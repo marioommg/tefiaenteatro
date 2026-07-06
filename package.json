@@ -10,7 +10,9 @@
     "astro": "astro",
     "typecheck": "astro check",
     "lint": "astro check",
-    "thumbs:elenco": "node src/develop-scripts/generate-elenco-thumbnails.js"
+    "thumbs:elenco": "node src/develop-scripts/generate-elenco-thumbnails.js",
+    "setup-access-logs": "powershell -ExecutionPolicy Bypass -File .\\scripts\\setup-access-logs.ps1 -Profile iam-auditor",
+    "deploy-lambda-photo-report": "node scripts/deploy-lambda-photo-report.js --profile iam-auditor --update-env"
   },
   "dependencies": {
     "@astrojs/check": "^0.9.5",

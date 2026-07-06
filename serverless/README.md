@@ -76,6 +76,27 @@
 - Compatible con HTTP API v2 (campo `cookies`) y REST API (campo `multiValueHeaders`)
 - Atributos de expiración: Max-Age=0 + Expires=Thu, 01 Jan 1970 00:00:00 GMT
 
+### photo-report
+**Endpoint**: Function URL `photo-report` (POST)  
+**Purpose**: Recibe reportes de la galería VIP (modificar metadatos o pedir borrado de foto) y envía email vía SES.
+
+**Auth:** header `X-Report-Auth` = `PHOTO_REPORT_SECRET`
+
+**Body JSON (`type: photo_report`):**
+```json
+{
+  "type": "photo_report",
+  "action": "modify",
+  "photoSlug": "ejemplo",
+  "file": "foto.jpg",
+  "data": { "people": "...", "event": "..." }
+}
+```
+
+**Despliegue:** `npm run deploy-lambda-photo-report` (ver `AGENTS.md`)
+
+**Retirar legacy:** `submit-revision` sustituida por esta función (`scripts/retire-submit-revision.ps1`).
+
 ## Configuración CloudFront
 
 ### Behavior `/zona-vip/*`:

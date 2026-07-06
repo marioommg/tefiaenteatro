@@ -80,6 +80,7 @@ const hasDate = !!item.date;
 const backUrl = "/zona-vip/galeria/";
 
 const apiUrl = import.meta.env.PUBLIC_REVISION_API_URL || "";
+const photoReportAuth = import.meta.env.PHOTO_REPORT_SECRET || "";
 ---
 
 <Layout
@@ -88,8 +89,9 @@ const apiUrl = import.meta.env.PUBLIC_REVISION_API_URL || "";
   noContainer="true"
   robots="noindex, nofollow"
 >
-  <script is:inline>
-    window.__REVISION_API_URL__ = "{apiUrl}";
+  <script is:inline define:vars={{ apiUrl, photoReportAuth }}>
+    window.__REVISION_API_URL__ = apiUrl;
+    window.__PHOTO_REPORT_AUTH__ = photoReportAuth;
   </script>
   <main class="vip-photo-detail">
     <nav class="photo-detail-nav" aria-label="Navegación secundaria">
@@ -547,7 +549,10 @@ const apiUrl = import.meta.env.PUBLIC_REVISION_API_URL || "";
            try {
              const res = await fetch(endpoint, {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
+                headers: {
+                  "Content-Type": "application/json",
+                  "X-Report-Auth": window.__PHOTO_REPORT_AUTH__ || "",
+                },
                 body: JSON.stringify(payload)
              });
              
