@@ -1,11 +1,26 @@
 // @ts-check
-import { defineConfig } from 'astro/config';
+import { defineConfig, envField } from 'astro/config';
 
 // https://astro.build/config
 import sitemap, { ChangeFreqEnum } from '@astrojs/sitemap';
 
 export default defineConfig({
   site: 'https://tefiaenteatro.com', // Cambia esta URL si es diferente
+  env: {
+    schema: {
+      PUBLIC_REVISION_API_URL: envField.string({
+        context: 'client',
+        access: 'public',
+        optional: true,
+      }),
+      // Mismo valor que PHOTO_REPORT_SECRET en Lambda; expuesto en HTML de galería VIP (zona autenticada)
+      PUBLIC_PHOTO_REPORT_AUTH: envField.string({
+        context: 'client',
+        access: 'public',
+        optional: true,
+      }),
+    },
+  },
   integrations: [
     sitemap({
       filter: (url) => {

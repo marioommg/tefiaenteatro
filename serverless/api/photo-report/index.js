@@ -5,13 +5,24 @@ const { SES_SENDER_EMAIL, SES_REGION, PHOTO_REPORT_SECRET } = process.env;
 const sesConfig = { ...(SES_REGION ? { region: SES_REGION } : {}), requestTimeout: 10000 };
 const ses = new SESClient(sesConfig);
 
-const CORS_HEADERS = {
-  "Content-Type": "application/json",
-  "Access-Control-Allow-Origin": "https://tefiaenteatro.com",
-  "Access-Control-Allow-Methods": "POST, OPTIONS",
-  "Access-Control-Allow-Headers": "Content-Type, X-Report-Auth",
-  "Access-Control-Max-Age": "86400",
-};
+const ALLOWED_ORIGINS = new Set([
+  "https://tefiaenteatro.com",
+  "https://www.tefiaenteatro.com",
+]);
+
+function corsHeaders(event) {
+  const reqOrigin = event.headers?.origin || event.headers?.Origin || "";
+  const allowOrigin = ALLOWED_ORIGINS.has(reqOrigin)
+    ? reqOrigin
+    : "https://tefiaenteatro.com";
+  return {
+    "Content-Type": "application/json",
+    "Access-Control-Allow-Origin": allowOrigin,
+    "Access-Control-Allow-Methods": "POST, OPTIONS",
+    "Access-Control-Allow-Headers": "Content-Type, X-Report-Auth",
+    "Access-Control-Max-Age": "86400",
+  };
+}
 
 const RATE_LIMIT_MAX = 5;
 const RATE_LIMIT_WINDOW_MS = 3600000;
@@ -51,26 +62,26 @@ export const handler = async (event) => {
   const method = event.requestContext?.http?.method || event.httpMethod || "GET";
 
   if (method === "OPTIONS") {
-    return { statusCode: 204, headers: CORS_HEADERS };
+    return { statusCode: 204, headers: corsHeaders(event) };
   }
 
   if (method !== "POST") {
-    return { statusCode: 405, headers: CORS_HEADERS, body: JSON.stringify({ error: "Method Not Allowed" }) };
+    return { statusCode: 405, headers: corsHeaders(event), body: JSON.stringify({ error: "Method Not Allowed" }) };
   }
 
   if (!SES_SENDER_EMAIL) {
     console.error("Missing SES_SENDER_EMAIL environment variable");
-    return { statusCode: 500, headers: CORS_HEADERS, body: JSON.stringify({ error: "Server misconfigured" }) };
+    return { statusCode: 500, headers: corsHeaders(event), body: JSON.stringify({ error: "Server misconfigured" }) };
   }
 
   const headers = event.headers || {};
   if (!isValidSecret(headers)) {
-    return { statusCode: 401, headers: CORS_HEADERS, body: JSON.stringify({ error: "Unauthorized" }) };
+    return { statusCode: 401, headers: corsHeaders(event), body: JSON.stringify({ error: "Unauthorized" }) };
   }
 
   const ip = event.requestContext?.http?.sourceIp || "unknown";
   if (!checkRateLimit(ip)) {
-    return { statusCode: 429, headers: CORS_HEADERS, body: JSON.stringify({ error: "Demasiadas peticiones. Inténtalo más tarde." }) };
+    return { statusCode: 429, headers: corsHeaders(event), body: JSON.stringify({ error: "Demasiadas peticiones. Inténtalo más tarde." }) };
   }
 
   let payload;
@@ -81,7 +92,7 @@ export const handler = async (event) => {
     }
     payload = JSON.parse(bodyStr);
   } catch (e) {
-    return { statusCode: 400, headers: CORS_HEADERS, body: JSON.stringify({ error: "Invalid JSON body" }) };
+    return { statusCode: 400, headers: corsHeaders(event), body: JSON.stringify({ error: "Invalid JSON body" }) };
   }
 
   if (payload.type === "photo_report") {
@@ -140,14 +151,14 @@ export const handler = async (event) => {
       await ses.send(command);
       return {
         statusCode: 200,
-        headers: CORS_HEADERS,
+        headers: corsHeaders(event),
         body: JSON.stringify({ ok: true, message: "Reporte de foto enviado" }),
       };
     } catch (err) {
       console.error("Error publishing to SES for photo report:", err);
-      return { statusCode: 500, headers: CORS_HEADERS, body: JSON.stringify({ error: "Error interno del servidor" }) };
+      return { statusCode: 500, headers: corsHeaders(event), body: JSON.stringify({ error: "Error interno del servidor" }) };
     }
   }
 
-  return { statusCode: 400, headers: CORS_HEADERS, body: JSON.stringify({ error: "Invalid payload type" }) };
+  return { statusCode: 400, headers: corsHeaders(event), body: JSON.stringify({ error: "Invalid payload type" }) };
 };

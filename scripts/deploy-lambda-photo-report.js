@@ -136,6 +136,7 @@ function upsertEnvFile(functionUrl, secret) {
 
   upsert("PUBLIC_REVISION_API_URL", functionUrl);
   upsert("PHOTO_REPORT_SECRET", secret);
+  upsert("PUBLIC_PHOTO_REPORT_AUTH", secret);
 
   writeFileSync(envPath, content, "utf8");
   console.log(`\n📝  .env actualizado (${envPath})`);
@@ -151,13 +152,10 @@ function ensureFunctionUrl() {
     exists = false;
   }
 
-  const cors =
-    'AllowOrigins="https://tefiaenteatro.com,https://www.tefiaenteatro.com",AllowMethods="POST",AllowHeaders="content-type,x-report-auth",MaxAge=86400';
-
   if (!exists) {
-    console.log("\n🌐  Creando Function URL...");
+    console.log("\n🌐  Creando Function URL (sin CORS en URL; lo gestiona la Lambda)...");
     run(
-      `aws lambda create-function-url-config --function-name ${FUNCTION_NAME} --auth-type NONE --cors ${cors} --region ${REGION} --profile ${PROFILE} --no-cli-pager`
+      `aws lambda create-function-url-config --function-name ${FUNCTION_NAME} --auth-type NONE --region ${REGION} --profile ${PROFILE} --no-cli-pager`
     );
     try {
       run(
@@ -174,10 +172,30 @@ function ensureFunctionUrl() {
       /* ya existe */
     }
   } else {
-    console.log("\n🌐  Actualizando CORS de Function URL...");
-    run(
-      `aws lambda update-function-url-config --function-name ${FUNCTION_NAME} --cors ${cors} --region ${REGION} --profile ${PROFILE} --no-cli-pager`
+    const urlCors = runSilent(
+      `aws lambda get-function-url-config --function-name ${FUNCTION_NAME} --region ${REGION} --profile ${PROFILE} --no-cli-pager --query Cors --output json`
     );
+    const hasUrlCors =
+      urlCors &&
+      urlCors !== "null" &&
+      urlCors !== "{}" &&
+      !urlCors.includes('"AllowOrigins": []') &&
+      !urlCors.includes('"AllowOrigins":[]');
+    if (hasUrlCors) {
+      console.log("\n🌐  Recreando Function URL sin CORS (solo Lambda)...");
+      const currentUrl = runSilent(
+        `aws lambda get-function-url-config --function-name ${FUNCTION_NAME} --region ${REGION} --profile ${PROFILE} --no-cli-pager --query FunctionUrl --output text`
+      );
+      run(
+        `aws lambda delete-function-url-config --function-name ${FUNCTION_NAME} --region ${REGION} --profile ${PROFILE} --no-cli-pager`
+      );
+      run(
+        `aws lambda create-function-url-config --function-name ${FUNCTION_NAME} --auth-type NONE --region ${REGION} --profile ${PROFILE} --no-cli-pager`
+      );
+      console.log(`   Nueva URL: ${currentUrl.trim()}`);
+    } else {
+      console.log("\n🌐  Function URL ya sin CORS (OK).");
+    }
   }
 
   return runSilent(
@@ -265,6 +283,7 @@ console.log(`   URL: ${functionUrl}`);
 console.log(`\n👉  Añade a .env (build del sitio):`);
 console.log(`   PUBLIC_REVISION_API_URL=${functionUrl}`);
 console.log(`   PHOTO_REPORT_SECRET=${secret}`);
+console.log(`   PUBLIC_PHOTO_REPORT_AUTH=${secret}`);
 console.log("\n👉  Luego: npm run build && npm run deploy");
 console.log("👉  Cuando verifiques la galería: .\\scripts\\retire-submit-revision.ps1 -Profile iam-auditor");
 

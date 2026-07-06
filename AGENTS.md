@@ -105,7 +105,8 @@ Copia `.env.example` → `.env`. Nunca commitees `.env`.
 | Variable | Uso |
 |----------|-----|
 | `PUBLIC_REVISION_API_URL` | Function URL de `photo-report` |
-| `PHOTO_REPORT_SECRET` | Secreto build-time para `X-Report-Auth` (sin prefijo `PUBLIC_`) |
+| `PHOTO_REPORT_SECRET` | Secreto en Lambda (`X-Report-Auth`) |
+| `PUBLIC_PHOTO_REPORT_AUTH` | Mismo valor; embebido en build de galería VIP |
 | `SES_SENDER_EMAIL` / `SES_REGION` | Email transaccional (Lambda) |
 | `VIP_PASSWORD_HASH` | Hash bcrypt de la zona VIP |
 | `CLOUDFLARE_API_TOKEN` | Token de zona (solo deploy) |
