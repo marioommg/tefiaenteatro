@@ -1,0 +1,16 @@
+[
+  {
+    "file": "demo-ensayo-01.webp",
+    "alt": "Foto de demostración — reemplaza con tu manifiesto local",
+    "people": ["Demo"],
+    "event": "Ensayo de ejemplo",
+    "date": "2026-01-01"
+  },
+  {
+    "file": "demo-funcion-01.webp",
+    "alt": "Segunda foto de demostración",
+    "people": ["Demo"],
+    "event": "Función de ejemplo",
+    "date": "2026-01-02"
+  }
+]

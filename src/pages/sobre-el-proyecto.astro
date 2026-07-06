@@ -1,0 +1,185 @@
+---
+import Layout from "../layouts/Layout.astro";
+import { getImage } from "astro:assets";
+import "../styles/libelula-y-efecto-secciones.css";
+import "../styles/sobre-el-proyecto.css";
+import fotoGrupal from "../assets/sobre-el-proyecto/foto grupal.jpg";
+import ProjectFigures from "../components/ProjectFigures.astro";
+
+const timelineVideos = [
+  { webm: "/sobre-el-proyecto/1_IDEAS.webm", mp4: "/sobre-el-proyecto/1_IDEAS.mp4" },
+  { webm: "/sobre-el-proyecto/2_CASTING.webm", mp4: "/sobre-el-proyecto/2_CASTING.mp4" },
+  { webm: "/sobre-el-proyecto/3_ENSAYOS.webm", mp4: "/sobre-el-proyecto/3_ENSAYOS.mp4" },
+  { webm: "/sobre-el-proyecto/4_PRODUCCIÓN.webm", mp4: "/sobre-el-proyecto/4_PRODUCCIÓN.mp4" },
+  { webm: "/sobre-el-proyecto/5_ESTRENO.webm", mp4: "/sobre-el-proyecto/5_ESTRENO.mp4" },
+] as const;
+
+const pageTitle = "Sobre el proyecto";
+const pageDescription =
+	"Descubre cómo nació y se desarrolló este proyecto de musical, desde la idea inicial hasta su presentación en 5 teatros de Madrid.";
+
+const optimizedBgMobile = await getImage({
+	src: fotoGrupal,
+	format: "webp",
+	width: 800,
+	quality: 75,
+});
+
+const optimizedBgDesktop = await getImage({
+	src: fotoGrupal,
+	format: "webp",
+	width: 1920,
+	quality: 80,
+});
+---
+
+<Layout title={pageTitle} description={pageDescription} noContainer={true}>
+	<main>
+		<!-- Hero Section -->
+		<section class="hero-section fade-section" data-initial-visible>
+			<style define:vars={{ 
+				bgMobile: `url('${optimizedBgMobile.src}')`, 
+				bgDesktop: `url('${optimizedBgDesktop.src}')` 
+			}}>
+				.hero-bg-responsive {
+					background-image: var(--bgMobile) !important;
+				}
+				@media (min-width: 768px) {
+					.hero-bg-responsive {
+						background-image: var(--bgDesktop) !important;
+					}
+				}
+			</style>
+			<div class="hero-bg hero-bg-responsive">
+			</div>
+			<div class="hero-overlay"></div>
+			<div class="hero-content">
+				<h1 class="hero-title">Sobre el proyecto</h1>
+				<p class="hero-subtitle">
+					De una idea en el aula a los escenarios de Madrid
+				</p>
+			</div>
+			<div class="scroll-indicator">
+				<span>Descubre la historia</span>
+				<div class="arrow-down">↓</div>
+			</div>
+		</section>
+
+		<!-- Timeline Section -->
+		<section
+			class="timeline-section fade-section"
+			data-anim="timeline"
+			id="recorrido"
+		>
+			<h2 class="section-title">El recorrido</h2>
+			<div class="timeline">
+				<div class="timeline-line-filled"></div>
+				<div class="timeline-item left timeline-anim-item">
+					<div class="timeline-content">
+						<video
+							class="timeline-image-placeholder"
+							aria-label="Vídeo en bucle de la dirección trabajando en el proyecto"
+							autoplay
+							loop
+							muted
+							playsinline
+							style="object-fit: cover; border: none;">
+							<source src={timelineVideos[0].webm} type="video/webm" />
+							<source src={timelineVideos[0].mp4} type="video/mp4" />
+						</video>
+						<div class="timeline-text">
+							<h3>La idea inicial</h3>
+							<p>
+								Primeros bocetos y conceptualización del
+								proyecto.
+							</p>
+						</div>
+					</div>
+				</div>
+				<div class="timeline-item right timeline-anim-item">
+					<div class="timeline-content">
+						<video
+							class="timeline-image-placeholder"
+							aria-label="Vídeo en bucle de las audiciones y el proceso de casting"
+							autoplay
+							loop
+							muted
+							playsinline
+							style="object-fit: cover; border: none;">
+							<source src={timelineVideos[1].webm} type="video/webm" />
+							<source src={timelineVideos[1].mp4} type="video/mp4" />
+						</video>
+						<div class="timeline-text">
+							<h3>Casting</h3>
+							<p>
+								Audiciones y conformación del elenco principal.
+							</p>
+						</div>
+					</div>
+				</div>
+				<div class="timeline-item left timeline-anim-item">
+					<div class="timeline-content">
+						<video
+							class="timeline-image-placeholder"
+							aria-label="Vídeo en bucle de los ensayos con el elenco"
+							autoplay
+							loop
+							muted
+							playsinline
+							style="object-fit: cover; border: none;">
+							<source src={timelineVideos[2].webm} type="video/webm" />
+							<source src={timelineVideos[2].mp4} type="video/mp4" />
+						</video>
+						<div class="timeline-text">
+							<h3>Ensayos</h3>
+							<p>Lectura de guion y preparación actoral.</p>
+						</div>
+					</div>
+				</div>
+				<div class="timeline-item right timeline-anim-item">
+					<div class="timeline-content">
+						<video
+							class="timeline-image-placeholder"
+							aria-label="Vídeo en bucle del montaje técnico y de producción"
+							autoplay
+							loop
+							muted
+							playsinline
+							style="object-fit: cover; border: none;">
+							<source src={timelineVideos[3].webm} type="video/webm" />
+							<source src={timelineVideos[3].mp4} type="video/mp4" />
+						</video>
+						<div class="timeline-text">
+							<h3>Producción</h3>
+							<p>Diseño técnico y montaje escénico.</p>
+						</div>
+					</div>
+				</div>
+				<div class="timeline-item left timeline-anim-item">
+					<div class="timeline-content">
+						<video
+							class="timeline-image-placeholder"
+							aria-label="Vídeo en bucle de distintas partes del montaje"
+							autoplay
+							loop
+							muted
+							playsinline
+							style="object-fit: cover; border: none;">
+							<source src={timelineVideos[4].webm} type="video/webm" />
+							<source src={timelineVideos[4].mp4} type="video/mp4" />
+						</video>
+						<div class="timeline-text">
+							<h3>Estreno</h3>
+							<p>Representaciones en 5 teatros de Madrid.</p>
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
+
+		<!-- Sección de Cifras del Proyecto -->
+		<ProjectFigures />
+	</main>
+</Layout>
+
+<script src="../scripts/sobre-el-proyecto.js"></script>

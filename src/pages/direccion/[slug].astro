@@ -1,0 +1,115 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import type { Actor } from "../../data/direccion";
+import { getAllActors } from "../../data/direccion";
+import DireccionProfile from "../../components/DireccionProfile.astro";
+import type { ImageMetadata } from "astro";
+
+export async function getStaticPaths() {
+    const actors = getAllActors();
+    return actors.map((actor, index) => {
+        const prevActor =
+            index > 0 ? actors[index - 1] : actors[actors.length - 1];
+        const nextActor =
+            index < actors.length - 1 ? actors[index + 1] : actors[0];
+        return {
+            params: { slug: actor.slug },
+            props: {
+                actor,
+                prevActor,
+                nextActor,
+                allActors: actors,
+            },
+        };
+    });
+}
+
+const { actor, prevActor, nextActor, allActors } = Astro.props as {
+    actor: Actor;
+    prevActor: Actor;
+    nextActor: Actor;
+    allActors: Actor[];
+};
+
+const nombre = actor.nombre;
+const descripcion1 = actor.descripcion1 ?? "";
+const descripcion2 = actor.descripcion2 ?? "";
+const pageTitle = nombre;
+const plainTextDescription1 = descripcion1.replace(/<[^>]*>?/gm, '');
+const rawDescription = plainTextDescription1 || `${nombre} en Tefía en Teatro.`;
+const pageDescription = rawDescription.length > 150
+  ? rawDescription.slice(0, 147) + '...'
+  : rawDescription;
+// Convert old paths to src/assets paths relative logic
+const carpetaGaleria =
+    actor.carpetaGaleria || `/images/direccion/${actor.slug}/`;
+// We don't need 'fileURLToPath' anymore as we use glob
+
+const usernameInstagram = actor.usernameInstagram || "";
+const usernameTikTok = actor.usernameTikTok || "";
+const spotifyUrl = actor.spotifyUrl || "";
+const usernameTwitch = actor.usernameTwitch || "";
+const usernameYoutube = actor.usernameYoutube || "";
+
+// Import all potential images (elenco + direccion)
+// This is heavy in dev but tree-shaken in build.
+const allImages = import.meta.glob<{ default: ImageMetadata }>(
+    [
+        "/src/assets/images/elenco/**/*.{webp,avif,png,jpg,jpeg,gif}",
+        "/src/assets/images/direccion/**/*.{webp,avif,png,jpg,jpeg,gif}",
+    ],
+    { eager: true },
+);
+
+// Helper to find image in glob
+// Paths in data are like "/images/elenco/inicio/moisesA.webp" or "/images/direccion/gaby/hero.webp"
+function getImageByPath(path: string | undefined): ImageMetadata | null {
+    if (!path) return null;
+    const cleanPath = path.replace(/^\/public\//, "/").replace(/^\//, ""); // remove leading slash
+    // Try to match src/assets/ + cleanPath
+    // cleanPath e.g. "images/elenco/inicio/moisesA.webp"
+
+    // Construct lookup key
+    const lookupPath = `/src/assets/${cleanPath}`;
+    const found = allImages[lookupPath];
+    return found ? found.default : null;
+}
+
+const heroImage = getImageByPath(actor.hero);
+
+// For gallery, we filter keys that start with the folder path
+// folder e.g. "/images/direccion/mario-munoz/"
+const folderClean = carpetaGaleria
+    .replace(/^\/public\//, "/")
+    .replace(/^\//, "");
+const galleryPrefix = `/src/assets/${folderClean}`;
+
+const galeriaImages = Object.keys(allImages)
+    .filter(
+        (k) =>
+            k.startsWith(galleryPrefix) &&
+            k !== `/src/assets/${actor.hero?.replace(/^\//, "")}`,
+    ) // exclude hero if in same folder
+    .sort((a, b) => a.localeCompare(b, "es", { numeric: true }))
+    .map((k) => allImages[k].default);
+---
+
+<Layout title={pageTitle} description={pageDescription} noContainer={true}>
+    <DireccionProfile
+        nombre={nombre}
+        descripcion1={descripcion1}
+        descripcion2={descripcion2}
+        carpetaGaleria={carpetaGaleria}
+        heroImage={heroImage}
+        galeriaImages={galeriaImages}
+        usernameInstagram={usernameInstagram}
+        usernameTikTok={usernameTikTok}
+        spotifyUrl={spotifyUrl}
+        usernameTwitch={usernameTwitch}
+        usernameYoutube={usernameYoutube}
+        prevActor={prevActor}
+        nextActor={nextActor}
+        allActors={allActors}
+        currentSlug={actor.slug}
+    />
+</Layout>

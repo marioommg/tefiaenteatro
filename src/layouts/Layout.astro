@@ -1,0 +1,466 @@
+---
+import logo from "../assets/logo.webp";
+import { BUILD_VERSION } from "../data/version";
+import PopupAviso from "../components/PopupAviso.astro";
+//import redirectUrl from "../scripts/redireccion.js?url";
+// Nota: ClientRouter (astro:transitions) deshabilitado para mejorar rendimiento en conexiones lentas
+const {
+	title,
+	fullTitle,
+	description,
+	noContainer = false,
+	robots,
+	hidePopup = false,
+	image = "/tefiaenteatro.webp",
+} = Astro.props;
+
+// SEO helpers
+const siteName = "Tefía en Teatro";
+const pageTitle = fullTitle ? fullTitle : (title ? `${title} - ${siteName}` : siteName);
+const pageDescription = description ?? "Tefía en Teatro, el musical.";
+const canonicalUrl = Astro.url?.href;
+---
+
+<!doctype html>
+<html lang="es-ES">
+	<head>
+		<title>{pageTitle}</title>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta name="description" content={pageDescription} />
+		{canonicalUrl && <link rel="canonical" href={canonicalUrl} />}
+		<link rel="icon" type="image/webp" href="/favicon.webp" />
+		<meta
+			name="robots"
+			content={robots ? robots : "max-image-preview:large"}
+		/>
+		<meta name="generator" content={Astro.generator} />
+		<meta name="theme-color" content="#000000" />
+		<meta name="x-build-version" content={BUILD_VERSION} />
+		<link rel="sitemap" href="/sitemap-index.xml" />
+
+		{/* Open Graph */}
+		<meta property="og:site_name" content={siteName} />
+		<meta property="og:locale" content="es_ES" />
+		<meta property="og:type" content="website" />
+		<meta property="og:title" content={pageTitle} />
+		<meta property="og:description" content={pageDescription} />
+		{canonicalUrl && <meta property="og:url" content={canonicalUrl} />}
+		<meta property="og:image" content={new URL(image, Astro.url).href} />
+
+		{/* Twitter Card */}
+		<meta name="twitter:card" content="summary_large_image" />
+		<meta name="twitter:title" content={pageTitle} />
+		<meta name="twitter:description" content={pageDescription} />
+		<meta name="twitter:image" content={new URL(image, Astro.url).href} />
+		<!-- <script is:inline type="module" src={redirectUrl}></script> -->
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link
+			href="https://fonts.googleapis.com/css2?family=BBH+Sans+Bartle&family=Beiruti:wght@200..900&family=Literata:ital,opsz,wght@0,7..72,200..900;1,7..72,200..900&display=swap"
+			rel="stylesheet"
+		/>
+		{
+			/**
+			 * ClientRouter eliminado temporalmente para evitar el prefetch agresivo que añade
+			 * y reducir JS necesario para navegación en 3G. Si queremos recuperar transiciones
+			 * visuales, lo reactivamos cuando podamos controlar su prefetch.
+			 */
+		}
+		<style is:global>
+			:root {
+				/* Default to 0 so calc() with var(--header-height) doesn't break before JS measures */
+				--header-height: 0px;
+			}
+			html {
+				font-size: 130%;
+			}
+			header {
+				margin: 0;
+				padding: 0;
+				width: 100%;
+				height: auto;
+				text-align: center;
+				background: #000000;
+			}
+			body {
+				margin: 0;
+				width: 100%;
+				height: 100%;
+				font-family: Beiruti, Helvetica;
+				background: #000000;
+				color: #ffffff;
+			}
+			/* Prevent accidental horizontal scrollbars on mobile */
+			html,
+			body {
+				overflow-x: hidden;
+			}
+			a {
+				color: #ffffff !important;
+				text-decoration: underline;
+				transition: color 0.3s ease;
+			}
+
+			a:hover {
+				color: #a200ff !important;
+			}
+
+			#logo-header {
+				max-width: 300px; /* Ancho máximo */
+				width: auto; /* Mantiene la proporción */
+				height: auto; /* Mantiene la proporción */
+				margin: 0 auto;
+			}
+			.container {
+				max-width: 600px;
+				margin: 0 auto;
+				padding: 2rem 1.5rem;
+			}
+
+			.site-footer {
+				padding: 1.5rem 1.5rem;
+				background-color: #000000;
+			}
+
+			.footer-container {
+				max-width: 1200px;
+				margin: 0 auto;
+			}
+
+			.footer-content {
+				display: flex;
+				justify-content: space-between;
+				gap: 3rem;
+				margin-bottom: 2rem;
+				flex-wrap: wrap;
+			}
+
+			.footer-logo-section {
+				flex: 1;
+				min-width: 280px;
+			}
+
+			.footer-logo {
+				margin: 0 0 0 0;
+			}
+
+			.footer-logo img {
+				max-width: 239px;
+				height: auto;
+				display: block;
+			}
+
+			.footer-disclaimer {
+				font-size: 0.875rem;
+				line-height: 1.6;
+				color: #ffffff;
+				margin: 0;
+				text-align: left;
+			}
+
+			.footer-links-section {
+				flex: 0 0 auto;
+				min-width: 200px;
+			}
+
+			.footer-links-title {
+				font-size: 1.2rem;
+				font-weight: 700;
+				margin: 0 0 1.5rem 0;
+			}
+
+			.footer-nav ul {
+				list-style: none;
+				padding: 0;
+				margin: 0;
+			}
+
+			.footer-nav li {
+				margin-bottom: 1rem;
+			}
+
+			.footer-credits {
+				text-align: right;
+			}
+
+			.footer-credits p {
+				font-size: 0.875rem;
+				color: #ffffff;
+				margin: 0;
+			}
+
+			.footer-credits a {
+				color: #ffffff;
+				text-decoration: none;
+				font-weight: 500;
+			}
+
+			.footer-credits a:hover {
+				color: #a200ff;
+				text-decoration: underline;
+			}
+
+			@media (max-width: 768px) {
+				.footer-content {
+					flex-direction: column;
+					gap: 2rem;
+				}
+
+				.footer-credits {
+					text-align: center;
+				}
+			}
+
+			.clickable-logo {
+				cursor: pointer;
+			}
+
+			/* CLS-safe image defaults and utilities */
+			img {
+				display: block;
+				max-width: 100%;
+				height: auto;
+			}
+			/* If width/height are present, browsers reserve aspect ratio preventing layout shifts */
+			img[width][height] {
+				height: auto;
+			}
+			/* Utility aspect-ratio wrappers to reserve space before images load */
+			.ratio-1-1 {
+				aspect-ratio: 1 / 1;
+			}
+			.ratio-3-4 {
+				aspect-ratio: 3 / 4;
+			}
+			.ratio-4-3 {
+				aspect-ratio: 4 / 3;
+			}
+			.ratio-16-9 {
+				aspect-ratio: 16 / 9;
+			}
+			.cover-media {
+				width: 100%;
+				height: 100%;
+				object-fit: cover;
+			}
+			.contain-media {
+				width: 100%;
+				height: 100%;
+				object-fit: contain;
+			}
+		</style>
+	</head>
+
+	<body>
+		<header transition:persist>
+			<img
+				src={logo.src}
+				alt="Logo de mi web"
+				id="logo-header"
+				class="clickable-logo"
+				width={logo.width}
+				height={logo.height}
+				decoding="async"
+				fetchpriority="high"
+				loading="eager"
+			/>
+		</header>
+
+		{
+			noContainer ? (
+				<slot />
+			) : (
+				<div class="container">
+					<slot />
+				</div>
+			)
+		}
+
+		<footer class="site-footer" transition:persist>
+			<div class="footer-container">
+				<div class="footer-content">
+					<!-- Logo Section -->
+					<div class="footer-logo-section">
+						<figure class="footer-logo">
+							<img
+								src={logo.src}
+								alt="Logo Tefia en Teatro"
+								loading="lazy"
+								decoding="async"
+								width={logo.width}
+								height={logo.height}
+								class="clickable-logo"
+								id="logo-footer"
+							/>
+						</figure>
+
+						<p class="footer-disclaimer">
+							Página web y proyecto creado con fines educativos
+							para la realización de un Trabajo de Fin de Ciclo
+							(TFC) para el ciclo de Realización de Proyectos
+							Audiovisuales y Espectáculos. Este sitio no tiene
+							ninguna vinculación con Atresplayer
+							(atresplayer.com) ni con la productora Buendía
+							Estudios.
+						</p>
+					</div>
+
+					<!-- Links Section -->
+					<div class="footer-links-section">
+						<h3 class="footer-links-title">Enlaces de interés</h3>
+
+						<nav class="footer-nav">
+							<ul>
+								<li><a href="/contacto/">Contacto</a></li>
+								<li><a href="/aviso-legal/">Aviso legal</a></li>
+								<li>
+									<a href="/privacy-policy/"
+										>Política de privacidad</a
+									>
+								</li>
+								<li>
+									<a href="/cookies-policy/"
+										>Política de cookies</a
+									>
+								</li>
+							</ul>
+						</nav>
+					</div>
+				</div>
+
+				<!-- Credits -->
+				<div class="footer-credits">
+					<p>
+						Web creada con mucho amor por <a
+							href="https://instagram.com/marioo_mmg"
+							target="_blank"
+							rel="noopener">Mario :)</a
+						>
+					</p>
+					<small style="font-size:0.8em; opacity:0.45;"
+						>Versión {BUILD_VERSION}</small
+					>
+				</div>
+			</div>
+		</footer>
+
+		{!hidePopup && <PopupAviso />}
+
+		<script is:inline>
+			(function () {
+				let resizeTimer = null;
+				let resizeBound = false;
+
+				function updateHeaderHeight() {
+					const header = document.querySelector("header");
+					if (!header) return;
+					const h = header.offsetHeight || 0;
+					document.documentElement.style.setProperty(
+						"--header-height",
+						`${h}px`,
+					);
+					window.dispatchEvent(
+						new CustomEvent("headerHeightUpdated", {
+							detail: { height: h },
+						}),
+					);
+				}
+
+				function onResizeDebounced() {
+					clearTimeout(resizeTimer);
+					resizeTimer = setTimeout(updateHeaderHeight, 100);
+				}
+
+				function ensureResizeBinding() {
+					if (resizeBound) return;
+					window.addEventListener("resize", onResizeDebounced);
+					resizeBound = true;
+				}
+
+				function initHeaderHeight() {
+					const header = document.querySelector("header");
+					if (!header) return;
+					const h = header.offsetHeight || 0;
+					if (h > 0) {
+						document.documentElement.style.setProperty(
+							"--header-height",
+							`${h}px`,
+						);
+					}
+				}
+
+				function bindLogo(logo) {
+					if (!logo || logo.dataset.bound) return;
+					logo.addEventListener("click", () => {
+						window.location.href = "/";
+					});
+					logo.dataset.bound = "1";
+				}
+
+				function setupOncePerPageLoad() {
+					const headerLogo = document.getElementById("logo-header");
+					const footerLogo = document.getElementById("logo-footer");
+					bindLogo(headerLogo);
+					bindLogo(footerLogo);
+
+					if (headerLogo) {
+						if (headerLogo.complete) {
+							updateHeaderHeight();
+						} else {
+							headerLogo.addEventListener(
+								"load",
+								updateHeaderHeight,
+								{ once: true },
+							);
+						}
+					}
+
+					try {
+						document.querySelectorAll("img").forEach((img) => {
+							const loading = img.getAttribute("loading");
+							const priority = (
+								img.getAttribute("fetchpriority") || ""
+							).toLowerCase();
+							if (loading !== "eager" && priority !== "high") {
+								if (!img.hasAttribute("loading"))
+									img.setAttribute("loading", "lazy");
+								if (!img.hasAttribute("decoding"))
+									img.setAttribute("decoding", "async");
+							}
+						});
+					} catch {}
+
+					ensureResizeBinding();
+					updateHeaderHeight();
+				}
+
+				function init() {
+					initHeaderHeight();
+					setupOncePerPageLoad();
+				}
+
+				if (document.readyState === "loading") {
+					document.addEventListener("DOMContentLoaded", init);
+				} else {
+					init();
+				}
+
+				document.addEventListener("astro:page-load", init);
+				document.addEventListener(
+					"astro:after-swap",
+					updateHeaderHeight,
+				);
+				document.addEventListener("astro:before-swap", () => {
+					if (!resizeBound) return;
+					window.removeEventListener("resize", onResizeDebounced);
+					resizeBound = false;
+					clearTimeout(resizeTimer);
+					resizeTimer = null;
+				});
+
+				window.addEventListener("load", updateHeaderHeight);
+			})();
+		</script>
+	</body>
+</html>

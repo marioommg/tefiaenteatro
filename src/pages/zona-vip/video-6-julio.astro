@@ -1,0 +1,89 @@
+---
+import Layout from "../../layouts/Layout.astro";
+
+const videoId = import.meta.env.PUBLIC_VIP_VIDEO_6_JULIO_ID;
+const embedSrc = videoId
+  ? `https://www.youtube-nocookie.com/embed/${videoId}`
+  : "";
+---
+
+<Layout
+	title="Vídeo exclusivo"
+	description="Acceso al vídeo exclusivo para la Zona VIP."
+	noContainer={true}
+	robots="noindex, nofollow"
+>
+	<main class="video-gate">
+		<section id="video-section">
+			<div class="video-embed">
+				<iframe
+					id="ytplayer"
+					src=""
+					data-src={embedSrc}
+					title="Reproductor de YouTube"
+					frameborder="0"
+					allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+					allowfullscreen></iframe>
+			</div>
+		</section>
+		<style>
+			.video-gate {
+				padding: 0;
+				text-align: center;
+			}
+
+			#video-section {
+				width: 100%;
+				display: flex;
+				justify-content: center;
+				align-items: center;
+				min-height: calc(100vh - var(--header-height, 0px));
+			}
+			.video-embed {
+				width: 100%;
+				max-width: 1200px;
+				position: relative;
+			}
+			.video-embed iframe {
+				width: 100%;
+				aspect-ratio: 16 / 9;
+				border: 0;
+				border-radius: 1rem;
+				background: #000;
+				display: block;
+				/* Use drop-shadow to avoid creating horizontal scrollbars due to large box-shadows */
+				filter: drop-shadow(0 0 60px rgba(162, 0, 255, 0.6))
+					drop-shadow(0 0 100px rgba(162, 0, 255, 0.3));
+			}
+
+			@media (max-width: 640px) {
+				#video-section {
+					min-height: calc(100vh - var(--header-height, 0px));
+					padding: 0rem 0rem;
+				}
+				.video-embed iframe {
+					border-radius: 0.5rem;
+				}
+			}
+		</style>
+		<script is:inline>
+			(function () {
+				function init() {
+					const iframe = document.getElementById("ytplayer");
+					if (iframe) {
+						const src = iframe.getAttribute("data-src");
+						if (src && iframe.src !== src) iframe.src = src;
+					}
+				}
+				if (document.readyState === "loading") {
+					document.addEventListener("DOMContentLoaded", init, {
+						once: true,
+					});
+				} else {
+					init();
+				}
+				document.addEventListener("astro:page-load", init);
+			})();
+		</script>
+	</main>
+</Layout>

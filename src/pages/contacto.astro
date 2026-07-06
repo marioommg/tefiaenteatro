@@ -1,0 +1,281 @@
+---
+import Layout from "../layouts/Layout.astro";
+
+const pageTitle = "Contacto";
+const pageDescription = "Contacta con el equipo de Tefía en Teatro para consultas, colaboraciones o información sobre el musical. ¡Estamos aquí para ayudarte!";
+---
+
+<Layout title={pageTitle} description={pageDescription} noContainer={false}>
+    <main class="contact">
+        <h1>Contacto</h1>
+
+        <p class="lead">
+            Si deseas ponerte en contacto con nosotros, puedes enviarnos un
+            correo electrónico.
+        </p>
+
+        <div
+            class="email-card"
+            role="group"
+            aria-label="Opciones de contacto por email"
+        >
+            <div class="email-text">
+                <span class="label">Email</span>
+                <a class="address" href="mailto:contacto@tefiaenteatro.com"
+                    >contacto@tefiaenteatro.com</a
+                >
+            </div>
+            <div class="email-actions">
+                <a
+                    class="btn primary"
+                    href="mailto:contacto@tefiaenteatro.com"
+                    aria-label="Enviar email a contacto@tefiaenteatro.com"
+                    >Enviar email</a
+                >
+                <button
+                    id="copyEmailBtn"
+                    class="btn ghost"
+                    type="button"
+                    data-email="contacto@tefiaenteatro.com"
+                >
+                    <svg
+                        class="icon"
+                        viewBox="0 0 24 24"
+                        width="18"
+                        height="18"
+                        aria-hidden="true"
+                    >
+                        <path
+                            fill="currentColor"
+                            d="M16 1H4c-1.1 0-2 .9-2 2v12h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"
+                        ></path>
+                    </svg>
+                    <span class="btn-text">Copiar</span>
+                </button>
+            </div>
+        </div>
+
+        <p>
+            Aunque ahora mismo están privadas, hubo un tiempo en el que tuvimos
+            redes sociales y puedes contactar con nosotros en ellas:
+        </p>
+
+        <ul class="social">
+            <li>
+                <a
+                    class="social-link"
+                    href="https://www.instagram.com/tefiaenteatro/"
+                    target="_blank"
+                    rel="noopener"
+                    aria-label="Instagram de Tefía en Teatro (@tefiaenteatro)"
+                >
+                    <svg
+                        class="icon"
+                        viewBox="0 0 24 24"
+                        width="20"
+                        height="20"
+                        aria-hidden="true"
+                    >
+                        <path
+                            fill="currentColor"
+                            d="M7 2h10a5 5 0 0 1 5 5v10a5 5 0 0 1-5 5H7a5 5 0 0 1-5-5V7a5 5 0 0 1 5-5zm0 2a3 3 0 0 0-3 3v10a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3V7a3 3 0 0 0-3-3H7zm5 3.5A5.5 5.5 0 1 1 6.5 13 5.5 5.5 0 0 1 12 7.5zm0 2A3.5 3.5 0 1 0 15.5 13 3.5 3.5 0 0 0 12 9.5zM18 6.25a1 1 0 1 1-1 1 1 1 0 0 1 1-1z"
+                        ></path>
+                    </svg>
+                    <span>Instagram: @tefiaenteatro</span>
+                </a>
+            </li>
+            <li>
+                <a
+                    class="social-link"
+                    href="https://www.tiktok.com/@tefiaenteatro"
+                    target="_blank"
+                    rel="noopener"
+                    aria-label="TikTok de Tefía en Teatro (@tefiaenteatro)"
+                >
+                    <svg
+                        class="icon"
+                        viewBox="0 0 24 24"
+                        width="20"
+                        height="20"
+                        aria-hidden="true"
+                    >
+                        <path
+                            fill="currentColor"
+                            d="M17.5 3.5c.8 1.2 2 2.1 3.5 2.4v3.1c-1.5-.1-2.9-.6-4.1-1.4v6.9c0 3.8-3.1 6.9-6.9 6.9S3.1 18.3 3.1 14.5 6.2 7.6 10 7.6c.4 0 .9 0 1.3.1v3.2c-.4-.1-.8-.1-1.3-.1-2 0-3.6 1.6-3.6 3.6S8 18 10 18s3.6-1.6 3.6-3.6V2h3.9v1.5z"
+                        ></path>
+                    </svg>
+                    <span>TikTok: @tefiaenteatro</span>
+                </a>
+            </li>
+        </ul>
+
+        <p>
+            Nos encantaría saber de ti y responder a cualquier pregunta o
+            comentario que puedas tener.
+        </p>
+        <p>¡Gracias por tu interés en el proyecto!</p>
+        <p>Atentamente,</p>
+        <p>El equipo de Tefía en Teatro</p>
+    </main>
+
+    <style>
+        .contact {
+            display: grid;
+            gap: 0.75rem;
+        }
+
+        .lead {
+            opacity: 0.9;
+            margin: 0.25rem 0 0.5rem;
+        }
+
+        .email-card {
+            display: grid;
+            gap: 0.5rem;
+            padding: 0.85rem;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.03);
+            margin: 0 auto; /* center the block */
+            text-align: center; /* center its contents */
+        }
+
+        .email-text {
+            display: flex;
+            align-items: baseline;
+            justify-content: center;
+            gap: 0.4rem;
+            flex-wrap: wrap;
+        }
+        .email-text .label {
+            font-size: 0.9rem;
+            opacity: 0.8;
+            letter-spacing: 0.02em;
+        }
+        .email-text .address {
+            font-weight: 700;
+            text-decoration: none;
+        }
+
+        .email-actions {
+            display: flex;
+            justify-content: center;
+            gap: 0.45rem;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.6rem 0.9rem;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            background: transparent;
+            color: #ffffff;
+            text-decoration: none;
+            cursor: pointer;
+            transition:
+                background 0.2s ease,
+                border-color 0.2s ease,
+                color 0.2s ease,
+                transform 0.05s ease;
+            font-weight: 600;
+        }
+        .btn:focus-visible {
+            outline: 2px solid #a200ff;
+            outline-offset: 2px;
+        }
+        .btn:active {
+            transform: translateY(1px);
+        }
+        .btn .icon {
+            opacity: 0.9;
+        }
+
+        .btn.primary {
+            background: #a200ff;
+            border-color: #a200ff;
+        }
+        .btn.primary:hover {
+            background: #8a00d8;
+            border-color: #8a00d8;
+            color: #d4d4d4 !important;
+        }
+
+        .btn.ghost:hover {
+            background: rgba(255, 255, 255, 0.06);
+            border-color: rgba(255, 255, 255, 0.35);
+        }
+
+        .social {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: grid;
+            gap: 0.35rem;
+            justify-items: center; /* center only socials */
+        }
+        .social-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+        }
+        .social-link .icon {
+            opacity: 0.9;
+        }
+        .social-link:hover .icon {
+            opacity: 1;
+        }
+
+        /* Tighten default paragraph spacing just in this page */
+        .contact p {
+            margin: 0.35rem 0;
+        }
+        .contact h1 {
+            margin: 0.25rem 0 0.5rem;
+        }
+    </style>
+
+    <script is:inline>
+        (function () {
+            const btn = document.getElementById("copyEmailBtn");
+            if (!btn) return;
+
+            async function copyText(text) {
+                try {
+                    if (navigator.clipboard && navigator.clipboard.writeText) {
+                        await navigator.clipboard.writeText(text);
+                        return true;
+                    }
+                } catch {}
+                try {
+                    const ta = document.createElement("textarea");
+                    ta.value = text;
+                    ta.style.position = "fixed";
+                    ta.style.opacity = "0";
+                    document.body.appendChild(ta);
+                    ta.focus();
+                    ta.select();
+                    const ok = document.execCommand("copy");
+                    document.body.removeChild(ta);
+                    return ok;
+                } catch {
+                    return false;
+                }
+            }
+
+            btn.addEventListener("click", async () => {
+                const email = btn.getAttribute("data-email") || "";
+                const ok = await copyText(email);
+                const textEl = btn.querySelector(".btn-text");
+                const original = textEl ? textEl.textContent : "Copiar";
+                if (textEl) textEl.textContent = ok ? "Copiado" : "Error";
+                setTimeout(() => {
+                    if (textEl) textEl.textContent = original;
+                }, 1500);
+            });
+        })();
+    </script>
+</Layout>

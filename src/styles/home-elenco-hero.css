@@ -1,0 +1,264 @@
+.home-elenco-hero {
+    position: relative;
+    overflow: hidden;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: clamp(2rem, 4vw, 3.75rem);
+    align-items: center;
+    padding: clamp(3.5rem, 6vw, 5rem) clamp(1.5rem, 7vw, 5rem);
+    margin: clamp(2rem, 5vw, 4rem) auto;
+    max-width: 1400px;
+    background: radial-gradient(circle at top left, rgba(162, 0, 255, 0.22), transparent 46%),
+        rgba(12, 12, 12, 0.9);
+    border: 1px solid rgba(162, 0, 255, 0.22);
+    border-radius: 28px;
+    box-shadow: 0 32px 60px rgba(0, 0, 0, 0.45);
+    isolation: isolate;
+}
+
+.home-elenco-hero::before,
+.home-elenco-hero::after {
+    content: '';
+    position: absolute;
+    width: clamp(220px, 36vw, 360px);
+    height: clamp(220px, 36vw, 360px);
+    background: radial-gradient(circle, rgba(162, 0, 255, 0.25) 0%, transparent 68%);
+    opacity: 0.75;
+    z-index: -1;
+    pointer-events: none;
+}
+
+.home-elenco-hero::before {
+    top: -18%;
+    left: -12%;
+}
+
+.home-elenco-hero::after {
+    bottom: -22%;
+    right: -12%;
+}
+
+.home-hero-content {
+    max-width: 520px;
+    margin: 0 auto;
+}
+
+.home-hero-eyebrow {
+    font-size: 0.9rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.7);
+    margin: 0 0 1rem;
+}
+
+.home-hero-title {
+    font-size: clamp(2.1rem, 5vw, 3rem);
+    margin: 0;
+    color: #ffffff;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+.home-hero-description {
+    margin: 1.5rem 0 2.5rem;
+    font-size: clamp(1.05rem, 2.2vw, 1.2rem);
+    line-height: 1.65;
+    color: rgba(255, 255, 255, 0.82);
+}
+
+.home-hero-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.home-hero-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.85rem 1.65rem;
+    border-radius: 999px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    text-decoration: none;
+    transition: transform 0.3s ease, box-shadow 0.3s ease, background 0.3s ease, border-color 0.3s ease;
+}
+
+.home-hero-button--primary {
+    background: linear-gradient(135deg, rgba(162, 0, 255, 0.5), #aa1faa);
+    color: #ffffff !important;
+    box-shadow: 0 15px 34px rgba(162, 0, 255, 0.4);
+}
+
+.home-hero-button--primary:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 18px 42px rgba(162, 0, 255, 0.5);
+    color:#ffffff !important;
+}
+
+.home-hero-arrow {
+    font-size: 1.3rem;
+    line-height: 1;
+    transition: transform 0.3s ease;
+}
+
+.home-hero-button:hover .home-hero-arrow {
+    transform: translateX(4px);
+}
+
+.home-hero-gallery {
+    position: relative;
+    display: block;
+    /* Space to accommodate rotated, overlapping cards */
+    min-height: clamp(340px, 48vw, 560px);
+    /* Horizontal offset used to fan out left/right cards */
+    --offset: clamp(70px, 12vw, 160px);
+    /* Ensure container spans full grid track for correct centering */
+    width: 100%;
+}
+
+/* Sparkles (purpurina morada) following cursor over gallery */
+.home-hero-gallery.sparkle-active { cursor: crosshair; }
+.hero-sparkle {
+    position: absolute;
+    left: 0; top: 0;
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 4; /* above cards, still under title (gallery z-index < title) */
+    opacity: 0.9;
+    /* soft glow and blending for a glitter feel */
+    filter: drop-shadow(0 0 6px rgba(170, 31, 170, 0.6)) drop-shadow(0 0 12px rgba(162, 0, 255, 0.45));
+    mix-blend-mode: screen;
+    transform: translate(-50%, -50%) scale(1);
+    will-change: transform, opacity;
+}
+/* fallback background if gradients are unsupported */
+.hero-sparkle { background: radial-gradient(circle, rgba(198, 76, 255, 0.95) 0%, rgba(162, 0, 255, 0.8) 45%, rgba(162, 0, 255, 0.0) 70%); }
+
+.home-hero-card {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    /* Reset default figure margins that cause horizontal shift */
+    margin: 0;
+    /* Responsive card width */
+    width: clamp(180px, 26vw, 320px);
+    aspect-ratio: 3 / 4;
+    overflow: hidden;
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    background: rgba(255, 255, 255, 0.04);
+    box-shadow: 0 20px 32px rgba(0, 0, 0, 0.35);
+    backdrop-filter: blur(6px);
+    /* Center baseline transform for absolute positioning */
+    transform: translate(-50%, -50%);
+    cursor: pointer;
+}
+
+/* Make the anchor fill the card for a larger click target */
+.home-hero-card > a { position: absolute; inset: 0; display: block; }
+
+.home-hero-card img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: saturate(1.08) contrast(1.04);
+    filter: blur(6px);
+    /* Float animation moved to the image to avoid conflicting with card transforms */
+    animation: homeHeroFloat 8s ease-in-out infinite;
+}
+
+/* Fan layout: center (primary), left (secondary), right (accent) */
+.home-hero-card--primary {
+    z-index: 3;
+    transform: translate(-50%, -50%) rotate(0deg);
+}
+
+.home-hero-card--secondary {
+    z-index: 2;
+    transform: translate(calc(-50% - var(--offset)), -50%) rotate(-15deg);
+    opacity: 0.4;
+}
+
+.home-hero-card--accent {
+    z-index: 2;
+    transform: translate(calc(-50% + var(--offset)), -50%) rotate(15deg);
+    opacity: 0.6;
+}
+
+/* Keep staggered float timing on the images */
+.home-hero-card--secondary img { animation-delay: 1.5s; }
+.home-hero-card--accent img { animation-delay: 3s; }
+
+@keyframes homeHeroFloat {
+    0%, 100% { transform: translateY(0) scale(1); }
+    50% { transform: translateY(-10px) scale(1.02); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .home-hero-card,
+    .home-hero-button {
+        animation: none;
+        transition: none;
+    }
+}
+
+@media (max-width: 1650px) {
+    .home-elenco-hero {
+        margin: 1.8rem 1.25rem 3rem;
+    }
+}
+
+/* En pantallas grandes, coloca la galería por detrás del título */
+@media (min-width: 1025px) {
+    .home-hero-content { position: relative; z-index: 2; }
+    .home-hero-gallery { position: relative; z-index: 1; }
+}
+
+@media (max-width: 1024px) {
+    .home-elenco-hero {
+        grid-template-columns: 1fr;
+        text-align: center;
+    }
+
+    .home-hero-content {
+        max-width: 580px;
+    }
+
+    .home-hero-buttons {
+        justify-content: center;
+    }
+
+    /* No grid here; gallery is positioned relative for the fanned layout */
+    .home-hero-gallery { --offset: clamp(60px, 10vw, 120px); min-height: clamp(320px, 52vw, 540px); }
+}
+
+@media (max-width: 768px) {
+    .home-elenco-hero {
+        padding: 3rem 1.5rem 2.6rem;
+    }
+    .home-hero-button--primary {
+        color: #ffffff !important;
+    }
+
+    /* Slightly reduce rotation and spacing for narrower screens */
+    .home-hero-gallery { --offset: clamp(40px, 12vw, 90px); min-height: clamp(300px, 60vw, 500px); }
+    .home-hero-card--secondary { transform: translate(calc(-50% - var(--offset)), -50%) rotate(-13deg); }
+    .home-hero-card--accent { transform: translate(calc(-50% + var(--offset)), -50%) rotate(13deg); }
+}
+
+@media (max-width: 600px) {
+
+
+    .home-hero-button {
+        justify-content: center;
+        width: 100%;
+    }
+
+    /* Tighter fan on small screens */
+    .home-hero-gallery { --offset: clamp(36px, 12vw, 72px); min-height: clamp(280px, 64vw, 440px); }
+    .home-hero-card--secondary { transform: translate(calc(-50% - var(--offset)), -50%) rotate(-12deg); }
+    .home-hero-card--accent { transform: translate(calc(-50% + var(--offset)), -50%) rotate(12deg); }
+}

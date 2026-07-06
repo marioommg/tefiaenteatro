@@ -1,0 +1,608 @@
+---
+import Layout from "../layouts/Layout.astro";
+import { Image } from "astro:assets";
+import { getAllActors } from "../data/elenco";
+
+const title = "Elenco";
+const description =
+	"Descubre al elenco de Tefía en Teatro, con fotos y descripciones de los actores que dan vida a los personajes principales.";
+
+const actors = getAllActors();
+// Helper to get image from glob
+const allImages = import.meta.glob<{ default: ImageMetadata }>(
+	"/src/assets/images/elenco/**/*.{webp,avif,png,jpg,jpeg,gif}",
+);
+
+async function getActorImages(actor: any) {
+	const heroPathBase = actor.hero.replace(
+		/^\/images\/elenco\//,
+		"/src/assets/images/elenco/",
+	);
+	const heroImageImport = Object.keys(allImages).find((key) =>
+		key.endsWith(heroPathBase.split("/src/assets/images/elenco/")[1]),
+	);
+
+	let heroImage = undefined;
+	if (heroImageImport) {
+		heroImage = (await allImages[heroImageImport]()).default;
+	}
+
+	let hoverImage = undefined;
+	if (heroImageImport) {
+		const hoverKey = heroImageImport.replace(/A(\.[a-z0-9]+)$/i, "B$1");
+		if (allImages[hoverKey]) {
+			hoverImage = (await allImages[hoverKey]()).default;
+		}
+	}
+	return { heroImage, hoverImage };
+}
+
+// Prepare actors with images
+const actorsWithImages = await Promise.all(
+	actors.map(async (actor) => {
+		const imgs = await getActorImages(actor);
+		const roleMap: Record<string, string> = {
+			"moises-denilo": "Vespa",
+			"antonio-lopez": "Charli",
+			"mario-valero": "Bambi",
+			sissi: "Sissi",
+			"daniel-sarabia": "La Pinito",
+			"nicolas-hernandez": "Boncho",
+			"sergio-jurado": "La Mole",
+			"sara-presilla": "Nisa",
+			"juanjo-loscos": "Airam",
+			"helena-madariaga": "Doña Obdulia",
+			"sara-kondo": "La Collares",
+			"dario-s-waisen": "Don Anselmo",
+			"martin-de-pablo": "La Rata",
+			"victor-jurado": "La Viga",
+			"alba-nunez": "Comprador",
+			"eider-ubeda": "Conchi",
+			"maria-hoyas": "Srta. Cristal",
+			"nafsikaa-tzouganakis": "Comprador",
+		};
+
+		// Short name extraction (first word)
+		const shortName = actor.nombre.split(" ")[0];
+		// Custom overrides if needed based on original HTML
+		const displayNames: Record<string, string> = {
+			"moises-denilo": "Moisés",
+			"antonio-lopez": "Antonio",
+			"mario-valero": "Mario",
+			sissi: "Pedro",
+			"daniel-sarabia": "Dani",
+			"nicolas-hernandez": "Nicolás",
+			"sergio-jurado": "Sergio",
+			"sara-presilla": "Sara",
+			"juanjo-loscos": "Juanjo",
+			"helena-madariaga": "Helena",
+			"sara-kondo": "Sara",
+			"dario-s-waisen": "Darío",
+			"martin-de-pablo": "Martín",
+			"victor-jurado": "Víctor",
+			"alba-nunez": "Alba",
+			"eider-ubeda": "Eider",
+			"maria-hoyas": "María",
+			"nafsikaa-tzouganakis": "Nafsikaa",
+		};
+
+		return {
+			...actor,
+			heroImage: imgs.heroImage,
+			hoverImage: imgs.hoverImage,
+			role: roleMap[actor.slug] || "",
+			displayName: displayNames[actor.slug] || shortName,
+		};
+	}),
+);
+
+// Chunking for rows: 4, 3, 4, 3, 4...
+const chunks = [];
+let i = 0;
+const pattern = [4, 3]; // Repeat this pattern
+let pIndex = 0;
+while (i < actorsWithImages.length) {
+	const size = pattern[pIndex % pattern.length];
+	chunks.push({
+		actors: actorsWithImages.slice(i, i + size),
+		isRow2: size === 3, // row-2 class for 3 items
+	});
+	i += size;
+	pIndex++;
+}
+
+const cardSizes = "(max-width: 600px) 70vw, (max-width: 872px) 40vw, 280px";
+---
+
+<Layout title={title} description={description} noContainer={true}>
+	<h1 class="elenco-title">Nuestro Elenco</h1>
+
+	<section class="people-grid">
+		{
+			chunks.map((chunk, _idx) => (
+				<div class={`people-row ${chunk.isRow2 ? "row-2" : "row-1"}`}>
+					{chunk.actors.map((actor) => (
+						<a
+							href={`/elenco/${actor.slug}/`}
+							class="img-link person-card"
+							aria-label={`Ir a ${actor.nombre}`}
+						>
+							<figure
+								class="hover-image"
+								role="img"
+								aria-hidden="false"
+							>
+								{actor.heroImage ? (
+									<Image
+										class="img-1"
+										src={actor.heroImage}
+										width={400}
+										sizes={cardSizes}
+										alt={actor.displayName}
+										loading="lazy"
+										style="width: 100%; height: 100%; object-fit: cover;"
+									/>
+								) : null}
+								{actor.hoverImage ? (
+									<Image
+										class="img-2"
+										src={actor.hoverImage}
+										width={400}
+										sizes={cardSizes}
+										alt={`${actor.displayName} (alternativo)`}
+										loading="lazy"
+										style="width: 100%; height: 100%; object-fit: cover;"
+									/>
+								) : null}
+							</figure>
+							<div class="person-meta">
+								<p class="person-name">{actor.displayName}</p>
+								<p class="person-role">{actor.role}</p>
+							</div>
+						</a>
+					))}
+				</div>
+			))
+		}
+	</section>
+
+	<style is:global>
+		html {
+			font-size: 130%;
+		}
+		header {
+			margin: 0;
+			padding: 0;
+			width: 100%;
+			height: auto;
+			text-align: center;
+			background: #000000;
+		}
+		body {
+			margin: 0;
+			width: 100%;
+			height: 100%;
+			font-family: Beiruti, Helvetica;
+			background: #000000;
+			color: #ffffff;
+		}
+
+		.elenco-title {
+			font-family: Beiruti, serif;
+			font-size: 2.2rem;
+			font-weight: 600;
+			text-align: center;
+			color: #ffffff;
+			margin: 2rem auto 3rem;
+			padding: 0 1rem;
+			background: linear-gradient(
+				135deg,
+				#ffffff 0%,
+				#e1c5ff 50%,
+				#ffffff 100%
+			);
+			-webkit-background-clip: text;
+			-webkit-text-fill-color: transparent;
+			background-clip: text;
+			letter-spacing: 0.02em;
+			position: relative;
+		}
+
+		.elenco-title::after {
+			content: "";
+			display: block;
+			width: 80px;
+			height: 3px;
+			background: linear-gradient(
+				90deg,
+				transparent,
+				#a200ff,
+				transparent
+			);
+			margin: 0.5rem auto 0;
+		}
+
+		/* Estilos para los enlaces */
+		a {
+			color: #ffffff !important;
+			text-decoration: underline;
+			transition: color 0.3s ease;
+		}
+
+		a:hover {
+			color: #a200ff !important;
+		}
+
+		a.img-link {
+			text-decoration: none !important;
+			display: block;
+			line-height: 0;
+		}
+
+		a:hover {
+			color: #a200ff !important;
+		}
+
+		a.img-link:hover {
+			text-decoration: none !important;
+		}
+
+		#logo-header {
+			max-width: 300px;
+			width: auto;
+			height: auto;
+			margin: 0 auto;
+		}
+		.container {
+			max-width: 600px;
+			margin: 0 auto;
+			padding: 2rem 1.5rem;
+		}
+
+		.site-footer {
+			padding: 3rem 1.5rem;
+			background-color: #000000;
+		}
+
+		.footer-container {
+			max-width: 1200px;
+			margin: 0 auto;
+		}
+
+		.footer-content {
+			display: flex;
+			justify-content: space-between;
+			gap: 3rem;
+			margin-bottom: 2rem;
+			flex-wrap: wrap;
+		}
+
+		.footer-logo-section {
+			flex: 1;
+			min-width: 280px;
+		}
+
+		.footer-logo {
+			margin: 0 0 0 0;
+		}
+
+		.footer-logo img {
+			max-width: 239px;
+			height: auto;
+			display: block;
+		}
+
+		.footer-disclaimer {
+			font-size: 0.875rem;
+			line-height: 1.6;
+			color: #ffffff;
+			margin: 0;
+			text-align: left;
+		}
+
+		.footer-links-section {
+			flex: 0 0 auto;
+			min-width: 200px;
+		}
+
+		.footer-links-title {
+			font-size: 1.2rem;
+			font-weight: 700;
+			margin: 0 0 1.5rem 0;
+		}
+
+		.footer-nav ul {
+			list-style: none;
+			padding: 0;
+			margin: 0;
+		}
+
+		.footer-nav li {
+			margin-bottom: 1rem;
+		}
+
+		.footer-credits {
+			text-align: right;
+			//border-bottom: 1px solid #ddd;
+		}
+
+		.footer-credits p {
+			font-size: 0.875rem;
+			color: #ffffff;
+			margin: 0;
+		}
+
+		.footer-credits a {
+			color: #ffffff;
+			text-decoration: none;
+			font-weight: 500;
+		}
+
+		.footer-credits a:hover {
+			color: #a200ff;
+			text-decoration: underline;
+		}
+
+		.footer-credits {
+			text-align: center;
+		}
+
+		.clickable-logo {
+			cursor: pointer;
+		}
+
+		.hover-image {
+			position: relative;
+			display: block;
+			width: 100%;
+			aspect-ratio: 3 / 4; /* Reserva espacio y evita CLS en las tarjetas */
+			vertical-align: bottom;
+			margin: 0;
+			overflow: hidden;
+			background: #0a0a0a; /* ligero placeholder */
+		}
+
+		.hover-image > img {
+			display: block;
+			width: 100%;
+			height: 100%;
+			object-fit: cover;
+			filter: saturate(1.08) contrast(1.04);
+			transition: opacity 0.5s ease;
+		}
+
+		.hover-image > .img-2 {
+			position: absolute;
+			inset: 0;
+			object-fit: cover;
+			opacity: 0;
+			pointer-events: none; /* deja pasar el clic al enlace/figure */
+		}
+
+		.person-meta {
+			position: absolute;
+			left: 0;
+			right: 0;
+			bottom: 0;
+			display: flex;
+			flex-direction: column;
+			align-items: flex-start;
+			gap: 0.8rem;
+			padding: 1.25rem 1.2rem 1.4rem;
+			background: linear-gradient(
+				0deg,
+				rgba(0, 0, 0, 0.92) 0%,
+				rgba(0, 0, 0, 0.6) 55%,
+				transparent 100%
+			);
+			pointer-events: none;
+			text-align: left;
+			z-index: 2;
+		}
+
+		.person-name,
+		.person-role {
+			margin: 0;
+			color: inherit;
+			transition: color 0.3s ease;
+			text-transform: uppercase;
+			letter-spacing: 0.06em;
+			text-shadow: 0 10px 24px rgba(0, 0, 0, 0.45);
+		}
+
+		.person-name {
+			font-weight: 700;
+			font-size: 1.05rem;
+		}
+
+		.person-role {
+			font-size: 0.82rem;
+			color: rgba(255, 255, 255, 0.72);
+			letter-spacing: 0.08em;
+		}
+
+		/* Cambia imagen y texto al pasar el cursor o al enfocar con teclado */
+		.person-card:is(:hover, :focus-visible) .hover-image > .img-1 {
+			opacity: 0;
+		}
+		.person-card:is(:hover, :focus-visible) .hover-image > .img-2 {
+			opacity: 1;
+		}
+		.person-card:is(:hover, :focus-visible) .person-name,
+		.person-card:is(:hover, :focus-visible) .person-role {
+			color: #ffffff;
+		}
+
+		.people-grid {
+			max-width: 1400px;
+			margin: 3rem auto;
+			padding: 0 1rem;
+		}
+
+		.people-row {
+			display: flex;
+			flex-wrap: wrap;
+			justify-content: center;
+			align-items: flex-start;
+			gap: clamp(1.4rem, 3vw, 2.2rem);
+			margin-bottom: clamp(2rem, 3vw, 2.8rem);
+		}
+
+		.person-card {
+			box-sizing: border-box;
+			position: relative;
+			display: block;
+			text-decoration: none !important;
+			line-height: 1;
+			color: #ffffff;
+			flex: 0 1 calc(25% - 1.8rem);
+			min-width: 180px;
+			max-width: 300px;
+			width: 100%;
+			border-radius: 22px;
+			overflow: hidden;
+			border: 1px solid rgba(255, 255, 255, 0.16);
+			background: rgba(255, 255, 255, 0.04);
+			box-shadow: 0 18px 32px rgba(0, 0, 0, 0.4);
+			backdrop-filter: blur(6px);
+			transition:
+				transform 0.35s ease,
+				box-shadow 0.35s ease,
+				border-color 0.35s ease;
+		}
+
+		.person-card:is(:hover, :focus-visible) {
+			transform: translateY(-6px);
+			box-shadow: 0 24px 44px rgba(0, 0, 0, 0.5);
+			border-color: rgba(162, 0, 255, 0.35);
+		}
+
+		.person-card:focus-visible {
+			outline: 2px solid rgba(255, 215, 255, 0.75);
+			outline-offset: 4px;
+		}
+
+		.person-card:is(:hover, :focus-visible) .person-meta {
+			background: linear-gradient(
+				0deg,
+				rgba(162, 0, 255, 0.55) 0%,
+				rgba(0, 0, 0, 0.45) 58%,
+				transparent 100%
+			);
+		}
+
+		/* Tablets pequeñas */
+		@media (max-width: 872px) {
+			.people-grid {
+				display: grid;
+				grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+				gap: 2rem;
+			}
+			.people-row {
+				display: contents; /* Hace que los hijos se integren en la grid */
+				margin-bottom: 0;
+				gap: 0;
+			}
+			.person-card {
+				flex: 1 1 calc(50% - 1.5rem);
+			}
+			.footer-content {
+				flex-direction: column;
+				gap: 2rem;
+			}
+			.elenco-title {
+				font-size: 2rem;
+			}
+		}
+
+		/* Móviles - una columna */
+		@media (max-width: 600px) {
+			.people-grid {
+				padding: 0 1.5rem;
+			}
+
+			.people-row {
+				gap: 2rem;
+			}
+
+			.person-card {
+				flex: 1 1 100%;
+				max-width: 360px;
+				margin: 0 auto;
+			}
+
+			.elenco-title {
+				font-size: 2rem;
+				margin: 1.5rem auto 2rem;
+			}
+		}
+
+		/* Móviles muy pequeños */
+		@media (max-width: 480px) {
+			.person-card {
+				max-width: 250px;
+				margin: 0 auto;
+			}
+		}
+
+		@media (prefers-reduced-motion: reduce) {
+			.person-card {
+				transition: none;
+			}
+
+			.person-card:is(:hover, :focus-visible) {
+				transform: none;
+				box-shadow: 0 18px 32px rgba(0, 0, 0, 0.4);
+			}
+
+			.person-card:is(:hover, :focus-visible) .person-meta {
+				background: linear-gradient(
+					0deg,
+					rgba(0, 0, 0, 0.92) 0%,
+					rgba(0, 0, 0, 0.6) 55%,
+					transparent 100%
+				);
+			}
+		}
+	</style>
+
+	<script is:inline>
+		// Implementación para cambiar temporalmente la imagen en móviles al pasar por encima
+		const personCards = document.querySelectorAll(".person-card");
+		console.log("Person cards found:", personCards.length);
+
+		if (window.innerWidth <= 600) {
+			// Solo para móviles
+			const observer = new IntersectionObserver(
+				(entries) => {
+					entries.forEach((entry) => {
+						if (entry.isIntersecting) {
+							const card = entry.target;
+							const img1 = card.querySelector(".img-1");
+							const img2 = card.querySelector(".img-2");
+
+							if (img1 && img2) {
+								console.log("Card is visible:", card);
+								setTimeout(() => {
+									// Espera antes de cambiar la imagen
+									img1.style.opacity = "0";
+									img2.style.opacity = "1";
+									setTimeout(() => {
+										img1.style.opacity = "1";
+										img2.style.opacity = "0";
+										console.log(
+											"Reverting image after 1 second",
+										);
+									}, 1000); // Cambia de nuevo después de 1 segundo
+								}, 600); // Espera 600ms antes de cambiar la imagen
+							}
+						}
+					});
+				},
+				{ threshold: 0.5 },
+			); // Se activa cuando el 50% del elemento es visible
+
+			personCards.forEach((card) => observer.observe(card));
+		}
+	</script>
+</Layout>

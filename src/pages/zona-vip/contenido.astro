@@ -1,0 +1,1076 @@
+---
+import Layout from "../../layouts/Layout.astro";
+
+const pageTitle = "Zona VIP – Contenido";
+const pageDescription =
+  "Zona protegida: contenidos exclusivos para asistentes.";
+
+const VIDEO_RELEASE = "2026-04-18T11:15:00+02:00";
+const AUDIO_GALLERY_RELEASE = "2026-04-21T17:30:00+02:00";
+
+// Prevent caching of this protected page
+Astro.response.headers.set(
+  "Cache-Control",
+  "no-store, no-cache, must-revalidate, proxy-revalidate",
+);
+Astro.response.headers.set("Pragma", "no-cache");
+Astro.response.headers.set("Expires", "0");
+---
+
+<Layout
+  title={pageTitle}
+  description={pageDescription}
+  noContainer="true"
+  robots="noindex, nofollow"
+>
+  <main>
+    <section class="vip-hero">
+      <div class="vip-hero-bg" aria-hidden="true"></div>
+      <div class="vip-hero-inner">
+        <h1 class="gradient-title">Zona VIP</h1>
+        <p class="lead">
+          Espacio exclusivo para todas las personas que vinieron a vernos o que
+          colaboraron con el proyecto.
+        </p>
+        <p class="muted">
+          Por motivos de derechos no podemos dejar este contenido abierto al
+          público.
+        </p>
+      </div>
+    </section>
+
+    <!-- ══════════════════════ REENCUENTRO ══════════════════════ -->
+    <section
+      id="reencuentro-section"
+      aria-labelledby="reencuentro-title"
+      style="position:relative; padding:0 1rem 3rem; overflow:clip;"
+    >
+      <!-- Fondo ambiental: glow cinematográfico -->
+
+      <div style="position:relative;z-index:1; max-width:1000px; margin:0 auto;">
+
+        <!-- Cabecera centrada -->
+        <div style="text-align:center; margin-bottom:2.25rem;">
+          <span style="
+            display:inline-block;
+            font-size:.68rem; font-weight:700; letter-spacing:.14em; text-transform:uppercase;
+            color:#00e1b7;
+            border:1px solid rgba(0,225,183,.3);
+            background:rgba(0,225,183,.07);
+            padding:.22rem .8rem;
+            border-radius:999px;
+            margin-bottom:.9rem;
+          ">✦ Evento especial ✦</span>
+
+          <h2 id="reencuentro-title" style="
+            margin:.2rem 0 .6rem;
+            font-size:clamp(1.75rem,4vw + .5rem,3rem);
+            font-weight:900;
+            letter-spacing:-.025em;
+            line-height:1.05;
+            background:#c07fff;
+            -webkit-background-clip:text; background-clip:text;
+            color:transparent;
+          ">🎬 ¡Hagamos un reencuentro!</h2>
+
+          <p style="color:#9a9a9a; margin:0; font-size:1.05rem; font-style:italic;">
+            Volvemos a vernos… esta vez en la gran pantalla.
+          </p>
+        </div>
+
+        <!-- Cuerpo: dos columnas -->
+        <div id="reencuentro-grid" style="
+          display:grid;
+          grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);
+          gap:1.25rem;
+          align-items:start;
+        ">
+
+          <!-- ── Columna izquierda: info del evento ── -->
+          <div style="
+            border-radius:16px;
+            border:1px solid #2a2a2a;
+            background:linear-gradient(155deg,#0f0b18 0%,#0a0a0a 100%);
+            padding:1.5rem 1.6rem;
+            position:relative;
+            overflow:hidden;
+          ">
+            <!-- Línea degradada lateral decorativa -->
+            <div aria-hidden="true" style="
+              position:absolute; left:0; top:10%; bottom:10%;
+              width:2px;
+              background:linear-gradient(to bottom, transparent, #a200ff 40%, #00e1b7 70%, transparent);
+              border-radius:999px;
+            "></div>
+
+            <!-- Tira de film decorativa arriba -->
+            <div aria-hidden="true" style="
+              position:absolute; top:0; right:0;
+              width:80px; height:100%;
+              background:repeating-linear-gradient(
+                to bottom,
+                transparent 0px, transparent 14px,
+                rgba(162,0,255,.06) 14px, rgba(162,0,255,.06) 20px
+              );
+              mask-image:linear-gradient(to left, rgba(0,0,0,.2), transparent 100%);
+            "></div>
+
+            <div style="padding-left:.75rem;">
+              <!-- Detalles del evento -->
+              <div style="display:flex; flex-direction:column; gap:1rem; margin-bottom:1.4rem;">
+                {[
+                  { icon: '📅', label: 'Fecha',              value: 'Sábado, 18 de abril de 2026' },
+                  { icon: '🕐', label: 'Horario',            value: '11:15 am – 2:15 pm' },
+                  { icon: '📍', label: 'Lugar',              value: 'Cine Paz mk2, Madrid' },
+                  { icon: '🚪', label: 'Apertura de puertas', value: 'A partir de las 11:00' },
+                ].map(({ icon, label, value }) => (
+                  <div style="display:flex; align-items:center; gap:.85rem;">
+                    <span style="
+                      font-size:1.15rem; flex-shrink:0;
+                      width:36px; height:36px;
+                      display:flex; align-items:center; justify-content:center;
+                      background:rgba(255,255,255,.04);
+                      border:1px solid #2a2a2a;
+                      border-radius:9px;
+                    " aria-hidden="true">{icon}</span>
+                    <div>
+                      <div style="font-size:.65rem; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:#666; margin-bottom:.15rem;">{label}</div>
+                      <div style="font-size:.95rem; color:#e8e8e8; font-weight:500;">{value}</div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              <!-- Aviso de puntualidad -->
+              <div role="alert" style="
+                display:flex; gap:.7rem; align-items:flex-start;
+                background:linear-gradient(135deg, rgba(255,160,0,.08), rgba(255,100,0,.04));
+                border:1px solid rgba(255,160,0,.25);
+                border-left:3px solid #ffaa00;
+                border-radius:0 10px 10px 0;
+                padding:.85rem 1rem;
+              ">
+                <span style="font-size:1rem; flex-shrink:0; margin-top:.05rem;" aria-hidden="true">⚠️</span>
+                <p style="margin:0; font-size:.845rem; line-height:1.55; color:#dab86a;">
+                  <strong style="color:#ffcc44; display:block; margin-bottom:.15rem;">Importante — puntualidad</strong>
+                  Asiste antes del inicio del visionado.
+                  Una vez que empiece la película <strong style="color:#ffcc44;">no se podrá acceder a la sala</strong>.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- ── Columna derecha: widget de entradas ── -->
+          <div style="display:flex; flex-direction:column; gap:.65rem;">
+            <p style="
+              margin:0;
+              font-size:.65rem; font-weight:700; letter-spacing:.12em; text-transform:uppercase;
+              color:#555;
+              display:flex; align-items:center; gap:.4rem;
+            ">
+              <span style="display:inline-block; width:16px; height:1px; background:#333;"></span>
+              Reserva tu entrada
+              <span style="display:inline-block; width:16px; height:1px; background:#333;"></span>
+            </p>
+            <div >
+              <tito-widget
+                event="tefia-en-teatro/reencuentro"
+                releases="entrada"
+              ></tito-widget>
+            </div>
+            <p style="margin:0; font-size:.78rem; color:#555; text-align:center;">
+              Acceso libre y gratuito — solo necesitas reservar tu plaza.
+            </p>
+          </div>
+
+        </div><!-- /grid -->
+      </div>
+    </section>
+
+    {
+      import.meta.env.DEV ? (
+        <script src="https://js.tito.io/v2/with/inline,test_mode,development_mode" async is:inline></script>
+      ) : (
+        <script src="https://js.tito.io/v2/with/inline" async is:inline></script>
+      )
+    }
+
+    <!-- Override global de estilos del widget Tito -->
+    <style is:global>
+      /* ══ Widget inline (paso 1: selección de entradas) ══ */
+      tito-widget .tito-widget-wrapper,
+      tito-widget .tito-widget-form,
+      .tito-widget .tito-widget-form {
+        background-color: transparent !important;
+        color: #e0e0e0 !important;
+        font-family: inherit !important;
+      }
+      tito-widget .tito-release-title,
+      .tito-widget .tito-release-title {
+        color: #ffffff !important;
+        font-weight: 700 !important;
+      }
+      tito-widget .tito-release-description,
+      .tito-widget .tito-release-description {
+        color: #9a9a9a !important;
+      }
+      tito-widget .tito-release-price,
+      .tito-widget .tito-release-price {
+        color: #00e1b7 !important;
+        font-weight: 700 !important;
+      }
+      tito-widget input[type="number"],
+      .tito-widget input[type="number"] {
+        background: #1a1a1a !important;
+        border: 1px solid #2a2a2a !important;
+        color: #fff !important;
+        border-radius: 8px !important;
+      }
+      tito-widget .tito-submit,
+      .tito-widget .tito-submit,
+      tito-widget button[type="submit"],
+      .tito-widget button[type="submit"] {
+        background: linear-gradient(135deg, #a200ff, #6b00ff 40%, #4a26ff) !important;
+        color: #fff !important;
+        border: none !important;
+        border-radius: 10px !important;
+        font-weight: 800 !important;
+        padding: .8rem 1.6rem !important;
+        box-shadow: 0 8px 24px rgba(162,0,255,.35) !important;
+        cursor: pointer !important;
+        font-size: .95rem !important;
+        width: 100% !important;
+        transition: transform .15s ease, box-shadow .2s ease !important;
+      }
+      tito-widget .tito-submit:hover,
+      .tito-widget .tito-submit:hover {
+        transform: translateY(-2px) !important;
+        box-shadow: 0 14px 36px rgba(162,0,255,.5) !important;
+      }
+
+      /* ══ Overlay/modal (paso 2+: .tito-overlay inyectado en body) ══ */
+      /* Tito injeta .tito-overlay directamente en <body>, fuera de tito-widget */
+      .tito-overlay {
+        color: #111 !important;
+      }
+      .tito-overlay input,
+      .tito-overlay textarea,
+      .tito-overlay select {
+        color: #111 !important;
+        background-color: #fff !important;
+      }
+      .tito-overlay input::placeholder,
+      .tito-overlay textarea::placeholder {
+        color: #999 !important;
+      }
+      .tito-overlay label,
+      .tito-overlay .tito-ticket-form-cell-label,
+      .tito-overlay .tito-registration-form label,
+      .tito-overlay h1,
+      .tito-overlay h2,
+      .tito-overlay h3,
+      .tito-overlay p,
+      .tito-overlay span:not(.tito-release-price) {
+        color: #111 !important;
+      }
+      /* Botón Continuar dentro del overlay: mantener el estilo morado */
+      .tito-overlay .tito-submit,
+      .tito-overlay button[type="submit"] {
+        background: linear-gradient(135deg, #a200ff, #6b00ff 40%, #4a26ff) !important;
+        color: #fff !important;
+        border: none !important;
+        border-radius: 8px !important;
+        font-weight: 800 !important;
+        cursor: pointer !important;
+      }
+
+      /* Responsive: colapsar a una columna en móvil */
+      @media (max-width: 680px) {
+        #reencuentro-grid {
+          grid-template-columns: 1fr !important;
+        }
+      }
+      /* ══ FIX: Fondo general del modal para evitar herencia oscura ══ */
+
+
+      /* ══ FIX: Enlaces invisibles (blanco sobre blanco) ══ */
+      /* Aplica a "Agregue un nombre de empresa", "Mostrar información", "Ver comprobante", etc. */
+      .tito-overlay a,
+      .tito-overlay .tito-quick-links a {
+        color: #a200ff !important; /* El color morado de tu tema */
+        text-decoration: underline !important;
+        font-weight: 500 !important;
+      }
+      
+      /* Evitar que afecte al botón principal si es un enlace */
+      .tito-overlay a.tito-submit {
+        color: #ffffff !important;
+        text-decoration: none !important;
+      }
+
+      /* ══ FIX: Pantalla de entradas generadas (negro sobre negro) ══ */
+      /* Aislamos la caja del ticket dándole un fondo claro y texto oscuro, o viceversa. */
+      .tito-overlay .tito-registration-tickets {
+        background-color: #1a1a1a !important; /* Fondo oscuro para el billete */
+        border: 1px solid #2a2a2a !important;
+        border-radius: 12px !important;
+        padding: 1.5rem !important;
+      }
+      
+      /* Forzamos el texto interior del billete a blanco para que contraste */
+      .tito-overlay .tito-registration-tickets *,
+      .tito-overlay .tito-ticket-name,
+      .tito-overlay .tito-ticket-state {
+        color: #ffffff !important;
+      }
+    </style>
+
+    <section class="vip-content">
+      <h2 class="section-title">Contenido disponible</h2>
+      <div class="vip-grid">
+        <article class="vip-card">
+          <h3><span aria-hidden="true">🎬</span> Grabación oficial</h3>
+          <p class="meta">
+            Accede a la grabación completa del musical (6 de julio)
+          </p>
+          <div id="video-action-area">
+            {
+              VIDEO_RELEASE && (
+                <div
+                  id="countdown-container"
+                  class="is-hidden"
+                  data-release={VIDEO_RELEASE}
+                >
+                  <p class="subtle-countdown">Disponible en:</p>
+                  <div class="countdown" id="vip-countdown">
+                    <div class="timebox">
+                      <>
+                        <span id="cd-d">--</span>
+                        <small>días</small>
+                      </>
+                    </div>
+                    <div class="timebox">
+                      <>
+                        <span id="cd-h">--</span>
+                        <small>horas</small>
+                      </>
+                    </div>
+                    <div class="timebox">
+                      <>
+                        <span id="cd-m">--</span>
+                        <small>min</small>
+                      </>
+                    </div>
+                    <div class="timebox">
+                      <>
+                        <span id="cd-s">--</span>
+                        <small>seg</small>
+                      </>
+                    </div>
+                  </div>
+                </div>
+              )
+            }
+            <p id="video-link-container">
+              <a
+                href="/zona-vip/video-6-julio/"
+                class="btn-cta"
+                id="video-btn"
+                aria-label="Ver grabación del 6 de julio"
+                >Ver ahora <span class="cta-arrow" aria-hidden="true">→</span
+                ></a
+              >
+            </p>
+          </div>
+        </article>
+        <article class="vip-card">
+          <h3><span aria-hidden="true">📸</span> Galería</h3>
+          <p class="meta">
+            Explora la galería con filtros por temáticas, eventos, personas y
+            números musicales.
+          </p>
+          <div id="gal-action-area">
+            {
+              AUDIO_GALLERY_RELEASE && (
+                <div
+                  id="gal-countdown-container"
+                  class="is-hidden"
+                  data-release={AUDIO_GALLERY_RELEASE}
+                >
+                  <p class="subtle-countdown">Disponible en:</p>
+                  <div class="countdown" id="gal-countdown">
+                    <div class="timebox">
+                      <>
+                        <span id="gal-cd-d">--</span>
+                        <small>días</small>
+                      </>
+                    </div>
+                    <div class="timebox">
+                      <>
+                        <span id="gal-cd-h">--</span>
+                        <small>horas</small>
+                      </>
+                    </div>
+                    <div class="timebox">
+                      <>
+                        <span id="gal-cd-m">--</span>
+                        <small>min</small>
+                      </>
+                    </div>
+                    <div class="timebox">
+                      <>
+                        <span id="gal-cd-s">--</span>
+                        <small>seg</small>
+                      </>
+                    </div>
+                  </div>
+                </div>
+              )
+            }
+            <p id="gal-link-container">
+              <a
+                href="/zona-vip/galeria/"
+                class="btn-cta"
+                aria-label="Ver galería fotográfica"
+                >Ver galería <span class="cta-arrow" aria-hidden="true">→</span
+                ></a
+              >
+            </p>
+          </div>
+        </article>
+        <article class="vip-card">
+          <h3>
+            <span aria-hidden="true">🎧</span> Banda sonora
+          </h3>
+          <p class="meta">
+            Escucha todas las canciones del musical para volver a vivirlas y descubre sus letras.
+          </p>
+          <div id="bs-action-area">
+            {
+              AUDIO_GALLERY_RELEASE && (
+                <div
+                  id="bs-countdown-container"
+                  class="is-hidden"
+                  data-release={AUDIO_GALLERY_RELEASE}
+                >
+                  <p class="subtle-countdown">Disponible en:</p>
+                  <div class="countdown" id="bs-countdown">
+                    <div class="timebox">
+                      <>
+                        <span id="bs-cd-d">--</span>
+                        <small>días</small>
+                      </>
+                    </div>
+                    <div class="timebox">
+                      <>
+                        <span id="bs-cd-h">--</span>
+                        <small>horas</small>
+                      </>
+                    </div>
+                    <div class="timebox">
+                      <>
+                        <span id="bs-cd-m">--</span>
+                        <small>min</small>
+                      </>
+                    </div>
+                    <div class="timebox">
+                      <>
+                        <span id="bs-cd-s">--</span>
+                        <small>seg</small>
+                      </>
+                    </div>
+                  </div>
+                </div>
+              )
+            }
+            <p id="bs-link-container">
+              <a
+                href="/zona-vip/banda-sonora/"
+                class="btn-cta"
+                aria-label="Escuchar banda sonora"
+                >Escuchar <span class="cta-arrow" aria-hidden="true">→</span
+                ></a
+              >
+            </p>
+          </div>
+        </article>
+      </div>
+      <p
+        class="center muted"
+        style="margin-top:.5rem; display:flex; gap:.75rem; justify-content:center; flex-wrap:wrap;"
+      >
+        <button
+          id="vip-logout"
+          class="btn-link"
+          type="button"
+          aria-label="Cerrar acceso VIP y limpiar cookies"
+          >Cerrar acceso VIP</button
+        >
+      </p>
+    </section>
+
+    <style>
+      :root {
+        --vip-bg:
+          radial-gradient(
+            1200px 600px at 50% -10%,
+            #3a0077 0%,
+            rgba(58, 0, 119, 0) 55%
+          ),
+          radial-gradient(
+            600px 300px at 10% -10%,
+            #0066ff 0%,
+            rgba(0, 102, 255, 0) 60%
+          ),
+          radial-gradient(
+            600px 300px at 90% 0%,
+            #00e1b7 0%,
+            rgba(0, 225, 183, 0) 60%
+          );
+        --vip-surface: #111;
+        --vip-surface-2: #151515;
+        --vip-border: #2a2a2a;
+        --vip-muted: #bfbfbf;
+        --vip-dim: #9a9a9a;
+        --vip-accent: #a200ff;
+      }
+
+      .center {
+        text-align: center;
+      }
+      .muted {
+        color: var(--vip-muted);
+      }
+      .lead {
+        max-width: 70ch;
+        margin: 0.5rem auto 1rem;
+      }
+
+      .vip-hero {
+        position: relative;
+        overflow: clip;
+        padding: 3.5rem 1rem 2.25rem;
+        text-align: center;
+        isolation: isolate;
+      }
+      .vip-hero-bg {
+        position: absolute;
+        inset: -2px;
+        z-index: -1;
+        background: var(--vip-bg);
+        filter: saturate(1.1);
+      }
+      .vip-hero-inner {
+        max-width: 1000px;
+        margin: 0 auto;
+      }
+      .gradient-title {
+        margin: 0;
+        font-size: clamp(2rem, 4vw + 1.25rem, 4rem);
+        line-height: 1.05;
+        font-weight: 900;
+        letter-spacing: -0.02em;
+        background: linear-gradient(90deg, #fff, #b893ff, #8ef3db);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        text-shadow: 0 0 40px rgba(162, 0, 255, 0.25);
+      }
+
+      .btn-cta {
+        position: relative;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.85rem 1.1rem;
+        border-radius: 0.65rem;
+        background: linear-gradient(
+          135deg,
+          var(--vip-accent),
+          #6b00ff 40%,
+          #4a26ff
+        );
+        color: #fff;
+        font-weight: 800;
+        text-decoration: none;
+        box-shadow:
+          0 8px 30px rgba(162, 0, 255, 0.25),
+          inset 0 0 0 1px rgba(255, 255, 255, 0.06);
+        transition:
+          transform 0.15s ease,
+          box-shadow 0.2s ease;
+      }
+      .btn-cta:hover {
+        transform: translateY(-1px);
+        box-shadow:
+          0 12px 36px rgba(162, 0, 255, 0.35),
+          inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+        color: #d89fff !important;
+      }
+      .btn-cta .cta-arrow {
+        transition: transform 0.2s ease;
+        display: inline-block;
+      }
+      .btn-cta:hover .cta-arrow {
+        transform: translateX(4px);
+      }
+
+      .btn-link {
+        background: none;
+        border: none;
+        color: var(--vip-dim);
+        text-decoration: underline;
+        cursor: pointer;
+        padding: 0;
+        font: inherit;
+      }
+      .btn-link:hover {
+        color: #fff;
+      }
+
+      .section-title {
+        text-align: center;
+        margin: 0.25rem 0 0;
+        font-size: 1.35rem;
+      }
+      .vip-content {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 0 1rem 2rem;
+      }
+      .vip-grid {
+        display: grid;
+        gap: 1rem;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        margin: 1rem 0;
+      }
+      .vip-card {
+        position: relative;
+        border: 1px solid var(--vip-border);
+        border-radius: 12px;
+        padding: 1rem;
+        background: linear-gradient(180deg, #0b0b0b, #0e0e0e);
+        transition:
+          transform 0.18s ease,
+          box-shadow 0.2s ease,
+          border-color 0.2s ease;
+      }
+      .vip-card:hover {
+        transform: translateY(-2px);
+        border-color: #3b2c6e;
+        box-shadow:
+          0 12px 26px rgba(0, 0, 0, 0.35),
+          inset 0 0 0 1px rgba(255, 255, 255, 0.02);
+      }
+      .vip-card h3 {
+        margin-top: 0;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+      .vip-card .meta {
+        color: var(--vip-dim);
+      }
+      .badge {
+        display: inline-block;
+        font-size: 0.75rem;
+        padding: 0.15rem 0.5rem;
+        border-radius: 0.5rem;
+        border: 1px solid var(--vip-border);
+        color: var(--vip-dim);
+      }
+
+      /* Countdown Styles */
+      .is-hidden { display: none !important; }
+      .subtle-countdown {
+          font-size: 0.8rem;
+          color: var(--vip-dim);
+          margin-bottom: 0.4rem;
+          font-weight: 600;
+      }
+      .countdown {
+          display: flex;
+          gap: 0.3rem;
+          justify-content: start; /* Keep to start, maybe 'space-between' if we want full width */
+          font-variant-numeric: tabular-nums;
+      }
+      .timebox {
+        position:relative;
+        background: linear-gradient(180deg, var(--vip-surface), var(--vip-surface-2));
+        border: 1px solid var(--vip-border);
+        padding: 0.4rem 0.25rem;
+        border-radius: 0.5rem;
+        min-width: 44px;
+        box-shadow: inset 0 0 0 1px rgba(255,255,255,.02), 0 4px 10px rgba(0,0,0,.25);
+        display:flex;
+        flex-direction:column;
+        align-items:center;
+        flex: 1; /* Distribute space evenly if possible */
+      }
+      .countdown span { display: block; font-size: 1.1rem; font-weight: 800; line-height: 1; }
+      .countdown small { color: var(--vip-dim); font-size: 0.55rem; letter-spacing: .02em; text-transform: uppercase; line-height: 1.1; margin-top: .15rem; }
+      .timebox.is-zero { display: none; }
+      #countdown-container { margin-top: 0.75rem; width: 100%; }
+
+      @media (min-width: 960px) {
+        .vip-hero {
+          padding: 4.25rem 1rem 2.5rem;
+        }
+      }
+
+      /* ══════════════════════ REENCUENTRO ══════════════════════ */
+      .reencuentro-section {
+        position: relative;
+        padding: 0 1rem 2.5rem;
+        overflow: clip;
+      }
+      .reencuentro-inner {
+        max-width: 1000px;
+        margin: 0 auto;
+      }
+      .reencuentro-header {
+        text-align: center;
+        margin-bottom: 2rem;
+      }
+      .reencuentro-badge {
+        display: inline-block;
+        font-size: 0.7rem;
+        font-weight: 700;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: #00e1b7;
+        border: 1px solid rgba(0, 225, 183, 0.35);
+        background: rgba(0, 225, 183, 0.08);
+        padding: 0.25rem 0.75rem;
+        border-radius: 999px;
+        margin-bottom: 0.85rem;
+      }
+      .reencuentro-title {
+        margin: 0 0 0.5rem;
+        font-size: clamp(1.6rem, 3vw + 1rem, 2.6rem);
+        font-weight: 900;
+        letter-spacing: -0.02em;
+        background: linear-gradient(90deg, #fff 30%, #b893ff 65%, #8ef3db);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        line-height: 1.1;
+      }
+      .reencuentro-emoji {
+        display: inline-block;
+        margin-right: 0.3rem;
+        background: none;
+        -webkit-background-clip: unset;
+        background-clip: unset;
+        color: initial;
+        filter: drop-shadow(0 2px 8px rgba(162,0,255,.4));
+      }
+      .reencuentro-subtitle {
+        color: var(--vip-muted);
+        margin: 0;
+        font-size: 1.05rem;
+      }
+      .reencuentro-body {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.25rem;
+        align-items: start;
+      }
+      .reencuentro-info-card {
+        border: 1px solid var(--vip-border);
+        border-radius: 14px;
+        background: linear-gradient(160deg, #0e0b16 0%, #0b0b0b 100%);
+        padding: 1.5rem;
+        position: relative;
+        overflow: hidden;
+      }
+      .reencuentro-info-card::before {
+        content: '';
+        position: absolute;
+        inset: -1px;
+        border-radius: 14px;
+        padding: 1px;
+        background: linear-gradient(135deg, rgba(162,0,255,.35), rgba(0,225,183,.2), transparent 60%);
+        -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+        -webkit-mask-composite: xor;
+        mask-composite: exclude;
+        pointer-events: none;
+      }
+      .event-details {
+        list-style: none;
+        padding: 0;
+        margin: 0 0 1.25rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.85rem;
+      }
+      .event-detail {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.75rem;
+      }
+      .event-detail-icon {
+        font-size: 1.1rem;
+        flex-shrink: 0;
+        margin-top: 0.05rem;
+        filter: drop-shadow(0 1px 4px rgba(0,0,0,.5));
+      }
+      .event-detail div {
+        display: flex;
+        flex-direction: column;
+        gap: 0.1rem;
+      }
+      .event-detail strong {
+        font-size: 0.7rem;
+        letter-spacing: 0.07em;
+        text-transform: uppercase;
+        color: var(--vip-dim);
+        font-weight: 700;
+      }
+      .event-detail span {
+        font-size: 0.975rem;
+        color: #fff;
+        font-weight: 500;
+      }
+      .event-warning {
+        display: flex;
+        gap: 0.65rem;
+        align-items: flex-start;
+        background: rgba(255, 180, 0, 0.07);
+        border: 1px solid rgba(255, 180, 0, 0.22);
+        border-radius: 10px;
+        padding: 0.85rem 1rem;
+      }
+      .event-warning-icon {
+        font-size: 1.1rem;
+        flex-shrink: 0;
+        margin-top: 0.05rem;
+      }
+      .event-warning p {
+        margin: 0;
+        font-size: 0.875rem;
+        color: #f0d080;
+        line-height: 1.5;
+      }
+      .event-warning strong {
+        color: #ffd060;
+      }
+      .event-warning em {
+        font-style: normal;
+        font-weight: 700;
+        color: #ffd060;
+      }
+      .reencuentro-tickets {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+      }
+      .tickets-label {
+        margin: 0;
+        font-size: 0.7rem;
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--vip-dim);
+      }
+      .tito-wrapper {
+        border: 1px solid var(--vip-border);
+        border-radius: 14px;
+        overflow: hidden;
+        background: #0c0c0c;
+      }
+
+      /* Override estilos de Tito para encajar con el tema oscuro */
+      .tito-wrapper tito-widget,
+      .tito-wrapper .tito-widget {
+        --tito-widget-background-color: transparent;
+      }
+      .tito-wrapper .tito-widget-form,
+      .tito-wrapper .tito-submit,
+      .tito-wrapper .tito-form-actions {
+        background-color: transparent !important;
+      }
+      .tito-wrapper .tito-submit {
+        background: linear-gradient(135deg, var(--vip-accent), #6b00ff 40%, #4a26ff) !important;
+        color: #fff !important;
+        border: none !important;
+        border-radius: 0.65rem !important;
+        font-weight: 800 !important;
+        padding: 0.75rem 1.5rem !important;
+        box-shadow: 0 8px 24px rgba(162,0,255,.3) !important;
+        cursor: pointer !important;
+        transition: transform 0.15s ease, box-shadow 0.2s ease !important;
+      }
+      .tito-wrapper .tito-submit:hover {
+        transform: translateY(-1px) !important;
+        box-shadow: 0 12px 32px rgba(162,0,255,.45) !important;
+      }
+
+      /* ── Inputs del formulario de Tito (paso "Información detallada") ── */
+      /* El widget renderiza campos con fondo blanco; forzamos texto oscuro */
+      tito-widget input[type="text"],
+      tito-widget input[type="email"],
+      tito-widget input[type="tel"],
+      tito-widget input[type="url"],
+      tito-widget input,
+      tito-widget textarea,
+      tito-widget select,
+      .tito-widget input[type="text"],
+      .tito-widget input[type="email"],
+      .tito-widget input[type="tel"],
+      .tito-widget input,
+      .tito-widget textarea,
+      .tito-widget select {
+        color: #111 !important;
+        background-color: #fff !important;
+      }
+      tito-widget input::placeholder,
+      .tito-widget input::placeholder,
+      tito-widget textarea::placeholder,
+      .tito-widget textarea::placeholder {
+        color: #888 !important;
+      }
+      /* Cabeceras de sección / labels dentro del formulario */
+      tito-widget .tito-ticket-form-cell-label,
+      tito-widget label,
+      .tito-widget label {
+        color: #333 !important;
+      }
+
+      @media (max-width: 700px) {
+        .reencuentro-body {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+
+  </main>
+</Layout>
+
+<script is:inline>
+  (function () {
+    const $ = (id) => document.getElementById(id);
+
+    async function doLogout() {
+      try {
+        await fetch("/api/vip-logout", {
+          method: "POST",
+          credentials: "include",
+        });
+      } catch (_) {}
+      // Redirect to login page with stay=1 to prevent auto-redirect back to content
+      window.location.assign("/zona-vip/?stay=1");
+    }
+
+    // Countdown Logic
+    function initCountdown() {
+      // All panels: [countdownContainerId, linkContainerId, span prefix]
+      const panels = [
+        { cdId: "countdown-container",    linkId: "video-link-container", prefix: "cd" },
+        { cdId: "bs-countdown-container", linkId: "bs-link-container",    prefix: "bs-cd" },
+        { cdId: "gal-countdown-container", linkId: "gal-link-container",  prefix: "gal-cd" },
+      ];
+
+      panels.forEach(p => {
+        const el = document.getElementById(p.cdId);
+        if (el) {
+          const iso = el.getAttribute("data-release");
+          if (iso) {
+            const t = Date.parse(iso);
+            p.target = isNaN(t) ? null : t;
+          }
+        }
+      });
+
+      const hasAnyTarget = panels.some(p => p.target);
+
+      if (hasAnyTarget) {
+        let rafId;
+        function tick() {
+          const now = Date.now();
+          let anyActive = false;
+
+          panels.forEach(({ cdId, linkId, prefix, target }) => {
+            const cdContainer = $(cdId);
+            const lContainer = $(linkId);
+            
+            if (!target) {
+              if (cdContainer) cdContainer.classList.add("is-hidden");
+              if (lContainer) lContainer.classList.remove("is-hidden");
+              if (cdId === "countdown-container") {
+                const rs = document.getElementById("reencuentro-section");
+                if (rs) rs.classList.add("is-hidden");
+              }
+              return;
+            }
+
+            const remaining = target - now;
+            if (remaining > 0) {
+              anyActive = true;
+              const diff = Math.floor(remaining / 1000);
+              const d = Math.floor(diff / 86400);
+              const h = Math.floor((diff % 86400) / 3600);
+              const m = Math.floor((diff % 3600) / 60);
+              const s = diff % 60;
+              const pad = (n) => String(n).padStart(2, "0");
+              const sd = $(`${prefix}-d`), sh = $(`${prefix}-h`), sm = $(`${prefix}-m`), ss = $(`${prefix}-s`);
+              
+              if (sd) sd.textContent = String(d);
+              if (sh) sh.textContent = pad(h);
+              if (sm) sm.textContent = pad(m);
+              if (ss) ss.textContent = pad(s);
+              
+              if (sd) sd.parentElement.classList.toggle("is-zero", d === 0);
+              if (sh) sh.parentElement.classList.toggle("is-zero", d === 0 && h === 0);
+              if (sm) sm.parentElement.classList.toggle("is-zero", d === 0 && h === 0 && m === 0);
+
+              if (cdContainer) cdContainer.classList.remove("is-hidden");
+              if (lContainer) lContainer.classList.add("is-hidden");
+            } else {
+              if (cdContainer) cdContainer.classList.add("is-hidden");
+              if (lContainer) lContainer.classList.remove("is-hidden");
+              if (cdId === "countdown-container") {
+                const rs = document.getElementById("reencuentro-section");
+                if (rs) rs.classList.add("is-hidden");
+              }
+            }
+          });
+
+          if (anyActive) {
+            rafId = requestAnimationFrame(tick);
+          } else if (rafId) {
+            cancelAnimationFrame(rafId);
+          }
+        }
+        tick();
+      } else {
+        // No valid dates — show all links immediately
+        panels.forEach(({ cdId, linkId }) => {
+          const cdContainer = $(cdId);
+          const lContainer = $(linkId);
+          if (cdContainer) cdContainer.classList.add("is-hidden");
+          if (lContainer) lContainer.classList.remove("is-hidden");
+          if (cdId === "countdown-container") {
+            const rs = document.getElementById("reencuentro-section");
+            if (rs) rs.classList.add("is-hidden");
+          }
+        });
+      }
+    }
+
+    function init() {
+      const btn = document.getElementById("vip-logout");
+      if (btn && !btn.dataset.bound) {
+        btn.addEventListener("click", doLogout);
+        btn.dataset.bound = "1";
+      }
+      initCountdown();
+    }
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", init, { once: true });
+    } else {
+      init();
+    }
+    document.addEventListener("astro:page-load", init);
+  })();
+</script>

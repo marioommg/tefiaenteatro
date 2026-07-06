@@ -1,0 +1,218 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { galleryItems, galleryPeople, galleryEvents, galleryMusicalNumbers } from '../../data/galeria';
+import '../../styles/galeria.css';
+const pageTitle = 'Zona VIP – Galería fotográfica';
+const pageDescription = 'Galería exclusiva para la comunidad de Tefía con filtros por temáticas, eventos, personas y números musicales.';
+const INITIAL_BATCH = 24;
+const initialItems = galleryItems.slice(0, INITIAL_BATCH);
+const remainingItems = galleryItems.slice(INITIAL_BATCH);
+const clientConfig = {
+  batchSize: INITIAL_BATCH,
+  total: galleryItems.length,
+  items: remainingItems,
+  events: galleryEvents,
+};
+const serializedConfig = JSON.stringify(clientConfig).replace(/</g, '\\u003c');
+---
+<Layout title={pageTitle} description={pageDescription} noContainer="true" robots="noindex, nofollow">
+  <main>
+    <section class="vip-hero">
+      <div class="vip-hero-bg" aria-hidden="true"></div>
+      <div class="vip-hero-inner">
+        <h1 class="gradient-title">Galería exclusiva</h1>
+      </div>
+    </section>
+
+    <section class="vip-gallery" aria-labelledby="gallery-heading">
+      <header class="gallery-header">
+        <h2 id="gallery-heading" class="section-title">Filtra las fotos</h2>
+        <button
+          type="button"
+          id="filter-toggle"
+          class="filter-toggle"
+          aria-expanded="false"
+          aria-controls="filter-toolbar"
+        >
+          <span class="filter-toggle-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="18" height="18" focusable="false">
+              <path d="M3 4h18v2l-6.5 7.455V20l-5 1.5v-8.045L3 6V4z" fill="currentColor" />
+            </svg>
+          </span>
+          <span class="filter-toggle-label">Mostrar filtros</span>
+          <span class="filter-toggle-caret" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="16" height="16" focusable="false">
+              <path d="M7 10l5 5 5-5H7z" fill="currentColor" />
+            </svg>
+          </span>
+        </button>
+        <div class="filter-toolbar" id="filter-toolbar" role="group" aria-label="Filtros de la galería">
+          <details class="filter-panel" data-panel="event">
+            <summary>Evento</summary>
+            <div class="filter-content">
+              {Array.isArray(galleryEvents) && galleryEvents.length ? (
+                <div class="filter-options">
+                  {galleryEvents.map((event) => event.isSeparator ? (
+                    <div class="filter-separator">{event.label}</div>
+                  ) : (
+                    <label class="filter-option">
+                      <input
+                        type="checkbox"
+                        data-filter-type="event"
+                        data-filter-value={event.slug}
+                        data-filter-label={event.label || 'Sin evento'}
+                      />
+                      <span>{event.label || 'Sin evento'}</span>
+                    </label>
+                  ))}
+                </div>
+              ) : (
+                <p class="muted small">No hay eventos configurados.</p>
+              )}
+            </div>
+          </details>
+          <details class="filter-panel" data-panel="people">
+            <summary>Personas</summary>
+            <div class="filter-content">
+              {galleryPeople.length ? (
+                <div class="filter-options">
+                  {galleryPeople.map((person) => person.isSeparator ? (
+                    <div class="filter-separator">{person.name}</div>
+                  ) : (
+                    <label class="filter-option">
+                      <input
+                        type="checkbox"
+                        data-filter-type="people"
+                        data-filter-value={person.slug}
+                        data-filter-label={person.name}
+                      />
+                      <span>{person.name}</span>
+                    </label>
+                  ))}
+                </div>
+              ) : (
+                <p class="muted small">Añade personas en el manifiesto para activar este filtro.</p>
+              )}
+            </div>
+          </details>
+          <details class="filter-panel" data-panel="musical">
+            <summary>Número musical</summary>
+            <div class="filter-content">
+              {galleryMusicalNumbers.length ? (
+                <div class="filter-options">
+                  {galleryMusicalNumbers.map((musical) => musical.isSeparator ? (
+                    <div class="filter-separator">{musical.label}</div>
+                  ) : (
+                    <label class="filter-option">
+                      <input
+                        type="checkbox"
+                        data-filter-type="musical"
+                        data-filter-value={musical.slug}
+                        data-filter-label={musical.label || 'Sin número musical'}
+                      />
+                      <span>{musical.label || 'Sin número musical'}</span>
+                    </label>
+                  ))}
+                </div>
+              ) : (
+                <p class="muted small">Todavía no hay números musicales configurados.</p>
+              )}
+            </div>
+          </details>
+        </div>
+      </header>
+
+      <div class="selected-filters" id="selected-filters"></div>
+
+      {import.meta.env.DEV && (
+        <p id="gallery-summary" class="muted gallery-summary">Mostrando <span id="gallery-count">{initialItems.length}</span> fotografías.</p>
+      )}
+
+      <p id="gallery-empty" class="muted center empty-copy" hidden>
+        No hay fotografías que coincidan con los filtros seleccionados.
+      </p>
+      <div
+        id="gallery-grid"
+        class="gallery-grid"
+        data-state={initialItems.length ? 'ready' : 'empty'}
+        data-total={galleryItems.length}
+        data-batch-size={INITIAL_BATCH}
+        data-loaded={initialItems.length}
+      >
+        {galleryItems.length === 0 ? (
+          <p class="muted center empty-copy">Aún no hay fotografías disponibles. Próximamente añadiremos contenido.</p>
+        ) : (
+          initialItems.map((item) => (
+            <article
+              class="gallery-card"
+              data-people={item.peopleSlugs.join(' ')}
+              data-event={item.eventSlug || ''}
+              data-musical={item.musicalNumberSlug || ''}
+              data-id={item.id}
+              data-vertical={item.height > item.width ? 'true' : undefined}
+            >
+              <figure class="gallery-card-figure">
+                <div class="gallery-card-media">
+                    <a class="gallery-card-link" href={item.detailUrl} aria-label={`Ver fotografía: ${item.alt}`} data-photo-link>
+                      <div class="img-wrapper">
+                        <img
+                          src={item.src.replace('/zona-vip/galeria/', '/zona-vip/galeria/thumbnails/')}
+                          alt={item.alt}
+                          loading="lazy"
+                          width={item.width}
+                          height={item.height}
+                        />
+                      </div>
+                    </a>
+                  <button
+                    type="button"
+                    class="gallery-card-download"
+                    data-download-src={item.src}
+                    data-download-file={item.file}
+                    aria-label={`Descargar fotografía: ${item.alt}`}
+                    title="Descargar fotografía en JPG"
+                  >
+                    <svg viewBox="0 0 32 32" width="22" height="22" aria-hidden="true" focusable="false">
+                      <path fill="currentColor" transform="translate(0, 2) scale(0.065)" d="M451.655 414.239H33.048C14.798 414.239 0 428.659 0 446.91c0 18.25 14.798 32.67 33.048 32.67h418.607c18.249 0 33.047-14.42 33.047-32.67 0-18.251-14.798-32.671-33.047-32.671zM217.351 370.521c13.862 19.657 37.98 17.842 50.002 0 30.482-45.242 126.299-177.947 126.299-177.947 7.233-10.19 6.901-23.929-.812-33.762a28.23 28.23 0 0 0-32.602-8.819l-73.499 29.111 9.703-143.854a28.213 28.213 0 0 0-7.6-21.238 28.245 28.245 0 0 0-20.729-8.889h-51.525a28.24 28.24 0 0 0-20.73 8.889 28.222 28.222 0 0 0-7.6 21.238l9.704 143.854-73.499-29.111a28.23 28.23 0 0 0-32.602 8.819c-7.713 9.833-8.045 23.571-.811 33.762.002-.001 94.861 133.365 126.301 177.947z"/>
+                    </svg>
+                  </button>
+                  {item.eventSlug && galleryEvents.find(e => e.slug === item.eventSlug)?.label && (
+                    <span class="gallery-card-event">
+                      {galleryEvents.find(e => e.slug === item.eventSlug)?.label}
+                    </span>
+                  )}
+                </div>
+              </figure>
+            </article>
+          ))
+        )}
+      </div>
+
+      {remainingItems.length ? (
+        <p class="center load-more-wrapper">
+          <button id="gallery-load-more" type="button" class="load-more">Cargar más</button>
+        </p>
+      ) : null}
+    </section>
+
+  </main>
+
+
+  <script is:inline>
+    if (window.location.search.includes('nofilter')) {
+      try {
+        localStorage.removeItem('vipGalleryFilters');
+        localStorage.removeItem('vipGalleryFilters:v1');
+        sessionStorage.removeItem('vipGalleryFilters');
+        sessionStorage.removeItem('vipGalleryFilters:v1');
+      } catch {}
+      window.location.replace('/zona-vip/galeria/');
+    }
+  </script>
+  <script is:inline type="application/json" id="gallery-data" set:html={serializedConfig}></script>
+  <script is:inline type="module">
+    // ...existing code...
+  </script>
+  <script is:inline type="module" src="/zona-vip/scripts/gallery-loader.js"></script>
+  </script>
+</Layout>

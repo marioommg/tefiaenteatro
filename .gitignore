@@ -1,0 +1,57 @@
+# Environment variables
+.env
+.env.*
+!.env.example
+
+# Private infra notes (production DNS, AWS IDs, etc.)
+AGENTS.local.md
+
+# Dependencies
+node_modules/
+serverless/**/node_modules/
+
+# Build output
+dist/
+.astro/
+
+# Lambda deployment packages
+*.zip
+
+# Media files (TIFF originals in root)
+*.tif
+*.tiff
+
+# Archive & local-only directories
+gallery-archive/
+_archive/
+.openai-internal/
+tito/
+
+# Large production media (see docs/MEDIA.md)
+public/zona-vip/galeria/**
+!public/zona-vip/galeria/.gitkeep
+public/audios/
+public/sobre-el-proyecto/
+
+# Timeline videos (photo stays in src/assets/sobre-el-proyecto/)
+src/assets/sobre-el-proyecto/*.mp4
+src/assets/sobre-el-proyecto/*.webm
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# IDE
+.vscode/
+
+# OS
+Thumbs.db
+.DS_Store
+
+# VIP content (local only — see docs/MEDIA.md)
+src/data/gallery.manifest.json
+src/data/canciones.local.ts
+
+# Function URLs (use env vars instead)
+*.function-url

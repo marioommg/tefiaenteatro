@@ -1,0 +1,1100 @@
+---
+const {
+    nombre,
+    descripcion1 = "",
+    descripcion2 = "",
+    carpetaGaleria,
+    heroImage = null, // ImageMetadata or null
+    galeriaImages = [], // ImageMetadata[]
+    usernameInstagram = "",
+    usernameTikTok = "",
+    spotifyUrl = "",
+    usernameTwitch = "",
+    usernameYoutube = "",
+    pageTitle = nombre,
+    prevActor = null,
+    nextActor = null,
+    allActors = [],
+    currentSlug = "",
+} = Astro.props;
+
+import { Image } from "astro:assets";
+import type { ImageMetadata } from "astro";
+
+// Load all images for the grid (elenco + direccion)
+const allImagesGrid = import.meta.glob<{ default: ImageMetadata }>([
+    "/src/assets/images/elenco/**/*.{webp,avif,png,jpg,jpeg,gif}",
+    "/src/assets/images/direccion/**/*.{webp,avif,png,jpg,jpeg,gif}",
+]);
+
+const firstNamesOnly = (full: string = "") => {
+    const parts = (full || "").trim().split(/\s+/);
+    if (parts.length <= 1) return full || "";
+    return parts.slice(0, parts.length - 1).join(" ");
+};
+const handles = Array.from(new Set(
+  [usernameInstagram, usernameTikTok]
+    .filter(Boolean)
+    .map(h => h.replace(/^@/, '').toLowerCase())
+));
+
+// Preparar foto de hero para cada actor en la navegación
+// (Logic removed as grid is not rendered currently)
+---
+
+<main class="actor-page">
+    <article class="actor-card">
+        <header class="actor-header">
+            <div class="hero-wrap">
+                {
+                    heroImage && (
+                        <figure class="actor-hero">
+                            <Image
+                                src={heroImage}
+                                alt={`Foto de ${nombre}`}
+                                loading="eager"
+                                width={600}
+                                height={800}
+                                fetchpriority="high"
+                                decoding="async"
+                            />
+                        </figure>
+                    )
+                }
+            </div>
+            <div class="info-wrap">
+                <h1 class="actor-name">{pageTitle}</h1>
+                <section class="actor-bio">
+                    {
+                        descripcion1 && (
+                            <p
+                                class="reveal-on-scroll"
+                                set:html={descripcion1}
+                            />
+                        )
+                    }
+                    {
+                        descripcion2 && (
+                            <p
+                                class="reveal-on-scroll"
+                                set:html={descripcion2}
+                            />
+                        )
+                    }
+                </section>
+                {
+                    (usernameInstagram ||
+                        usernameTikTok ||
+                        spotifyUrl ||
+                        usernameTwitch ||
+                        usernameYoutube) && (
+                        <section class="actor-social">
+                            <h2 class="sr-only">Redes sociales</h2>
+                            <div class="social-row reveal-on-scroll">
+                                <span
+                                    class="handle-rotator"
+                                    data-handles={JSON.stringify(handles)}
+                                >
+                                    {handles.length > 0 ? `@${handles[0]}` : ""}
+                                </span>
+                                <div class="social-buttons">
+                                    {usernameInstagram && (
+                                        <a
+                                            href={`https://instagram.com/${usernameInstagram}`}
+                                            target="_blank"
+                                            rel="noopener"
+                                            class="btn-icon"
+                                            aria-label={`Instagram @${usernameInstagram}`}
+                                            title={`Instagram @${usernameInstagram}`}
+                                        >
+                                            <svg
+                                                class="icon icon-ig"
+                                                viewBox="0 0 24 24"
+                                                width="20"
+                                                height="20"
+                                                fill="currentColor"
+                                            >
+                                                <path d="M7 2h10a5 5 0 0 1 5 5v10a5 5 0 0 1-5 5H7a5 5 0 0 1-5-5V7a5 5 0 0 1 5-5zm0 2a3 3 0 0 0-3 3v10a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3V7a3 3 0 0 0-3-3H7zm5 3a5 5 0 1 1 0 10 5 5 0 0 1 0-10zm0 2.2a2.8 2.8 0 1 0 0 5.6 2.8 2.8 0 0 0 0-5.6zM18 6.5a1 1 0 1 1 0 2 1 1 0 0 1 0-2z" />
+                                            </svg>
+                                        </a>
+                                    )}
+                                    {usernameTikTok && (
+                                        <a
+                                            href={`https://www.tiktok.com/@${usernameTikTok}`}
+                                            target="_blank"
+                                            rel="noopener"
+                                            class="btn-icon"
+                                            aria-label={`TikTok @${usernameTikTok}`}
+                                            title={`TikTok @${usernameTikTok}`}
+                                        >
+                                            <svg
+                                                class="icon icon-tt"
+                                                viewBox="0 0 16 16"
+                                                width="16"
+                                                height="16"
+                                                fill="currentColor"
+                                            >
+                                                <path d="M9 0h1.98c.144.715.54 1.617 1.235 2.512C12.895 3.389 13.797 4 15 4v2c-1.753 0-3.07-.814-4-1.829V11a5 5 0 1 1-5-5v2a3 3 0 1 0 3 3z" />
+                                            </svg>
+                                        </a>
+                                    )}
+                                    {spotifyUrl && (
+                                        <a
+                                            href={spotifyUrl}
+                                            target="_blank"
+                                            rel="noopener"
+                                            class="btn-icon"
+                                            aria-label={`Spotify de ${nombre}`}
+                                            title={`Spotify de ${nombre}`}
+                                        >
+                                            <svg
+                                                class="icon icon-spotify"
+                                                viewBox="0 0 24 24"
+                                                width="18"
+                                                height="18"
+                                                fill="currentColor"
+                                                aria-hidden="true"
+                                            >
+                                                <path d="M12 1.5C6.2 1.5 1.5 6.2 1.5 12S6.2 22.5 12 22.5 22.5 17.8 22.5 12 17.8 1.5 12 1.5zm4.9 14.2c-.2.3-.6.4-.9.2-2.6-1.6-5.9-2-9.8-1.1-.3.1-.7-.1-.8-.4-.1-.3.1-.7.4-.8 4.2-1 7.9-.6 10.8 1.2.3.2.4.6.3.9zm1.2-3.1c-.2.3-.6.5-.9.3-3-1.8-7.5-2.4-11-1.3-.4.1-.8-.1-.9-.5s.1-.8.5-.9c4-1.2 9-0.6 12.4 1.5.3.2.4.6.3.9zm.1-3.3c-3.5-2.1-9.4-2.3-12.8-1.3-.5.1-1-.2-1.1-.7-.1-.5.2-1 .7-1.1 3.9-1.1 10.3-.9 14.3 1.5.5.3.6.9.3 1.4-.3.4-.9.6-1.4.2z" />
+                                            </svg>
+                                        </a>
+                                    )}
+                                    {usernameTwitch && (
+                                        <a
+                                            href={`https://www.twitch.tv/${usernameTwitch}`}
+                                            target="_blank"
+                                            rel="noopener"
+                                            class="btn-icon"
+                                            aria-label={`Twitch @${usernameTwitch}`}
+                                            title={`Twitch @${usernameTwitch}`}
+                                        >
+                                            <svg
+                                                class="icon icon-twitch"
+                                                viewBox="0 0 16 16"
+                                                width="16"
+                                                height="16"
+                                                fill="currentColor"
+                                                aria-hidden="true"
+                                            >
+                                                <path d="M3.857 0 1 2.857v10.286h3.429V16l2.857-2.857H9.57L14.714 8V0H3.857zm9.714 7.429-2.285 2.285H9l-2 2v-2H4.429V1.143h9.142v6.286z" />{" "}
+                                                <path d="M11.857 3.143h-1.143V6.57h1.143V3.143zm-3.143 0H7.571V6.57h1.143V3.143z" />
+                                            </svg>
+                                        </a>
+                                    )}
+                                    {usernameYoutube && (
+                                        <a
+                                            href={usernameYoutube.startsWith('http') ? usernameYoutube : (usernameYoutube.includes('youtube.com/') || usernameYoutube.includes('youtu.be/') ? `https://${usernameYoutube}` : `https://youtube.com/@${usernameYoutube.replace(/^@/, '')}`)}
+                                            target="_blank"
+                                            rel="noopener"
+                                            class="btn-icon"
+                                            aria-label={`YouTube @${usernameYoutube}`}
+                                            title={`YouTube @${usernameYoutube}`}
+                                        >
+                                            <svg
+                                                class="icon icon-youtube"
+                                                viewBox="0 0 24 24"
+                                                width="20"
+                                                height="20"
+                                                fill="currentColor"
+                                            >
+                                                <path d="M21.582 6.186a2.6 2.6 0 0 0-1.83-1.83C18.14 3.93 12 3.93 12 3.93s-6.14 0-7.752.426a2.6 2.6 0 0 0-1.83 1.83C2 7.798 2 12 2 12s0 4.202.418 5.814a2.6 2.6 0 0 0 1.83 1.83C5.86 20.07 12 20.07 12 20.07s6.14 0 7.752-.426a2.6 2.6 0 0 0 1.83-1.83C22 16.202 22 12 22 12s0-4.202-.418-5.814zM9.59 15.56V8.44L15.69 12z"/>
+                                            </svg>
+                                        </a>
+                                    )}
+                                </div>
+                            </div>
+                        </section>
+                    )
+                }
+            </div>
+        </header>
+
+        <!-- Navegación anterior/siguiente -->
+        {
+            (prevActor || nextActor) && (
+                <nav
+                    class="actor-navigation"
+                    aria-label="Navegación entre actores"
+                >
+                    {prevActor && (
+                        <a
+                            href={`/direccion/${prevActor.slug}`}
+                            class="nav-actor nav-prev"
+                            title={`Anterior: ${prevActor.nombre}`}
+                        >
+                            <span class="nav-arrow">‹</span>
+                            <span class="nav-name">{prevActor.nombre}</span>
+                        </a>
+                    )}
+                    {nextActor && (
+                        <a
+                            href={`/direccion/${nextActor.slug}`}
+                            class="nav-actor nav-next"
+                            title={`Siguiente: ${nextActor.nombre}`}
+                        >
+                            <span class="nav-name">{nextActor.nombre}</span>
+                            <span class="nav-arrow">›</span>
+                        </a>
+                    )}
+                </nav>
+            )
+        }
+
+        {
+            galeriaImages?.length > 0 && (
+                <section
+                    class="actor-gallery"
+                    role="region"
+                    aria-label={`Galería de ${nombre}`}
+                >
+                    <h2>Galería</h2>
+                    <div
+                        class="slider"
+                        data-autoplay="true"
+                        data-interval="4000"
+                    >
+                        <div class="slides">
+                            {galeriaImages.map(
+                                (imgMeta: ImageMetadata, i: number) => {
+                                    const MAX_W = 1100;
+                                    const MAX_H = 650;
+                                    const ratio = Math.min(
+                                        1,
+                                        MAX_W / imgMeta.width,
+                                        MAX_H / imgMeta.height,
+                                    );
+                                    const finalW = Math.round(
+                                        imgMeta.width * ratio,
+                                    );
+                                    const finalH = Math.round(
+                                        imgMeta.height * ratio,
+                                    );
+                                    return (
+                                        <figure
+                                            class={`slide ${i === 0 ? "active" : ""}`}
+                                            data-index={i}
+                                        >
+                                            <div
+                                                class="slide-bg"
+                                                style={`background-image: url('${imgMeta.src}')`}
+                                            />
+                                            <Image
+                                                class="slide-img"
+                                                src={imgMeta}
+                                                alt={`${nombre} — foto ${i + 1}`}
+                                                loading={
+                                                    i === 0 ? "eager" : "lazy"
+                                                }
+                                                width={finalW}
+                                                height={finalH}
+                                                style="width: 100%; height: 100%; object-fit: contain;"
+                                            />
+                                        </figure>
+                                    );
+                                },
+                            )}
+                        </div>
+                        <button
+                            class="nav prev"
+                            aria-label="Anterior"
+                            title="Anterior"
+                        >
+                            ‹
+                        </button>
+                        <button
+                            class="nav next"
+                            aria-label="Siguiente"
+                            title="Siguiente"
+                        >
+                            ›
+                        </button>
+                        <div class="dots" aria-label="Paginación de la galería">
+                            {galeriaImages.map((_meta: any, i: number) => (
+                                <button
+                                    class={`dot ${i === 0 ? "active" : ""}`}
+                                    data-index={i}
+                                    aria-label={`Ver imagen ${i + 1}`}
+                                />
+                            ))}
+                        </div>
+                    </div>
+                </section>
+            )
+        }
+    </article>
+
+    <style>
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+
+        .actor-page {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 1rem 3rem;
+            position: relative;
+        }
+
+        /* Navegación anterior/siguiente */
+        .actor-navigation {
+            display: flex;
+            justify-content: space-between;
+            gap: 0.75rem;
+            margin: 1.5rem 0;
+            width: 100%;
+        }
+        .nav-actor {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.5rem 0.85rem;
+            background: rgba(0, 0, 0, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            color: #fff;
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 500;
+            backdrop-filter: blur(8px);
+            transition: all 0.25s ease;
+            flex: 1;
+            max-width: 48%;
+        }
+        .nav-actor:hover {
+            background: rgba(162, 0, 255, 0.7);
+            border-color: rgba(162, 0, 255, 0.5);
+            transform: scale(1.02);
+            color: #ffffff !important;
+        }
+        .nav-prev {
+            flex-direction: row;
+            justify-content: flex-start;
+        }
+        .nav-next {
+            flex-direction: row;
+            justify-content: flex-end;
+            text-align: right;
+        }
+        .nav-arrow {
+            font-size: 1.3rem;
+            line-height: 1;
+            font-weight: 300;
+        }
+        .nav-name {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .actor-header {
+            display: grid;
+            grid-template-columns: 1.2fr 1fr;
+            gap: 1.5rem;
+            align-items: start;
+        }
+        .hero-wrap {
+            min-height: 280px;
+        }
+        .actor-hero {
+            margin: 0;
+            aspect-ratio: 3 / 4;
+            overflow: hidden;
+        }
+        .actor-hero img {
+            width: 100%;
+            height: 100%;
+            max-height: 800px;
+            object-fit: contain;
+            display: block;
+            border-radius: 14px;
+        }
+        .info-wrap {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        .actor-name {
+            margin: 0;
+            font-size: 2.4rem;
+            line-height: 1.1;
+            letter-spacing: 0.3px;
+        }
+        .actor-bio p {
+            margin: 0 0 0.8rem 0;
+            font-size: 1.05rem;
+            line-height: 1.65;
+            text-align: left;
+        }
+        .social-row {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        .handle-rotator {
+            font-weight: 600;
+            letter-spacing: 0.2px;
+            min-height: 1.2em;
+            display: inline-block;
+            white-space: nowrap;
+            transition: opacity 0.3s ease;
+        }
+        .social-buttons {
+            display: inline-flex;
+            gap: 0.5rem;
+        }
+        .btn-icon {
+            width: 36px;
+            height: 36px;
+            display: inline-grid;
+            place-items: center;
+            border: 1px solid #ffffff33;
+            border-radius: 999px;
+            text-decoration: none;
+        }
+        .btn-icon:hover {
+            background: #00000066;
+        }
+        @media (prefers-reduced-motion: reduce) {
+            .handle-rotator {
+                transition: none;
+            }
+        }
+
+        /* Gallery slider */
+        .actor-gallery {
+            margin-top: 2rem;
+        }
+        .actor-gallery h2 {
+            font-size: 1.3rem;
+            margin: 0 0 0.75rem 0;
+        }
+        .slider {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 16 / 9;
+            border-radius: 14px;
+            overflow: hidden;
+            background: #111;
+        }
+        .slider {
+            touch-action: pan-y;
+            cursor: grab;
+        }
+        .slider.dragging {
+            cursor: grabbing;
+        }
+        .slides {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            pointer-events: none;
+        }
+        .slide {
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            transition: opacity 0.6s ease;
+            margin: 0;
+            overflow: hidden;
+        }
+        .slide.active {
+            opacity: 1;
+        }
+        .slide-bg {
+            position: absolute;
+            inset: 0;
+            background-position: center;
+            background-size: cover;
+            filter: blur(18px);
+            transform: scale(1.08);
+            opacity: 0.7;
+        }
+        .slide-img {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            display: block;
+        }
+        .nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: #00000066;
+            color: #fff;
+            border: 1px solid #ffffff33;
+            width: 40px;
+            height: 40px;
+            border-radius: 999px;
+            display: grid;
+            place-items: center;
+            cursor: pointer;
+            backdrop-filter: blur(2px);
+            z-index: 3;
+            pointer-events: auto;
+        }
+        .nav:hover {
+            background: #00000099;
+        }
+        .nav.prev {
+            left: 10px;
+        }
+        .nav.next {
+            right: 10px;
+        }
+        .dots {
+            position: absolute;
+            bottom: 10px;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            z-index: 3;
+        }
+        .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            border: 1px solid #ffffff80;
+            background: #ffffff33;
+            cursor: pointer;
+            padding: 0;
+        }
+        .dot.active {
+            background: #a200ff;
+            border-color: #a200ff;
+        }
+
+        /* Progressive reveal */
+        .reveal-on-scroll {
+            opacity: 0;
+            transform: translateY(12px);
+            transition:
+                opacity 0.6s ease,
+                transform 0.6s ease;
+        }
+        .reveal-on-scroll.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Sección de todos los actores */
+        .all-actors-section {
+            margin-top: 3rem;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .all-actors-section h2 {
+            font-size: 1.5rem;
+            margin: 0 0 1rem 0;
+            text-align: center;
+        }
+        .actors-grid-wrapper {
+            position: relative;
+            max-height: 320px;
+            overflow: hidden; /* evita scrollbar horizontal por redondeos/box-shadows */
+            /* Crear gutter interno sin crecer el ancho total */
+            margin-left: -8px;
+            margin-right: -8px;
+            padding-left: 8px;
+            padding-right: 8px;
+            padding-top: 3px;
+            transition: max-height 0.5s ease;
+        }
+        .actors-grid-wrapper.expanded {
+            max-height: none;
+        }
+        .actors-grid-wrapper::after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 100px;
+            background: linear-gradient(
+                to bottom,
+                transparent,
+                var(--bg-color, #0a0a0a)
+            );
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+        .actors-grid-wrapper.expanded::after {
+            opacity: 0;
+        }
+        .actors-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: clamp(0.75rem, 2vw, 1rem);
+            overflow: visible; /* permite que sombras no generen scroll en el wrapper */
+        }
+        .expand-btn {
+            display: block;
+            margin: 1rem auto 0;
+            padding: 0.65rem 1.5rem;
+            background: rgba(162, 0, 255, 0.2);
+            border: 1px solid rgba(162, 0, 255, 0.4);
+            border-radius: 8px;
+            color: #fff;
+            font-size: 0.8rem;
+            font-weight: 500;
+            font-family: Beiruti, sans-serif;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .expand-btn:hover {
+            background: rgba(162, 0, 255, 0.4);
+            border-color: rgba(162, 0, 255, 0.6);
+        }
+        .expand-btn.hidden {
+            display: none;
+        }
+        /* Tarjeta de actor: estilos tomados de elenco.astro */
+        .person-card {
+            position: relative;
+            display: block;
+            text-decoration: none !important;
+            line-height: 1;
+            color: #ffffff;
+            width: 100%;
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.16);
+            background: rgba(255, 255, 255, 0.04);
+            box-shadow: 0 12px 22px rgba(0, 0, 0, 0.35);
+            backdrop-filter: blur(6px);
+            transition:
+                transform 0.35s ease,
+                box-shadow 0.35s ease,
+                border-color 0.35s ease;
+        }
+        .person-card:is(:hover, :focus-visible) {
+            transform: translateY(-3px);
+            box-shadow: 0 18px 32px rgba(0, 0, 0, 0.45);
+            border-color: rgba(162, 0, 255, 0.35);
+        }
+        .person-card:focus-visible {
+            outline: 2px solid rgba(255, 215, 255, 0.75);
+            outline-offset: 4px;
+        }
+        .person-card.current {
+            opacity: 0.6;
+            pointer-events: none;
+            border-color: #ffffff;
+            /* Mantener tamaño: usar highlight interno y conservar bordes de 1px */
+            box-shadow:
+                0 0 0 1px #ffffff inset,
+                0 12px 22px rgba(0, 0, 0, 0.35);
+        }
+        .hover-image {
+            position: relative;
+            display: block;
+            width: 100%;
+            aspect-ratio: 3 / 4;
+            vertical-align: bottom;
+            margin: 0;
+            overflow: hidden;
+            background: #0a0a0a;
+        }
+        .hover-image > img {
+            display: block;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: saturate(1.08) contrast(1.04);
+            transition: opacity 0.5s ease;
+        }
+        .hover-image > .img-2 {
+            position: absolute;
+            inset: 0;
+            object-fit: cover;
+            opacity: 0;
+            pointer-events: none;
+        }
+        .person-card:is(:hover, :focus-visible) .hover-image > .img-1 {
+            opacity: 0;
+        }
+        .person-card:is(:hover, :focus-visible) .hover-image > .img-2 {
+            opacity: 1;
+        }
+        .person-meta {
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 0.8rem;
+            padding: 0.85rem 0.8rem 0.95rem;
+            background: linear-gradient(
+                0deg,
+                rgba(0, 0, 0, 0.92) 0%,
+                rgba(0, 0, 0, 0.6) 55%,
+                transparent 100%
+            );
+            pointer-events: none;
+            text-align: left;
+            z-index: 2;
+        }
+        .person-name {
+            margin: 0;
+            color: inherit;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            text-shadow: 0 10px 24px rgba(0, 0, 0, 0.45);
+            font-weight: 700;
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 980px) {
+            .actor-header {
+                grid-template-columns: 1fr;
+            }
+            .actor-name {
+                font-size: 2rem;
+            }
+            .slider {
+                aspect-ratio: 4 / 5;
+            }
+
+            .nav-actor {
+                font-size: 0.8rem;
+                padding: 0.5rem 0.65rem;
+            }
+            .nav-arrow {
+                font-size: 1.1rem;
+            }
+
+            /* Grid de actores en móvil */
+            .actors-grid {
+                grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+                gap: 0.65rem;
+            }
+            .actors-grid-wrapper {
+                max-height: 280px;
+            }
+        }
+    </style>
+
+    <script>
+        // Keep track of cleanups between SPA navigations
+        let cleanups: Array<() => void> = [];
+
+        function runCleanups() {
+            try {
+                cleanups.forEach((fn) => {
+                    try {
+                        fn();
+                    } catch {}
+                });
+            } finally {
+                cleanups = [];
+            }
+        }
+
+        function initReveal() {
+            const obs = new IntersectionObserver(
+                (entries) => {
+                    entries.forEach((entry) => {
+                        if (entry.isIntersecting) {
+                            entry.target.classList.add("visible");
+                            obs.unobserve(entry.target);
+                        }
+                    });
+                },
+                { threshold: 0.15 },
+            );
+
+            const toObserve = Array.from(
+                document.querySelectorAll(".reveal-on-scroll"),
+            );
+            toObserve.forEach((el, idx) => {
+                setTimeout(() => obs.observe(el), idx * 80);
+            });
+
+            return () => obs.disconnect();
+        }
+
+        // Simple slider with teardown support
+        function initSlider(sliderEl: Element) {
+            const slider = sliderEl as HTMLElement;
+            const slides = Array.from(
+                slider.querySelectorAll(".slide"),
+            ) as HTMLElement[];
+            const dots = Array.from(
+                slider.querySelectorAll(".dot"),
+            ) as HTMLElement[];
+            const btnPrev = slider.querySelector(
+                ".nav.prev",
+            ) as HTMLElement | null;
+            const btnNext = slider.querySelector(
+                ".nav.next",
+            ) as HTMLElement | null;
+            let index = 0;
+            let timer = 0 as any;
+            const interval = parseInt(
+                slider.getAttribute("data-interval") || "4000",
+                10,
+            );
+            const autoplay = slider.getAttribute("data-autoplay") !== "false";
+
+            function show(i: number) {
+                index = (i + slides.length) % slides.length;
+                slides.forEach((s, si) =>
+                    s.classList.toggle("active", si === index),
+                );
+                dots.forEach((d, di) =>
+                    d.classList.toggle("active", di === index),
+                );
+            }
+            function next() {
+                show(index + 1);
+            }
+            function prev() {
+                show(index - 1);
+            }
+            function start() {
+                if (!autoplay) return;
+                stop();
+                timer = window.setInterval(next, interval);
+            }
+            function stop() {
+                if (timer) {
+                    clearInterval(timer);
+                    timer = 0;
+                }
+            }
+
+            const onPrev = () => {
+                prev();
+                start();
+            };
+            const onNext = () => {
+                next();
+                start();
+            };
+            btnPrev?.addEventListener("click", onPrev);
+            btnNext?.addEventListener("click", onNext);
+            const dotHandlers: Array<() => void> = [];
+            dots.forEach((d, di) => {
+                const h = () => {
+                    show(di);
+                    start();
+                };
+                dotHandlers.push(h);
+                d.addEventListener("click", h);
+            });
+
+            const onMouseEnter = () => stop();
+            const onMouseLeave = () => start();
+            slider.addEventListener("mouseenter", onMouseEnter);
+            slider.addEventListener("mouseleave", onMouseLeave);
+            const onKey = (e: Event) => {
+                const ke = e as KeyboardEvent;
+                if (ke.key === "ArrowRight") {
+                    next();
+                    start();
+                }
+                if (ke.key === "ArrowLeft") {
+                    prev();
+                    start();
+                }
+            };
+            slider.addEventListener("keydown", onKey);
+            slider.setAttribute("tabindex", "0");
+
+            // Swipe gestures (pointer events)
+            let isPointerDown = false;
+            let startX = 0;
+            let deltaX = 0;
+            let startT = 0;
+            const SWIPE_THRESHOLD = 50; // px
+            const SWIPE_TIME_MAX = 1000; // ms
+
+            function onPointerDown(e: PointerEvent) {
+                isPointerDown = true;
+                startX = e.clientX;
+                deltaX = 0;
+                startT = Date.now();
+                stop();
+                slider.classList.add("dragging");
+            }
+            function onPointerMove(e: PointerEvent) {
+                if (!isPointerDown) return;
+                deltaX = e.clientX - startX;
+            }
+            function onPointerUp() {
+                if (!isPointerDown) return;
+                isPointerDown = false;
+                slider.classList.remove("dragging");
+                const elapsed = Date.now() - startT;
+                if (
+                    Math.abs(deltaX) > SWIPE_THRESHOLD &&
+                    elapsed < SWIPE_TIME_MAX
+                ) {
+                    if (deltaX < 0) next();
+                    else prev();
+                }
+                start();
+                deltaX = 0;
+            }
+
+            slider.addEventListener("pointerdown", onPointerDown);
+            window.addEventListener("pointermove", onPointerMove);
+            window.addEventListener("pointerup", onPointerUp);
+
+            // Initialize
+            show(0);
+            start();
+
+            // Cleanup for this slider
+            return () => {
+                stop();
+                btnPrev?.removeEventListener("click", onPrev);
+                btnNext?.removeEventListener("click", onNext);
+                dots.forEach((d, i) =>
+                    d.removeEventListener("click", dotHandlers[i]!),
+                );
+                slider.removeEventListener("mouseenter", onMouseEnter);
+                slider.removeEventListener("mouseleave", onMouseLeave);
+                slider.removeEventListener("keydown", onKey);
+                slider.removeEventListener("pointerdown", onPointerDown);
+                window.removeEventListener("pointermove", onPointerMove);
+                window.removeEventListener("pointerup", onPointerUp);
+            };
+        }
+
+        function initHandleRotators() {
+            const cleanFns: Array<() => void> = [];
+            document.querySelectorAll(".handle-rotator").forEach((el) => {
+                const rot = el as HTMLElement;
+                let handles: string[] = [];
+                try {
+                    const raw = rot.getAttribute("data-handles") || "[]";
+                    handles = JSON.parse(raw).filter((h: string) => !!h);
+                } catch {}
+                handles = Array.from(new Set(handles));
+                if (handles.length <= 1) return; // nothing to rotate
+
+                let idx = 0;
+                let timer: number | undefined;
+                const interval = 4500;
+
+                // Measure max width to avoid layout shift
+                const prevText = rot.textContent || "";
+                const prevVisibility = rot.style.visibility;
+                const prevWidth = rot.style.width;
+                rot.style.visibility = "hidden";
+                rot.style.width = "auto";
+                let maxW = 0;
+                handles.forEach((h) => {
+                    rot.textContent = `@${h}`;
+                    maxW = Math.max(maxW, rot.offsetWidth);
+                });
+                rot.style.width = `${Math.ceil(maxW)}px`;
+                rot.style.visibility = prevVisibility;
+                rot.textContent = prevText;
+
+                function render() {
+                    rot.style.opacity = "0";
+                    setTimeout(() => {
+                        rot.textContent = `@${handles[idx]}`;
+                        rot.style.opacity = "1";
+                    }, 180);
+                }
+                function next() {
+                    idx = (idx + 1) % handles.length;
+                    render();
+                }
+                function start() {
+                    stop();
+                    timer = window.setInterval(next, interval);
+                }
+                function stop() {
+                    if (timer) {
+                        clearInterval(timer);
+                        timer = undefined;
+                    }
+                }
+
+                const onEnter = () => stop();
+                const onLeave = () => start();
+                rot.addEventListener("mouseenter", onEnter);
+                rot.addEventListener("mouseleave", onLeave);
+
+                rot.style.transition = "opacity .2s ease";
+                rot.textContent = `@${handles[0]}`;
+                start();
+
+                cleanFns.push(() => {
+                    stop();
+                    rot.removeEventListener("mouseenter", onEnter);
+                    rot.removeEventListener("mouseleave", onLeave);
+                });
+            });
+            return () => cleanFns.forEach((fn) => fn());
+        }
+
+        function initExpandGrid() {
+            const expandBtn = document.getElementById("expandBtn");
+            const gridWrapper = document.getElementById("actorsGridWrapper");
+            if (!expandBtn || !gridWrapper) return () => {};
+            const onClick = () => {
+                const isExpanded = gridWrapper.classList.contains("expanded");
+                if (isExpanded) {
+                    gridWrapper.classList.remove("expanded");
+                    expandBtn.textContent = "Ver todos los actores";
+                    gridWrapper.scrollIntoView({
+                        behavior: "smooth",
+                        block: "nearest",
+                    });
+                } else {
+                    gridWrapper.classList.add("expanded");
+                    expandBtn.textContent = "Ver menos";
+                }
+            };
+            expandBtn.addEventListener("click", onClick);
+            return () => expandBtn.removeEventListener("click", onClick);
+        }
+
+        function setupElencoPage() {
+            // Ensure previous page listeners/timers are removed
+            runCleanups();
+
+            // Reveal
+            cleanups.push(initReveal());
+            // Sliders
+            document
+                .querySelectorAll(".actor-gallery .slider")
+                .forEach((el) => {
+                    const dispose = initSlider(el);
+                    cleanups.push(dispose);
+                });
+            // Handle rotators
+            cleanups.push(initHandleRotators());
+            // Expand grid
+            cleanups.push(initExpandGrid());
+        }
+
+        // Initial run and lifecycle
+        if (document.readyState === "loading") {
+            document.addEventListener("DOMContentLoaded", setupElencoPage);
+        } else {
+            setupElencoPage();
+        }
+        document.addEventListener("astro:page-load", setupElencoPage);
+        document.addEventListener("astro:before-swap", runCleanups);
+    </script>
+</main>

@@ -1,0 +1,322 @@
+---
+import Layout from '../layouts/Layout.astro';
+import faqs, { faqGroups } from '../data/faq';
+const pageTitle = 'Preguntas frecuentes';
+const pageDescription = 'Preguntas frecuentes sobre Tefía en Teatro: el musical. Encuentra información sobre el reparto, fechas, teatros, colaboraciones y mucho más.';
+
+// Helper to build text-only answers for JSON-LD
+const stripHtml = (html: string) => html.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim();
+---
+<Layout title={pageTitle} description={pageDescription} noContainer={true}>
+  <main>
+    <section id="faq" class="faq-page fade-section" aria-labelledby="faq-title">
+      <header class="faq-hero">
+        <div class="faq-hero__inner">
+          <h1 id="faq-title">Preguntas frecuentes</h1>
+        </div>
+      </header>
+
+      <div class="faq-container">
+          <div class="faq-tools" role="region" aria-label="Herramientas de la página de preguntas frecuentes">
+            <button class="faq-filter-toggle" type="button" aria-expanded="false" aria-controls="faq-search-wrap" aria-label="Filtrar" title="Filtrar">
+              <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                <path d="M3 6h18M6 11h12M9 16h6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              <span class="faq-filter-label">FILTRAR</span>
+            </button>
+            <div id="faq-search-wrap" class="faq-search-wrap" hidden>
+              <label class="sr-only" for="faq-search">Buscar en las preguntas</label>
+              <input id="faq-search" class="faq-search" type="search" placeholder="Buscar por palabra clave" enterkeyhint="search" />
+            </div>
+          </div>
+        <div class="faq-list" id="faq-list" aria-live="polite">
+          {faqGroups.map((group, gi) => (
+            <section class="faq-group" id={`faq-group-${group.id}`}>
+              <h2 class="faq-group__title">{group.title}</h2>
+              {group.items.map((item, ii) => (
+                <details class="faq-item" id={`q-${item.id}`} data-tags={(item.tags ?? []).join(', ')} open={item.open ?? (gi === 0 && ii === 0)}>
+                  <summary class="faq-question"><span class="q">{item.question}</span></summary>
+                  <div class="faq-answer" set:html={item.answer}></div>
+                </details>
+              ))}
+            </section>
+          ))}
+        </div>
+        <p class="faq-empty" hidden>
+          ¿Sigues teniendo dudas?
+          <a class="faq-empty__cta" href="/contacto" aria-label="Abrir página de contacto">Contacta con nosotros</a>
+        </p>
+      </div>
+    </section>
+  </main>
+
+  <script is:inline>
+    // Accesible filter + expand/collapse controls
+    (function () {
+      const search = document.getElementById('faq-search');
+      const list = document.getElementById('faq-list');
+      const items = () => Array.from(list.querySelectorAll('.faq-item'));
+      const groups = () => Array.from(list.querySelectorAll('.faq-group'));
+      const empty = document.querySelector('.faq-empty');
+      const searchWrap = document.getElementById('faq-search-wrap');
+      const filterToggle = document.querySelector('.faq-filter-toggle');
+
+      function normalize(s) {
+        return (s || '')
+          .toLowerCase()
+          .normalize('NFD')
+          .replace(/[\u0300-\u036f]/g, '');
+      }
+
+      function applyFilter(value) {
+        const q = normalize(value);
+        let visibleCount = 0;
+        items().forEach((el) => {
+          const tags = el.getAttribute('data-tags') || '';
+          const text = normalize(el.textContent || '');
+          const tagText = normalize(tags);
+          const haystack = `${text} ${tagText}`;
+          const match = !q || haystack.includes(q);
+          el.hidden = !match;
+          if (match) visibleCount++;
+        });
+        // Hide group sections with no visible items
+        groups().forEach((section) => {
+          const hasVisible = section.querySelector('.faq-item:not([hidden])') !== null;
+          section.hidden = !hasVisible;
+        });
+        // Show empty message only when a non-empty search has zero results
+        empty.hidden = !(q && visibleCount === 0);
+      }
+
+      search?.addEventListener('input', (e) => {
+        applyFilter(e.target.value);
+      });
+
+      filterToggle?.addEventListener('click', () => {
+        const isHidden = searchWrap?.hasAttribute('hidden');
+        if (isHidden) {
+          searchWrap?.removeAttribute('hidden');
+          // animate in
+          requestAnimationFrame(() => {
+            searchWrap?.classList.add('open');
+            filterToggle.setAttribute('aria-expanded', 'true');
+            setTimeout(() => search?.focus(), 0);
+          });
+        } else {
+          // animate out then hide
+          searchWrap?.classList.remove('open');
+          filterToggle.setAttribute('aria-expanded', 'false');
+          setTimeout(() => searchWrap?.setAttribute('hidden', ''), 180);
+        }
+      });
+
+      // Optional: close filter with ESC
+      search?.addEventListener('keydown', (ev) => {
+        if (ev.key === 'Escape') {
+          filterToggle?.click();
+        }
+      });
+    })();
+  </script>
+
+  <script type="application/ld+json" is:inline>
+    {JSON.stringify({
+      '@context': 'https://schema.org',
+      '@type': 'FAQPage',
+      mainEntity: faqs.map((f) => ({
+        '@type': 'Question',
+        name: f.question,
+        acceptedAnswer: { '@type': 'Answer', text: stripHtml(f.answer) },
+      })),
+    })}
+  </script>
+
+  <style>
+    /* Minimal, pero alineado con el look del sitio (oscuro + acento morado) */
+    :root {
+      --faq-radius: 16px;
+      --faq-card-bg: rgba(255, 255, 255, 0.04);
+      --faq-border: rgba(255, 255, 255, 0.14);
+      --faq-border-hover: rgba(255, 255, 255, 0.22);
+      --faq-dim: rgba(255, 255, 255, 0.7);
+      --faq-accent: #a200ff;
+      --faq-ring: rgba(162, 0, 255, 0.35);
+    }
+
+    .faq-page { overflow-x: clip; }
+    .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 1px, 1px); white-space: nowrap; border: 0; }
+
+    .faq-hero {
+      background:
+        radial-gradient(800px 300px at 10% -10%, rgba(162, 0, 255, 0.16), transparent 60%),
+        radial-gradient(700px 260px at 95% -20%, rgba(162, 0, 255, 0.12), transparent 60%),
+        rgba(12, 12, 12, 0.92);
+      padding: 3.2rem 0 1.1rem;
+      border-bottom: 1px solid var(--faq-border);
+    }
+    .faq-hero__inner {
+      max-width: 960px;
+      width: min(960px, 100%);
+      margin-inline: auto;
+      padding-inline: 1rem;
+      box-sizing: border-box;
+      text-align: center;
+    }
+    #faq-title { font-size: clamp(1.85rem, 2.2vw + 1rem, 2.6rem); margin: 0; text-transform: uppercase; letter-spacing: 0.04em; }
+    .faq-subtitle { margin: .55rem auto 1.25rem; color: var(--faq-dim); max-width: 70ch; }
+
+  .faq-tools {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 1.2rem;
+    margin: 0 auto 1.2rem auto;
+    max-width: 74ch;
+    justify-content: flex-start;
+  }
+  @media (max-width: 600px) {
+    .faq-tools { flex-direction: column; align-items: stretch; gap: .7rem; }
+  }
+
+    .faq-search {
+      width: 100%;
+      padding: .9rem 1rem;
+      border-radius: 14px;
+      border: 1px solid var(--faq-border);
+      background: var(--faq-card-bg);
+      color: inherit;
+      outline: none;
+      transition: border-color .15s ease, box-shadow .15s ease, background .2s ease;
+    }
+    .faq-search::placeholder { color: rgba(255,255,255,0.55); }
+    .faq-search:focus { border-color: var(--faq-border-hover); box-shadow: 0 0 0 4px var(--faq-ring); }
+
+    .faq-filter-toggle {
+      display: inline-flex;
+      align-items: center;
+      gap: .7rem;
+      height: 44px;
+      padding: 0 1.1rem 0 .9rem;
+      border: 1px solid var(--faq-border);
+      background:
+        linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02)),
+        linear-gradient(135deg, rgba(162, 0, 255, 0.18), rgba(162, 0, 255, 0.06));
+      color: #ffffff;
+      border-radius: 999px;
+      cursor: pointer;
+      font-weight: 700;
+      font-size: .98rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      box-shadow: 0 10px 24px rgba(0,0,0,0.22);
+      transition: transform .12s ease, background .2s ease, border-color .2s ease, box-shadow .2s ease;
+    }
+    .faq-filter-toggle .icon { width: 18px; height: 18px; display: block; transition: transform .2s ease, opacity .2s ease; }
+    .faq-filter-label {
+      font-family: inherit;
+      font-size: .98rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #fff;
+      opacity: .92;
+      margin-right: .1rem;
+      margin-left: 0;
+      user-select: none;
+      pointer-events: none;
+    }
+    .faq-filter-toggle:hover { transform: translateY(-1px); border-color: var(--faq-border-hover); box-shadow: 0 14px 30px rgba(0,0,0,0.28), 0 10px 26px rgba(162, 0, 255, 0.16); }
+    .faq-filter-toggle:active { transform: translateY(0); }
+    .faq-filter-toggle:focus-visible { outline: none; border-color: var(--faq-border-hover); box-shadow: 0 0 0 4px var(--faq-ring), 0 10px 26px rgba(162, 0, 255, 0.18); }
+    .faq-filter-toggle[aria-expanded="true"] { background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.03)), linear-gradient(135deg, rgba(162, 0, 255, 0.28), rgba(162, 0, 255, 0.12)); border-color: var(--faq-border-hover); box-shadow: 0 0 0 4px var(--faq-ring), 0 12px 28px rgba(0,0,0,0.28), 0 10px 26px rgba(162,0,255,0.2); }
+    .faq-filter-toggle[aria-expanded="true"] .icon { transform: rotate(90deg); }
+
+  .faq-search-wrap { width: 100%; max-width: 520px; opacity: 0; transform: translateY(-6px) scale(.98); transition: opacity .18s ease, transform .18s ease; }
+  .faq-search-wrap[hidden] { display: none; }
+  .faq-search-wrap.open { opacity: 1; transform: none; }
+
+    .faq-container { max-width: 980px; margin: 0 auto; padding: 1.6rem 1rem 3rem; }
+    .faq-list { margin: 0 auto; max-width: 74ch; }
+
+    /* Grouped sections */
+    .faq-group { margin-top: 1.6rem; }
+    .faq-group[hidden] { display: none !important; }
+    .faq-group__title {
+      margin: 1.2rem 0 .3rem;
+      font-size: 0.95rem;
+      font-weight: 800;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--faq-dim);
+      border-top: 1px solid var(--faq-border);
+      padding-top: 1rem;
+    }
+
+    .faq-item {
+      margin: .9rem 0;
+      border: 1px solid var(--faq-border);
+      border-radius: var(--faq-radius);
+      background: var(--faq-card-bg);
+      overflow: clip;
+      transition: border-color .15s ease, background .2s ease;
+    }
+    .faq-item:hover { border-color: var(--faq-border-hover); }
+    .faq-item[hidden] { display: none !important; }
+
+    .faq-question {
+      list-style: none;
+      cursor: pointer;
+      padding: 1rem 2.5rem 1rem 1rem;
+      position: relative;
+      user-select: none;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+  .faq-question::-webkit-details-marker { display: none; }
+  /* Hide default marker in Firefox and other browsers */
+  .faq-question::marker { content: ''; font-size: 0; }
+    /* Indicador minimal compatible con el estilo del sitio */
+    .faq-question::after {
+      content: '';
+      position: absolute; right: .9rem; top: 50%; transform: translateY(-50%) rotate(-45deg);
+      width: .6rem; height: .6rem; border-right: 2px solid currentColor; border-bottom: 2px solid currentColor; opacity: .8; transition: transform .2s ease, opacity .2s ease;
+    }
+    .faq-item[open] .faq-question::after { transform: translateY(-50%) rotate(45deg); opacity: 1; }
+    .faq-item:focus-within { outline: none; box-shadow: 0 0 0 4px var(--faq-ring); border-radius: var(--faq-radius); }
+
+    .faq-answer {
+      border-top: 1px solid var(--faq-border);
+      padding: 0 1rem; max-height: 0; overflow: hidden; transition: max-height .3s ease;
+    }
+    .faq-item[open] .faq-answer { padding: .75rem 1rem 1rem; max-height: 420px; }
+    .faq-answer p { margin: 0.35rem 0; color: rgba(255,255,255,0.86); line-height: 1.6; }
+    .faq-answer a { color: var(--faq-accent); text-decoration: underline; text-underline-offset: 2px; }
+
+    .faq-empty { text-align: center; margin: 1.5rem 0; color: var(--faq-dim); display: flex; flex-direction: column; gap: .8rem; align-items: center; }
+    .faq-empty__cta {
+      display: inline-flex;
+      align-items: center;
+      gap: .5rem;
+      height: 42px;
+      padding: 0 1rem;
+      border: 1px solid var(--faq-border);
+      background:
+        linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.03)),
+        linear-gradient(135deg, rgba(162, 0, 255, 0.24), rgba(162, 0, 255, 0.12));
+      color: #fff;
+      border-radius: 999px;
+      text-decoration: none;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      box-shadow: 0 10px 24px rgba(0,0,0,0.22);
+      transition: transform .12s ease, border-color .2s ease, box-shadow .2s ease;
+    }
+    .faq-empty__cta:hover { transform: translateY(-1px); border-color: var(--faq-border-hover); box-shadow: 0 14px 30px rgba(0,0,0,0.28), 0 10px 26px rgba(162, 0, 255, 0.16); }
+    .faq-empty__cta:focus-visible { outline: none; box-shadow: 0 0 0 4px var(--faq-ring), 0 10px 26px rgba(162, 0, 255, 0.18); }
+  </style>
+</Layout>

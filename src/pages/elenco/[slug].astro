@@ -1,0 +1,106 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import ElencoProfile from "../../components/ElencoProfile.astro";
+import type { Actor } from "../../data/elenco";
+import { getAllActors } from "../../data/elenco";
+import type { ImageMetadata } from "astro";
+
+export async function getStaticPaths() {
+  const actors = getAllActors();
+  return actors.map((actor, index) => {
+    const prevActor = index > 0 ? actors[index - 1] : actors[actors.length - 1];
+    const nextActor = index < actors.length - 1 ? actors[index + 1] : actors[0];
+    return {
+      params: { slug: actor.slug },
+      props: {
+        actor,
+        prevActor,
+        nextActor,
+        allActors: actors,
+      },
+    };
+  });
+}
+
+const { actor, prevActor, nextActor, allActors } = Astro.props as {
+  actor: Actor;
+  prevActor: Actor;
+  nextActor: Actor;
+  allActors: Actor[];
+};
+const nombre = actor.nombre;
+const descripcion1 = actor.descripcion1 ?? "";
+const descripcion2 = actor.descripcion2 ?? "";
+const pageTitle = nombre;
+const plainTextDescription1 = descripcion1.replace(/<[^>]*>?/gm, '');
+const rawDescription = plainTextDescription1 || `${nombre} en Tefía en Teatro.`;
+const pageDescription = rawDescription.length > 150
+  ? rawDescription.slice(0, 147) + '...'
+  : rawDescription;
+const carpetaGaleria = (
+  actor.carpetaGaleria || `/images/elenco/${actor.slug}/`
+).replace("public/", "/");
+const usernameInstagram = actor.usernameInstagram || "";
+const usernameTikTok = actor.usernameTikTok || "";
+const spotifyUrl = actor.spotifyUrl || "";
+const usernameTwitch = actor.usernameTwitch || "";
+const usernameYoutube = actor.usernameYoutube || "";
+const hero = actor.hero;
+
+// Autogenerar galería leyendo la carpeta assets
+const allImages = import.meta.glob<{ default: ImageMetadata }>(
+  "/src/assets/images/elenco/**/*.{webp,avif,png,jpg,jpeg,gif}",
+);
+
+// 1. Obtener imagen hero
+// Convertir path absoluto /images/elenco/... -> /src/assets/images/elenco/...
+const heroPathBase = hero.replace(
+  /^\/images\/elenco\//,
+  "/src/assets/images/elenco/",
+);
+
+// Buscar en el glob la imagen que coincida
+const heroImageImport = Object.keys(allImages).find((key) =>
+  key.endsWith(heroPathBase.split("/src/assets/images/elenco/")[1]),
+);
+const heroImage = heroImageImport
+  ? (await allImages[heroImageImport]()).default
+  : null;
+
+// 2. Obtener galería
+let galeriaImages: ImageMetadata[] = [];
+const slug = actor.slug;
+// La carpetaGaleria suele ser /images/elenco/slug/
+// Ajustamos para buscar en src/assets
+const galleryPrefix = `/src/assets/images/elenco/${slug}/`;
+
+const galleryKeys = Object.keys(allImages).filter((key) =>
+  key.startsWith(galleryPrefix),
+);
+galleryKeys.sort((a, b) => a.localeCompare(b, "es", { numeric: true }));
+
+// Cargar las imágenes
+galeriaImages = await Promise.all(
+  galleryKeys.map(async (key) => (await allImages[key]()).default),
+);
+---
+
+<Layout title={pageTitle} description={pageDescription} noContainer={true}>
+  <ElencoProfile
+    nombre={nombre}
+    descripcion1={descripcion1}
+    descripcion2={descripcion2}
+    carpetaGaleria={carpetaGaleria}
+    heroImage={heroImage}
+    galeriaImages={galeriaImages}
+    usernameInstagram={usernameInstagram}
+    usernameTikTok={usernameTikTok}
+    spotifyUrl={spotifyUrl}
+    usernameTwitch={usernameTwitch}
+    usernameYoutube={usernameYoutube}
+    prevActor={prevActor}
+    nextActor={nextActor}
+    allActors={allActors}
+    currentSlug={actor.slug}
+  />
+</Layout>

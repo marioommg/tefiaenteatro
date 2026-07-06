@@ -1,0 +1,382 @@
+---
+import Layout from "../layouts/Layout.astro";
+const pageTitle = "Tefía en Teatro - El musical";
+const pageDescription =
+	"Descubre cómo fue el proyecto de Tefía en Teatro, desde su concepción hasta su realización en 5 teatros de Madrid.";
+
+import videomakingof from "../assets/video-makingof-trailer.mp4";
+import thumbnailmakingof from "../assets/thumbnail-makingof.webp";
+import agradecimientosUrl from "../scripts/agradecimientos.js?url";
+import indexScriptUrl from "../scripts/index.js?url";
+import "../styles/agradecimientos.css";
+import "../styles/makingof.css";
+import "../styles/libelula-y-efecto-secciones.css";
+import "../styles/home-elenco-hero.css";
+import "../styles/home-direccion.css";
+import CreditsRows from "../components/CreditsRows.astro";
+import { Image } from "astro:assets";
+// Direct Text imports for convenience on homepage hero
+import moisesImg from "../assets/images/elenco/inicio/moisesA.webp";
+import sarakImg from "../assets/images/elenco/inicio/sarakA.webp";
+import antonioImg from "../assets/images/elenco/inicio/antonioA.webp";
+
+import gabyImg from "../assets/images/direccion/gabyA.png";
+import marioImg from "../assets/images/direccion/marioA.png";
+
+import IngridImg from "../assets/images/direccion/ingridA.png";
+---
+
+<Layout fullTitle={pageTitle} description={pageDescription} noContainer={true}>
+	<main>
+		{/* Secciones con animación de aparición */}
+		<section
+			id="sobre-el-proyecto"
+			class="fade-section"
+			data-initial-visible
+		>
+			<section class="makingof-section">
+				<div class="makingof-bg">
+					<div class="video-frame" style="position:relative;">
+						<video
+							class="makingof-video"
+							src={videomakingof}
+							playsinline
+							controls
+							preload="metadata"
+							poster={thumbnailmakingof.src}></video>
+					</div>
+					<div class="makingof-cta">
+						<a
+							class="btn-cta"
+							href="/sobre-el-proyecto"
+							aria-label="Ir a Sobre el proyecto"
+						>
+							Sobre el proyecto
+							<span class="cta-arrow" aria-hidden="true">→</span>
+						</a>
+					</div>
+				</div>
+			</section>
+		</section>
+
+		{/* Sección de hero del elenco */}
+		<section
+			id="elenco"
+			class="home-elenco-hero fade-section fade-init"
+			aria-labelledby="elenco-heading"
+			data-manual-reveal
+		>
+			<div class="home-hero-content">
+				<p class="home-hero-eyebrow">Conoce a los protagonistas</p>
+				<h2 id="elenco-heading" class="home-hero-title">
+					Nuestro elenco
+				</h2>
+				<p class="home-hero-description">
+					Descubre a quienes dieron vida a los personajes
+				</p>
+				<div class="home-hero-buttons">
+					<a
+						class="home-hero-button home-hero-button--primary"
+						href="/elenco"
+						aria-label="Ir a la página completa del elenco"
+					>
+						<span>Descubrir reparto</span>
+						<span class="home-hero-arrow" aria-hidden="true">→</span
+						>
+					</a>
+				</div>
+			</div>
+			<div class="home-hero-gallery" aria-hidden="true">
+				<figure class="home-hero-card home-hero-card--primary">
+					<a href="/elenco/" aria-label="Ver perfil de Moisés Denilo">
+						<Image
+							src={moisesImg}
+							alt="Moisés Denilo"
+							loading="eager"
+							width={100}
+						/>
+					</a>
+				</figure>
+				<figure class="home-hero-card home-hero-card--secondary">
+					<a href="/elenco/" aria-label="Ver perfil de Sara Kondo">
+						<Image
+							src={sarakImg}
+							alt="Sara Kondo"
+							loading="lazy"
+							width={100}
+						/>
+					</a>
+				</figure>
+				<figure class="home-hero-card home-hero-card--accent">
+					<a href="/elenco/" aria-label="Ver perfil de Antonio López">
+						<Image
+							src={antonioImg}
+							alt="Antonio López"
+							loading="lazy"
+							width={100}
+						/>
+					</a>
+				</figure>
+			</div>
+		</section>
+
+		{/* Sección de Dirección (justo debajo de "Nuestro elenco") */}
+		<section
+			id="direccion"
+			class="direccion-section fade-section fade-init"
+			aria-labelledby="direccion-heading"
+		>
+			<div class="direccion-inner">
+				<p class="home-hero-eyebrow">Detrás del proyecto</p>
+				<h2
+					id="direccion-heading"
+					class="home-hero-title direccion-title"
+				>
+					Dirección
+				</h2>
+				<div class="direccion-grid">
+					<a
+						href="/direccion/gabriela-mejias"
+						aria-label="Ver perfil de Gabriela Mejías"
+						class="direccion-link"
+					>
+						<figure class="direccion-card">
+							<Image
+								class="direccion-img"
+								src={gabyImg}
+								alt="Gabriela Mejías"
+								loading="lazy"
+								width={400}
+							/>
+							<figcaption class="direccion-name">
+								Gabriela Mejías
+							</figcaption>
+						</figure>
+					</a>
+
+					<a
+						href="/direccion/mario-munoz-gil"
+						aria-label="Ver perfil de Mario Muñoz Gil"
+						class="direccion-link"
+					>
+						<figure class="direccion-card">
+							<Image
+								class="direccion-img"
+								src={marioImg}
+								alt="Mario Muñoz Gil"
+								loading="lazy"
+								width={400}
+							/>
+							<figcaption class="direccion-name">
+								Mario Muñoz Gil
+							</figcaption>
+						</figure>
+					</a>
+
+					<a
+						href="/direccion/ingrid-prieto"
+						aria-label="Ver perfil de Ingrid Prieto"
+						class="direccion-link"
+					>
+						<figure class="direccion-card">
+							<Image
+								class="direccion-img"
+								src={IngridImg}
+								alt="Ingrid Prieto"
+								loading="lazy"
+								width={400}
+							/>
+							<figcaption class="direccion-name">
+								Ingrid Prieto
+							</figcaption>
+						</figure>
+					</a>
+				</div>
+			</div>
+		</section>
+
+		{/* Zona VIP */}
+		<section
+			id="zona-vip"
+			class="vip-section fade-section fade-init"
+			aria-labelledby="zona-vip-title"
+		>
+			<div
+				class="vip-inner"
+				style="max-width: 900px; margin: 0 auto; padding: 2rem 1rem; text-align: center;"
+			>
+				<h2 id="zona-vip-title">Zona VIP</h2>
+				<p style="margin: 0 auto 1rem; max-width: 60ch;">
+					Acceso a contenido exclusivo para quienes vinisteis a vernos
+					o colaborasteis.
+				</p>
+				<p
+					style="margin: 0 auto 1.5rem; max-width: 70ch; color: var(--color-dim, #666);"
+				>
+					Porque sois parte de esto.
+				</p>
+				<a
+					class="btn-cta"
+					href="/zona-vip"
+					aria-label="Ir a la Zona VIP"
+				>
+					Entrar en la Zona VIP
+					<span class="cta-arrow" aria-hidden="true">→</span>
+				</a>
+			</div>
+		</section>
+
+		{/* Sección de Ángeles del proyecto */}
+		<section
+			id="angeles-del-proyecto"
+			class="angeles-section fade-section fade-init"
+			aria-labelledby="angeles-title"
+		>
+			<!-- Luces/libélulas sobre toda la sección -->
+			<span class="libelula" aria-hidden="true"></span>
+			<span class="libelula" aria-hidden="true"></span>
+			<span class="libelula" aria-hidden="true"></span>
+			<span class="libelula" aria-hidden="true"></span>
+			<span class="libelula" aria-hidden="true"></span>
+			<div class="angeles-inner">
+				<h2 id="angeles-title">Ángeles del proyecto</h2>
+				<div class="angeles-orbita">
+					<ul
+						class="angeles-list"
+						aria-label="Lista de ángeles del proyecto"
+					>
+						<li>Blanca Gil San Felipe</li>
+						<li>Juanjo Loscos Fernández</li>
+						<li>Ernesto Presilla Strauss</li>
+						<li>Sergio Jurado</li>
+					</ul>
+					<p class="angeles-especial">
+						<span class="angeles-icon" aria-hidden="true">★</span>
+						<span class="angeles-label"
+							>Especial agradecimiento a</span
+						>
+						<strong class="angeles-nombre"
+							>JESÚS MUÑOZ BARRAL</strong
+						>
+					</p>
+				</div>
+			</div>
+		</section>
+
+		{/* Sección de Agradecimientos */}
+		<section
+			id="agradecimientos"
+			class="credits-page fade-section fade-init"
+		>
+			<CreditsRows rowCount={10} />
+
+			{/* Créditos */}
+			<div class="credits" aria-label="Créditos">
+				<div class="credits-inner">
+					<h1 style="text-align: center;">Agradecimientos</h1>
+					<div class="credit-grid">
+						<div class="credit-block">
+							<h3>Realización</h3>
+							<p>
+								Marcos Navarrete<br />
+								Alejandro Mantuano<br />
+								Pablo Romero<br />
+								Victoria Menaya<br />
+								Priscila Rey<br />
+								Sara Alcalá
+							</p>
+							<br />
+							<h3>Apoyo</h3>
+							<p>
+								Adela Muñoz Gil <br />
+								Raquel Gil San Felipe <br />
+								Juan José Prieto Barrio <br />
+								Marta Barrigüete Marcos <br />
+								Paula Gil Rubio <br />
+								Juan López Serrano
+							</p>
+							<br />
+						</div>
+						<div class="credit-block">
+							<h3>Iluminación</h3>
+							<p>
+								Alejandro Calero <br />
+								Adrián Palomino
+							</p>
+							<br />
+							<h3>Sonido</h3>
+							<p>
+								Ignacio Álvarez <br />
+								Alonso Lara Hormazabal <br />
+								Diego Lucas <br />
+								Daniel de Lucas <br />
+							</p>
+							<br />
+							<h3>Producción</h3>
+							<p>
+								Álvaro Denche <br />
+								Nerea Valero <br />
+							</p>
+							<br />
+						</div>
+					</div>
+					<p style="margin: 0; text-align: center;">
+						Este proyecto no habría sido posible sin la colaboración
+						y apoyo de todas estas personas.
+					</p>
+					<p
+						style="margin: 3px 0 0; opacity: 0.7; font-size: 0.9em; text-align: center;"
+					>
+						Si colaboraste mediante una donación anónima, tu nombre
+						no aparece aquí; si quieres que lo incluyamos, puedes
+						<a href="/contacto">contactarnos</a>.
+					</p>
+				</div>
+			</div>
+		</section>
+
+		{/* ¿Tienes alguna duda? CTA hacia contacto o FAQ */}
+		<section
+			id="dudas"
+			class="faq-cta-section fade-section fade-init"
+			aria-labelledby="dudas-title"
+		>
+			<div
+				class="faq-cta-inner"
+				style="max-width: 900px; margin: 0 auto; padding: 2.5rem 1rem; text-align: center;"
+			>
+				<h2 id="dudas-title">¿Tienes alguna duda?</h2>
+				<p
+					style="margin: 0.5rem auto 1.25rem; max-width: 65ch; color: var(--color-dim, #666);"
+				>
+					Estamos aquí para ayudarte. Consulta las preguntas
+					frecuentes o escríbenos directamente.
+				</p>
+				<div
+					style="display: flex; gap: .75rem; justify-content: center; flex-wrap: wrap;"
+				>
+					<a
+						class="btn-cta"
+						href="/faq"
+						aria-label="Ir a Preguntas frecuentes"
+					>
+						Ver preguntas frecuentes
+						<span class="cta-arrow" aria-hidden="true">→</span>
+					</a>
+					<a
+						class="btn-cta"
+						href="/contacto"
+						aria-label="Ir a Contacto"
+					>
+						Contactar
+						<span class="cta-arrow" aria-hidden="true">→</span>
+					</a>
+				</div>
+			</div>
+		</section>
+	</main>
+</Layout>
+
+<script is:inline type="module" src={agradecimientosUrl}></script>
+
+<script is:inline type="module" src={indexScriptUrl}></script>

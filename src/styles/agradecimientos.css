@@ -1,0 +1,170 @@
+  .credits-page {
+    position: relative;
+    height: calc(auto + 50px); /* Ajustado para incluir 20px adicionales */
+    overflow: hidden;
+    width: 100vw;
+    margin-inline: calc(50% - 50vw); /* full-bleed across any parent constraints */
+    background: radial-gradient(1200px 600px at 70% -10%, rgb(0, 0, 0), transparent 60%),
+                radial-gradient(800px 400px at 20% 110%, rgba(0, 0, 0, 0.06), transparent 60%),
+                #000000;
+    color: #fff;
+  }
+
+  /* Fondo animado: filas sin solapar */
+  .bg {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    opacity: 0.8;
+  }
+
+  .rows {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    grid-template-rows: repeat(var(--rows, 6), 1fr);
+    align-items: center;
+    gap: clamp(0.75rem, 1.8vh, 1.4rem);
+    /* El fondo termina al final del contenedor (sin desvanecer abajo) */
+    mask-image: linear-gradient(to bottom, transparent, black 4%, black 100%);
+  }
+
+  .row {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .track {
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+    gap: 2.25rem;
+    white-space: nowrap;
+    will-change: transform;
+    transform: translate3d(0,0,0); /* fuerza aceleración GPU en móviles */
+    animation: scroll-left var(--dur, 36s) linear infinite;
+    animation-play-state: paused; /* no arranques hasta fijar duración */
+  }
+
+  .track.reverse {
+    animation-name: scroll-right;
+  }
+
+  .name {
+    font-size: clamp(0.85rem, 1.2vw, 1.1rem);
+    letter-spacing: 0.3px;
+    color: rgba(255,255,255,0.65);
+    text-shadow: 0 1px 1px rgba(0,0,0,0.2);
+  }
+
+  .dot { opacity: 0.35; }
+
+  @keyframes scroll-left {
+    0%   { transform: translate3d(0, 0, 0); }
+    100% { transform: translate3d(calc(-1 * var(--dist, 0px)), 0, 0); }
+  }
+
+  @keyframes scroll-right {
+    0%   { transform: translate3d(calc(-1 * var(--dist, 0px)), 0, 0); }
+    100% { transform: translate3d(0, 0, 0); }
+  }
+
+  /* Card central en flujo normal */
+  .center {
+    position: relative;
+    z-index: 1;
+    padding: clamp(2rem, 12vh, 6rem) clamp(1rem, 4vw, 2rem) 0;
+  }
+
+  .card {
+    max-width: 900px;
+    text-align: center;
+    background: linear-gradient(
+      to bottom,
+      rgba(0, 0, 0, 0.164) 0%,
+      rgba(0, 0, 0, 0.116) 100%
+    );
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 16px;
+    padding: clamp(1.25rem, 2vw, 2rem) clamp(1rem, 4vw, 2.5rem);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.589);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    margin: 0 auto;
+  }
+
+  .card h1 {
+    margin: 0 0 0.5rem 0;
+    font-size: clamp(1.8rem, 4.5vw, 3rem);
+    line-height: 1.1;
+  }
+
+  .card p {
+    margin: 0;
+    font-size: clamp(1rem, 2vw, 1.25rem);
+    color: rgba(255,255,255,0.85);
+  }
+
+  /* Créditos en flujo normal, por delante del fondo de nombres */
+  .credits {
+    max-width: fit-content;
+    position: relative;
+    inset: unset;
+    z-index: 1;
+    padding: 0rem 1rem 1.5rem;
+    margin: clamp(1.5rem, 8vh, 4rem) auto 0;
+    background: radial-gradient(ellipse at center, rgb(0, 0, 0, 0.9) 30%, rgba(0, 0, 0, 0.747) 50%, transparent 90%);
+  }
+  .credits-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding-inline: clamp(0.5rem, 3vw, 1rem);
+    color: rgba(255,255,255,0.9);
+  }
+  .credits h2 { 
+    margin: 0 0 0.5rem 0; 
+    font-size: clamp(1rem, 2.4vw, 1.25rem); 
+    letter-spacing: 0.5px; 
+    text-transform: uppercase; 
+    opacity: 0.9;
+  }
+  .credit-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: clamp(0.5rem, 2vw, 1rem) clamp(1rem, 3vw, 2rem);
+  }
+  @media (max-width: 720px) {
+    .credit-grid { grid-template-columns: 1fr; }
+    .credit-grid .credit-block,
+    .credit-grid .credit-block h3,
+    .credit-grid .credit-block p { text-align: center; }
+  }
+  /* En 2 columnas: primera columna a la derecha, segunda a la izquierda */
+  @media (min-width: 721px) {
+    .credit-grid .credit-block:nth-child(odd):not(.credit-block--full),
+    .credit-grid .credit-block:nth-child(odd):not(.credit-block--full) h3,
+    .credit-grid .credit-block:nth-child(odd):not(.credit-block--full) p { text-align: right; }
+
+    .credit-grid .credit-block:nth-child(even):not(.credit-block--full),
+    .credit-grid .credit-block:nth-child(even):not(.credit-block--full) h3,
+    .credit-grid .credit-block:nth-child(even):not(.credit-block--full) p { text-align: left; }
+    .credit-block--full { grid-column: 1 / -1; text-align: left; }
+  }
+  .credit-block h3 {
+    margin: 0 0 0.25rem 0;
+    font-size: clamp(0.9rem, 2vw, 1.05rem);
+    font-weight: 700;
+    letter-spacing: 0.3px;
+  }
+  .credit-block p {
+    margin: 0;
+    font-size: clamp(1rem, 2vw, 1.25rem);
+    color: rgba(255,255,255,0.85);
+    line-height: 1.4;
+  }
+
+  /* Accesibilidad: respeta reduced motion */
+  @media (prefers-reduced-motion: reduce) {
+    .track { animation-duration: 0s; }
+  }

@@ -1,0 +1,882 @@
+---
+import { Image } from "astro:assets";
+
+// Import Elenco images
+import albaImg from "../assets/images/elenco/inicio/albaB.webp";
+import antonioImg from "../assets/images/elenco/inicio/antonioB.webp";
+import moisesImg from "../assets/images/elenco/inicio/moisesB.webp";
+import sarakImg from "../assets/images/elenco/inicio/sarakB.webp";
+import juanjoImg from "../assets/images/elenco/inicio/juanjoB.webp";
+import darioImg from "../assets/images/elenco/inicio/darioB.webp";
+import eiderImg from "../assets/images/elenco/inicio/eiderB.webp";
+import helenaImg from "../assets/images/elenco/inicio/helenaB.webp";
+import nicoImg from "../assets/images/elenco/inicio/nicolasB.webp";
+
+// Import all Vestuario images from the looks directory
+const lookImages = import.meta.glob<{ default: ImageMetadata }>(
+    "../assets/sobre-el-proyecto/looks/*.{jpg,jpeg,png,webp}",
+    { eager: true },
+);
+
+// Sort images numerically by their LOOK number (e.g. 1, 2, 4, 13...)
+const vestuarioImages = Object.entries(lookImages)
+    .sort(([pathA], [pathB]) => {
+        const numA = parseInt(pathA.match(/LOOK\s*(\d+)/i)?.[1] || "0");
+        const numB = parseInt(pathB.match(/LOOK\s*(\d+)/i)?.[1] || "0");
+        return numA - numB;
+    })
+    .map(([_, mod]) => mod.default);
+---
+
+<section id="project-figures" class="figures-section fade-section">
+    <div class="figures-container">
+        <div class="figures-header">
+            <p class="figures-eyebrow">Impacto y Escala</p>
+            <h2 class="figures-title">El Proyecto en Cifras</h2>
+        </div>
+
+        <div class="bento-grid">
+            <!-- Card 1: Elenco (Link & Interactive) -->
+            <a
+                href="/elenco"
+                class="bento-card card-elenco group"
+                aria-label="Ir a la página del elenco"
+            >
+                <div class="card-bg-mosaic">
+                    <div class="mosaic-item">
+                        <Image src={albaImg} alt="Alba Núñez" width={100} />
+                    </div>
+                    <div class="mosaic-item">
+                        <Image
+                            src={antonioImg}
+                            alt="Antonio López"
+                            width={100}
+                        />
+                    </div>
+                    <div class="mosaic-item">
+                        <Image
+                            src={moisesImg}
+                            alt="Moisés Denilo"
+                            width={100}
+                        />
+                    </div>
+                    <div class="mosaic-item">
+                        <Image src={sarakImg} alt="Sara Kondo" width={100} />
+                    </div>
+                    <div class="mosaic-item">
+                        <Image
+                            src={juanjoImg}
+                            alt="Juan José Loscos "
+                            width={100}
+                        />
+                    </div>
+                    <div class="mosaic-item">
+                        <Image
+                            src={darioImg}
+                            alt="Darío S Waisen"
+                            width={100}
+                        />
+                    </div>
+                    <div class="mosaic-item">
+                        <Image src={eiderImg} alt="Eider Úbeda" width={100} />
+                    </div>
+                    <div class="mosaic-item">
+                        <Image
+                            src={helenaImg}
+                            alt="Helena Madariaga"
+                            width={100}
+                        />
+                    </div>
+                    <div class="mosaic-item">
+                        <Image
+                            src={nicoImg}
+                            alt="Nicolás Hernández"
+                            width={100}
+                        />
+                    </div>
+                </div>
+                <div class="card-overlay"></div>
+                <div class="card-content">
+                    <div class="stat-main">
+                        <div class="stat-number" data-target="18">0</div>
+                        <h3 class="stat-label">Actores</h3>
+                    </div>
+                    <p class="stat-detail">De 76 solicitudes</p>
+                    <div class="card-cta">
+                        <span>Conoce al elenco</span>
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="20"
+                            height="20"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            class="cta-arrow"
+                            ><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"
+                            ></path></svg
+                        >
+                    </div>
+                </div>
+            </a>
+
+            <!-- Card 2: Vestuario (Interactive Gallery) -->
+            <div class="bento-card card-vestuario group" id="card-vestuario">
+                <div class="card-content vestuario-layout">
+                    <div class="vestuario-text">
+                        <div class="stat-header">
+                            <div class="stat-number" data-target="117">0</div>
+                        </div>
+                        <h3 class="stat-label">Looks Diseñados</h3>
+                        <span class="click-hint">
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="16"
+                                height="16"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="2"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                ><path d="M8 2v4"></path><path d="M16 2v4"
+                                ></path><path d="M3 10h18"></path><rect
+                                    x="3"
+                                    y="4"
+                                    width="18"
+                                    height="18"
+                                    rx="2"></rect><path d="M10 16h4"
+                                ></path></svg
+                            >
+                            Haz clic para ver más
+                        </span>
+                    </div>
+                    <div class="gallery-container">
+                        <div class="flashcard-scene">
+                            <div
+                                class="flashcard-wrapper"
+                                id="flashcard-wrapper"
+                            >
+                                {
+                                    vestuarioImages.map((img, index) => (
+                                        <Image
+                                            src={img}
+                                            alt={`Look de vestuario ${index + 1}`}
+                                            width={300}
+                                            class={`gallery-img ${index === 0 ? "active" : ""}`}
+                                            data-index={index}
+                                        />
+                                    ))
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 3: Espectadores (+1000) -->
+            <article class="bento-card card-espectadores">
+                <div class="espectadores-bg">
+                    <div class="crowd-blur"></div>
+                </div>
+                <div class="card-content centered">
+                    <div
+                        class="stat-number large-stat"
+                        data-target="1000"
+                        data-prefix="+"
+                    >
+                        +0
+                    </div>
+                    <h3 class="stat-label">Espectadores</h3>
+                </div>
+            </article>
+
+            <!-- Card 4: Música -->
+            <article class="bento-card card-musica">
+                <div class="card-content">
+                    <div class="stat-number" data-target="17">0</div>
+                    <h3 class="stat-label">Números<br />Musicales</h3>
+                    <div class="audio-wave">
+                        <span></span><span></span><span></span><span></span>
+                    </div>
+                </div>
+            </article>
+
+            <!-- Card 6: Gira -->
+            <article class="bento-card card-gira">
+                <div class="card-content">
+                    <div class="gira-flex">
+                        <div class="gira-stat">
+                            <div class="stat-number" data-target="5">0</div>
+                            <h3 class="stat-label">Espacios</h3>
+                        </div>
+                        <!-- Interactive Map / List placeholder -->
+                        <div class="gira-locations-wrapper">
+                            <div class="gira-locations-track">
+                                <span class="location-tag">Vicálvaro</span>
+                                <span class="location-tag">San Blas</span>
+                                <span class="location-tag">Vallecas</span>
+                                <span class="location-tag">Aluche</span>
+                                <span class="location-tag">Alcobendas</span>
+                                <span class="location-tag" aria-hidden="true"
+                                    >Vicálvaro</span
+                                >
+                                <span class="location-tag" aria-hidden="true"
+                                    >San Blas</span
+                                >
+                                <span class="location-tag" aria-hidden="true"
+                                    >Vallecas</span
+                                >
+                                <span class="location-tag" aria-hidden="true"
+                                    >Aluche</span
+                                >
+                                <span class="location-tag" aria-hidden="true"
+                                    >Alcobendas</span
+                                >
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </article>
+        </div>
+    </div>
+</section>
+
+<script>
+    // Animation for numbers
+    const animateNumbers = () => {
+        const stats = document.querySelectorAll(".stat-number");
+
+        const observer = new IntersectionObserver(
+            (entries) => {
+                entries.forEach((entry) => {
+                    if (entry.isIntersecting) {
+                        const el = entry.target;
+                        const targetStr = el.getAttribute("data-target") || "0";
+                        const target = parseInt(targetStr, 10);
+                        const prefix = el.getAttribute("data-prefix") || "";
+                        const isCurrency = el.classList.contains("dollar");
+
+                        // Speed up big numbers
+                        const duration = target > 100 ? 2500 : 1500;
+                        const startTime = performance.now();
+
+                        const update = (now: number) => {
+                            const elapsed = now - startTime;
+                            const progress = Math.min(elapsed / duration, 1);
+                            const ease = 1 - Math.pow(1 - progress, 3); // cubic ease out
+
+                            const current = Math.floor(target * ease);
+
+                            let text = current.toLocaleString("es-ES");
+                            if (isCurrency) text += "€";
+                            el.textContent = prefix + text;
+
+                            if (progress < 1) {
+                                requestAnimationFrame(update);
+                            } else {
+                                // Ensure final value is accurate
+                                let finalText = target.toLocaleString("es-ES");
+                                if (isCurrency) finalText += "€";
+                                el.textContent = prefix + finalText;
+                            }
+                        };
+
+                        requestAnimationFrame(update);
+                        observer.unobserve(el);
+                    }
+                });
+            },
+            { threshold: 0.5 },
+        );
+
+        stats.forEach((stat) => observer.observe(stat));
+    };
+
+    // Vestuario Gallery Logic
+    const initGallery = () => {
+        const card = document.getElementById("card-vestuario");
+        if (!card) return;
+
+        const wrapper = card.querySelector("#flashcard-wrapper") as HTMLElement;
+        const images = Array.from(
+            card.querySelectorAll(".gallery-img"),
+        ) as HTMLElement[];
+        if (!wrapper || images.length === 0) return;
+
+        let currentIndex = 0;
+        let isAnimating = false;
+        let rotationCount = 0;
+
+        const nextImage = () => {
+            if (isAnimating) return;
+            isAnimating = true;
+
+            const nextIndex = (currentIndex + 1) % images.length;
+            const currentImg = images[currentIndex];
+            const nextImg = images[nextIndex];
+
+            // Setup for rotation
+            rotationCount += 180;
+            wrapper.style.transform = `rotateY(${rotationCount}deg)`;
+
+            // Decide which face shows which image based on rotation count
+            setTimeout(() => {
+                currentImg.classList.remove("active");
+                nextImg.classList.add("active");
+
+                // Flip the image content to match wrapper rotation so it's not backwards
+                if (rotationCount % 360 !== 0) {
+                    (nextImg as HTMLElement).style.transform =
+                        `rotateY(180deg)`;
+                } else {
+                    (nextImg as HTMLElement).style.transform = `rotateY(0deg)`;
+                }
+            }, 300); // Change image half-way through the flip (600ms / 2)
+
+            currentIndex = nextIndex;
+
+            setTimeout(() => {
+                isAnimating = false;
+            }, 600);
+        };
+
+        card.addEventListener("click", nextImage);
+    };
+
+    const boot = () => {
+        animateNumbers();
+        initGallery();
+    };
+
+    // Ensure it runs on initial load and after view transitions (if enabled)
+    document.addEventListener("astro:page-load", boot);
+    document.addEventListener("DOMContentLoaded", boot);
+
+    // Backup: if already loaded
+    if (
+        document.readyState === "complete" ||
+        document.readyState === "interactive"
+    ) {
+        boot();
+    }
+</script>
+
+<style>
+    .figures-section {
+        padding: 4rem 1.5rem 6rem;
+        position: relative;
+        max-width: 1400px;
+        margin: 0 auto;
+    }
+
+    /* Header Styles */
+    .figures-header {
+        text-align: center;
+        margin-bottom: 3.5rem;
+    }
+
+    .figures-eyebrow {
+        font-size: 0.9rem;
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+        color: rgba(255, 255, 255, 0.7);
+        margin: 0 0 1rem;
+    }
+
+    .figures-title {
+        font-size: clamp(2.2rem, 5vw, 3.5rem);
+        margin: 0;
+        color: #ffffff;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        font-weight: 700;
+    }
+
+    /* Bento Grid */
+    .bento-grid {
+        display: grid;
+        grid-template-columns: repeat(12, 1fr);
+        gap: 1.5rem;
+        grid-auto-rows: minmax(240px, auto);
+        grid-template-areas:
+            "elenco elenco elenco elenco elenco vestuario vestuario vestuario vestuario vestuario vestuario vestuario"
+            "espectadores espectadores espectadores espectadores espectadores musica musica musica gira gira gira gira";
+    }
+
+    /* Universal Card Styles */
+    .bento-card {
+        position: relative;
+        background: rgba(20, 20, 20, 0.6);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 24px;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+        padding: 2.5rem;
+        box-sizing: border-box;
+        transition:
+            transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1),
+            box-shadow 0.4s ease,
+            border-color 0.4s ease;
+        text-decoration: none;
+        color: #fff;
+    }
+
+    .bento-card:hover {
+        transform: translateY(-8px) scale(1.01);
+        box-shadow:
+            0 20px 40px rgba(0, 0, 0, 0.6),
+            0 0 25px rgba(162, 0, 255, 0.2);
+        border-color: rgba(162, 0, 255, 0.4);
+        z-index: 10;
+    }
+
+    .card-content {
+        position: relative;
+        z-index: 3;
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+
+    /* Specific modifier for centering content (e.g., Espectadores, Musica, Finanzas) */
+    .card-content.centered {
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        height: 100%;
+    }
+
+    .card-overlay {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(
+            to top,
+            rgba(0, 0, 0, 0.9),
+            rgba(0, 0, 0, 0.3) 60%,
+            transparent
+        );
+        z-index: 2;
+        transition: opacity 0.3s ease;
+    }
+
+    .card-overlay-gradient {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(
+            to bottom,
+            rgba(0, 0, 0, 0) 0%,
+            rgba(0, 0, 0, 0.4) 50%,
+            rgba(0, 0, 0, 0.9) 100%
+        );
+        z-index: 2;
+    }
+
+    /* Typography */
+    .stat-number {
+        font-size: clamp(3rem, 5vw, 4.5rem);
+        font-weight: 800;
+        line-height: 0.9;
+        margin-bottom: 0.5rem;
+        color: #fff;
+        font-variant-numeric: tabular-nums;
+    }
+
+    .stat-label {
+        font-size: 1.1rem;
+        color: #fff;
+        margin: 0;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+
+    .stat-detail {
+        font-size: 0.85rem;
+        color: rgba(255, 255, 255, 0.7);
+        margin: 0.5rem 0 0;
+    }
+
+    /* --- PER CARD STYLING --- */
+
+    /* 1. ELENCO (Link) */
+    .card-elenco {
+        grid-area: elenco;
+        cursor: pointer;
+    }
+
+    /* Mosaic Background */
+    .card-bg-mosaic {
+        position: absolute;
+        inset: 0;
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        grid-template-rows: repeat(3, 1fr);
+        opacity: 0.3;
+        filter: grayscale(100%);
+        transition: 0.5s ease;
+        z-index: 1;
+        transform: scale(1.05);
+    }
+
+    .card-elenco:hover .card-bg-mosaic {
+        opacity: 0.6;
+        filter: grayscale(0%);
+        transform: scale(1);
+        gap: 2px;
+    }
+
+    .mosaic-item img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .card-cta {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-top: 1.5rem;
+        background: #fff;
+        color: #000;
+        padding: 0.6rem 1.2rem;
+        border-radius: 999px;
+        font-weight: 700;
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        opacity: 0;
+        transform: translateY(10px);
+        transition: 0.3s ease;
+    }
+
+    .card-elenco:hover .card-cta {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    .cta-arrow {
+        transition: transform 0.3s ease;
+    }
+    .card-elenco:hover .cta-arrow {
+        transform: translateX(3px);
+    }
+
+    /* 2. VESTUARIO (Gallery) */
+    .card-vestuario {
+        grid-area: vestuario;
+        cursor: pointer;
+        user-select: none;
+        background: linear-gradient(135deg, #1c1c1c, #0a0a0a);
+    }
+
+    .vestuario-layout {
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        height: 100%;
+        gap: 2rem;
+    }
+
+    .vestuario-text {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+
+    .gallery-container {
+        width: 140px;
+        height: 180px;
+        flex-shrink: 0;
+        perspective: 1000px;
+        position: relative;
+    }
+
+    .flashcard-scene {
+        width: 100%;
+        height: 100%;
+        border-radius: 12px;
+        box-shadow:
+            0 10px 30px -5px rgba(0, 0, 0, 0.8),
+            0 0 15px rgba(255, 255, 255, 0.05) inset;
+    }
+
+    .flashcard-wrapper {
+        width: 100%;
+        height: 100%;
+        position: relative;
+        transform-style: preserve-3d;
+        transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        border-radius: 12px;
+    }
+
+    .gallery-img {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        opacity: 0;
+        backface-visibility: hidden;
+        border-radius: 12px;
+        border: 2px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .gallery-img.active {
+        opacity: 1;
+        z-index: 2;
+    }
+
+    .stat-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+    }
+
+    .click-hint {
+        font-size: 0.8rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        color: rgba(255, 255, 255, 0.6);
+        background: rgba(255, 255, 255, 0.05);
+        padding: 0.4rem 0.8rem;
+        border-radius: 6px;
+        margin-top: 1rem;
+        width: fit-content;
+        opacity: 0.7;
+        transform: translateX(0);
+        transition: 0.3s ease;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .card-vestuario:hover .click-hint {
+        opacity: 1;
+        transform: translateX(0);
+    }
+
+    /* 3. ESPECTADORES (+1000) */
+    .card-espectadores {
+        grid-area: espectadores;
+        background: linear-gradient(135deg, #1a0b2e, #000);
+    }
+
+    .espectadores-bg {
+        position: absolute;
+        inset: 0;
+        overflow: hidden;
+    }
+    .crowd-blur {
+        position: absolute;
+        inset: -50%;
+        background: radial-gradient(
+            circle,
+            rgba(162, 0, 255, 0.15) 10%,
+            transparent 60%
+        );
+        filter: blur(40px);
+        animation: pulseGlow 4s infinite alternate;
+    }
+
+    .large-stat {
+        font-size: clamp(4rem, 6vw, 5.5rem);
+        background: linear-gradient(to right, #fff, #bda0ff);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    /* 4. MUSICA */
+    .card-musica {
+        grid-area: musica;
+        background: #111;
+    }
+
+    .audio-wave {
+        display: flex;
+        gap: 3px;
+        height: 1.5rem;
+        align-items: flex-end;
+        margin-top: 1rem;
+        opacity: 0.5;
+    }
+
+    .audio-wave span {
+        flex: 1;
+        background: #a200ff;
+        border-radius: 2px;
+        animation: wave 1s ease-in-out infinite;
+    }
+
+    .audio-wave span:nth-child(2) {
+        animation-delay: 0.1s;
+        height: 60%;
+    }
+    .audio-wave span:nth-child(3) {
+        animation-delay: 0.2s;
+        height: 80%;
+    }
+    .audio-wave span:nth-child(4) {
+        animation-delay: 0.3s;
+        height: 40%;
+    }
+
+    .card-musica:hover .audio-wave span {
+        background: #fff;
+        opacity: 1;
+    }
+
+    /* 6. GIRA */
+    .card-gira {
+        grid-area: gira;
+        background: rgba(255, 255, 255, 0.03);
+    }
+
+    .card-gira .card-content {
+        height: 100%;
+    }
+
+    .gira-flex {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1.5rem;
+        width: 100%;
+        height: 100%;
+    }
+
+    .gira-stat {
+        min-width: max-content;
+        flex-shrink: 0;
+    }
+
+    .gira-locations-wrapper {
+        height: 160px;
+        overflow: hidden;
+        position: relative;
+        flex-grow: 1;
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+    }
+
+    .gira-locations-track {
+        display: flex;
+        flex-direction: column;
+        gap: 0.8rem;
+        align-items: center;
+        height: max-content;
+        animation: verticalScroll 15s linear infinite;
+    }
+
+    .gira-locations-track:hover {
+        animation-play-state: paused;
+    }
+
+    .location-tag {
+        padding: 0.6rem 1.8rem;
+        background: rgba(162, 0, 255, 0.1);
+        border: 1px solid rgba(162, 0, 255, 0.2);
+        border-radius: 100px;
+        font-size: 1.15rem;
+        font-weight: 500;
+        letter-spacing: 0.03em;
+        color: rgba(255, 255, 255, 0.9);
+        transition: 0.3s;
+    }
+    .location-tag:hover {
+        background: rgba(162, 0, 255, 0.3);
+        border-color: rgba(162, 0, 255, 0.5);
+        transform: translateY(-2px);
+    }
+
+    /* Animations */
+    @keyframes pulseGlow {
+        0% {
+            opacity: 0.3;
+            transform: scale(0.8);
+        }
+        100% {
+            opacity: 0.6;
+            transform: scale(1.2);
+        }
+    }
+
+    @keyframes wave {
+        0%,
+        100% {
+            height: 20%;
+        }
+        50% {
+            height: 100%;
+        }
+    }
+
+    @keyframes verticalScroll {
+        0% {
+            transform: translateY(0);
+        }
+        100% {
+            transform: translateY(calc(-50% - 0.4rem));
+        }
+    }
+
+    /* Responsive */
+    @media (max-width: 1024px) {
+        .bento-grid {
+            grid-template-areas:
+                "elenco elenco elenco elenco elenco elenco vestuario vestuario vestuario vestuario vestuario vestuario"
+                "espectadores espectadores espectadores espectadores espectadores espectadores espectadores espectadores espectadores espectadores espectadores espectadores"
+                "musica musica musica musica musica musica gira gira gira gira gira gira";
+        }
+        .gira-flex {
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 1.5rem;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .bento-grid {
+            grid-template-columns: 1fr;
+            grid-template-areas:
+                "elenco"
+                "vestuario"
+                "espectadores"
+                "musica"
+                "gira";
+        }
+
+        .vestuario-layout,
+        .gira-flex {
+            flex-direction: column;
+            text-align: center;
+            align-items: center;
+        }
+
+        .vestuario-text {
+            align-items: center;
+        }
+
+        .bento-card {
+            padding: 2rem;
+        }
+
+        .figures-section {
+            padding-top: 2rem;
+        }
+
+        .stat-number {
+            font-size: 3.5rem;
+        }
+
+        .large-stat {
+            font-size: 4.5rem;
+        }
+    }
+</style>

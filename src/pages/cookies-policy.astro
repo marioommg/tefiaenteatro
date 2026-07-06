@@ -1,0 +1,219 @@
+---
+import Layout from "../layouts/Layout.astro";
+
+const pageTitle = "Política de cookies";
+const pageDescription = "Política de cookies de Tefía en Teatro: tipos de cookies que usamos, proveedores, duración y cómo gestionarlas desde tu navegador.";
+const lastUpdated = "09/11/2025";
+---
+
+<Layout title={pageTitle} description={pageDescription} noContainer={false} robots="noindex, follow">
+    <h2>Política de cookies</h2>
+
+    <p><strong>Última actualización:</strong> {lastUpdated}</p>
+
+    <p>
+        Esta política describe cómo <strong
+            >Tefía en Teatro</strong
+        > utiliza cookies y tecnologías similares en el sitio <a href="/"
+            >tefiaenteatro.com</a
+        >. Esta política debe leerse conjuntamente con nuestra
+        <a href="/privacy-policy/">Política de Privacidad</a>, donde encontrarás
+        información adicional sobre el tratamiento de datos personales.
+    </p>
+
+    <h3><strong>1. Responsable y contacto</strong></h3>
+
+    <ul>
+        <li>
+            <strong>Responsable:</strong> Mario Muñoz Gil (Tefía en Teatro).
+        </li>
+        <li>
+            <strong>Correo electrónico:</strong>
+            <a href="mailto:contacto@tefiaenteatro.com"
+                >contacto@tefiaenteatro.com</a
+            >.
+        </li>
+        <li><strong>Sitio web:</strong> <a href="/">tefiaenteatro.com</a>.</li>
+    </ul>
+
+    <h3><strong>2. ¿Qué son las cookies?</strong></h3>
+
+    <p>
+        Las cookies son archivos que se descargan en tu dispositivo cuando
+        accedes a determinados sitios web. Permiten almacenar y recuperar
+        información, por ejemplo para recordar sesiones, mejorar la seguridad o
+        analizar el uso del sitio. También utilizamos tecnologías afines como
+        almacenamiento local del navegador.
+    </p>
+
+    <h3><strong>3. Tipos de cookies que podemos emplear</strong></h3>
+
+    <ul>
+        <li>
+            <strong>Técnicas o necesarias:</strong> imprescindibles para que la web
+            funcione y para garantizar la seguridad del área privada.
+        </li>
+        <li>
+            <strong>De personalización:</strong> adaptan la experiencia según tus
+            preferencias (no se usan actualmente).
+        </li>
+        <li>
+            <strong>Analíticas o de medición:</strong> ayudan a entender cómo se usa
+            el sitio (no se usan actualmente).
+        </li>
+        <li>
+            <strong>De publicidad comportamental:</strong> orientan publicidad en
+            función de hábitos (no se usan actualmente).
+        </li>
+    </ul>
+
+    <p>
+        En este momento <strong>solo utilizamos cookies técnicas</strong>. Si en
+        el futuro incorporamos cookies que requieran tu consentimiento, las
+        activaremos únicamente tras mostrar un aviso y actualizar esta política.
+    </p>
+
+    <h3><strong>4. Proveedores involucrados</strong></h3>
+
+    <ul>
+        <li>
+            <strong>Hostinger International Ltd. (UE):</strong> aloja los archivos
+            estáticos del sitio. No instala cookies adicionales en tu navegador.
+        </li>
+        <li>
+            <strong>Amazon Web Services, Inc. (AWS):</strong> proporciona el servicio
+            de distribución segura para la zona privada <code>/zona-vip</code> mediante
+            CloudFront. Las cookies listadas a continuación se firman y se entregan
+            a través de nuestra infraestructura en AWS.
+        </li>
+    </ul>
+
+    <h3><strong>5. Cookies técnicas actualmente activas</strong></h3>
+
+    <p>
+        Estas cookies solo se crean cuando introduces la contraseña y accedes a
+        la sección privada <code>/zona-vip</code>. Son imprescindibles para
+        mantener el acceso autorizado al contenido protegido y no se utilizan
+        para ningún otro fin.
+    </p>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Cookie</th>
+                <th>Tipo / titular</th>
+                <th>Finalidad</th>
+                <th>Duración</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><code>CloudFront-Policy</code></td>
+                <td>Técnica · Propia (emitida vía AWS CloudFront)</td>
+                <td
+                    >Contiene la política firmada que autoriza el acceso a los
+                    recursos protegidos de la zona VIP.</td
+                >
+                <td
+                    >24 horas desde la autenticación o hasta cerrar sesión
+                    manualmente.</td
+                >
+            </tr>
+            <tr>
+                <td><code>CloudFront-Signature</code></td>
+                <td>Técnica · Propia (emitida vía AWS CloudFront)</td>
+                <td
+                    >Incluye la firma criptográfica que valida la política de
+                    acceso y evita manipulaciones.</td
+                >
+                <td
+                    >24 horas desde la autenticación o hasta cerrar sesión
+                    manualmente.</td
+                >
+            </tr>
+            <tr>
+                <td><code>CloudFront-Key-Pair-Id</code></td>
+                <td>Técnica · Propia (emitida vía AWS CloudFront)</td>
+                <td
+                    >Identifica el par de claves usado para verificar la firma y
+                    completar la autenticación en la zona VIP.</td
+                >
+                <td
+                    >24 horas desde la autenticación o hasta cerrar sesión
+                    manualmente.</td
+                >
+            </tr>
+        </tbody>
+    </table>
+
+    <p>
+        Puedes revocar el acceso anticipadamente desde <a
+            href="/zona-vip/contenido/">la zona VIP</a
+        > usando la opción de “Cerrar sesión”, que elimina estas cookies de forma
+        inmediata.
+    </p>
+
+    <h3><strong>6. Contenidos embebidos y terceros</strong></h3>
+
+    <p>
+        Algunas páginas incluyen vídeos alojados en <code
+            >youtube-nocookie.com</code
+        >. Este dominio impide que YouTube instale cookies hasta que pulsas
+        reproducir. Al interactuar con el reproductor pueden fijarse cookies
+        propias de YouTube; te recomendamos consultar la política de Google para
+        más información.
+    </p>
+
+    <h3><strong>7. Tecnologías similares: almacenamiento local</strong></h3>
+
+    <p>
+        Utilizamos <code>localStorage</code> para recordar si ya aceptaste el aviso
+        educativo que aparece al entrar en la web. El identificador utilizado es
+        <code>popupAccepted</code> y se mantiene hasta que lo eliminas desde la configuración
+        de tu navegador.
+    </p>
+
+    <h3><strong>8. Cómo controlar o bloquear las cookies</strong></h3>
+
+    <p>
+        Puedes gestionar las cookies desde la configuración de tu navegador. A
+        continuación tienes enlaces a las guías oficiales de los navegadores más
+        habituales:
+    </p>
+
+    <ul>
+        <li>
+            <a href="https://support.google.com/chrome/answer/95647"
+                >Google Chrome</a>
+        </li>
+        <li>
+            <a href="https://support.mozilla.org/es/kb/Deshabilitar%20cookies"
+                >Mozilla Firefox</a>
+        </li>
+        <li>
+            <a href="https://support.apple.com/es-es/guide/safari/sfri11471/mac"
+                >Safari (macOS)</a>
+        </li>
+        <li>
+            <a
+                href="https://support.microsoft.com/es-es/topic/eliminar-y-administrar-cookies-168dab11-0753-043d-7c16-ede5947fc64d"
+                >Microsoft Edge / Internet Explorer</a>
+        </li>
+    </ul>
+
+    <p>
+        Ten en cuenta que si eliminas o bloqueas las cookies técnicas, el acceso
+        al área privada puede dejar de funcionar correctamente.
+    </p>
+
+    <h3><strong>9. Cambios en la política</strong></h3>
+
+    <p>
+        Revisamos esta política periódicamente para reflejar cambios legales o
+        técnicos. Publicaremos los cambios con una nueva fecha de actualización.
+        Si introduces datos personales y deseas información adicional, contacta
+        con nosotros en <a href="mailto:contacto@tefiaenteatro.com"
+            >contacto@tefiaenteatro.com</a
+        >.
+    </p>
+</Layout>

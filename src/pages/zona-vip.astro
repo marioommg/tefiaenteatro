@@ -1,0 +1,857 @@
+---
+import Layout from "../layouts/Layout.astro";
+
+const pageTitle = "Zona VIP – Contenido exclusivo";
+const pageDescription =
+  "Acceso privado para asistentes: galería y grabación completa del 6 de julio.";
+---
+
+<Layout title={pageTitle} description={pageDescription} noContainer="true">
+  <main>
+    <!-- Luciérnagas decorativas flotando por toda la página -->
+    <div id="fireflies-container">
+      <span class="libelula" aria-hidden="true"></span>
+      <span class="libelula" aria-hidden="true"></span>
+      <span class="libelula" aria-hidden="true"></span>
+      <span class="libelula" aria-hidden="true"></span>
+      <span class="libelula" aria-hidden="true"></span>
+      <span class="libelula" aria-hidden="true"></span>
+      <span class="libelula" aria-hidden="true"></span>
+      <span class="libelula" aria-hidden="true"></span>
+    </div>
+
+    <section class="vip-hero">
+      <div class="vip-hero-bg" aria-hidden="true"></div>
+      <div class="vip-hero-inner">
+        <h1 class="gradient-title">Zona VIP</h1>
+        <p class="lead">
+          Espacio exclusivo para todas las personas que vinieron a vernos o que
+          colaboraron con el proyecto.
+        </p>
+        <p class="muted">
+          Por motivos de intimidad no podemos dejar este contenido abierto al
+          público.
+        </p>
+      </div>
+    </section>
+
+    <!-- Acceso VIP: formulario de contraseña (server-side con CloudFront Signed Cookies) -->
+    <section
+      id="vip-acceso"
+      aria-labelledby="vip-acceso-title"
+      class="vip-gate"
+    >
+      <h2 id="vip-acceso-title" class="section-title">Acceso a contenidos</h2>
+
+      <section id="vip-password-section">
+        <h3 class="subtle">Introduce la contraseña</h3>
+        <form
+          id="vip-password-form"
+          method="post"
+          action="/zona-vip/"
+          autocomplete="on"
+          class="vip-form"
+        >
+          <input
+            type="text"
+            id="vip-username"
+            name="username"
+            value="acceso-vip"
+            autocomplete="username"
+            hidden
+            aria-hidden="true"
+            tabindex="-1"
+          />
+          <label for="vip-password" class="sr-only">Contraseña</label>
+          <input
+            type="password"
+            id="vip-password"
+            name="password"
+            autocomplete="current-password"
+            placeholder="Fortis imaginatio..."
+            required
+          />
+          <button type="submit" class="btn-cta btn-small" id="vip-submit">
+            <span class="btn-label">Desbloquear</span>
+            <span class="cta-arrow" aria-hidden="true">→</span>
+          </button>
+          <p id="vip-password-error" class="error" role="alert" hidden>
+            Contraseña incorrecta. Inténtalo de nuevo.
+          </p>
+          <p id="vip-password-server-error" class="error" role="alert" hidden>
+            Ha ocurrido un error al validar. Inténtalo de nuevo en unos
+            segundos.
+          </p>
+          <p class="center muted" style="margin-top:1rem;">
+            Si asististe y aún no tienes acceso, por favor <a href="/contacto/"
+              >contáctanos</a
+            > y te lo facilitamos.
+          </p>
+        </form>
+      </section>
+    </section>
+
+    <!-- Estilos movidos fuera del gate para que sigan aplicando cuando el gate se oculta -->
+    <style>
+      :root {
+        --vip-bg:
+          radial-gradient(
+            1200px 600px at 50% -10%,
+            #3a0077 0%,
+            rgba(58, 0, 119, 0) 55%
+          ),
+          radial-gradient(
+            600px 300px at 10% -10%,
+            #0066ff 0%,
+            rgba(0, 102, 255, 0) 60%
+          ),
+          radial-gradient(
+            600px 300px at 90% 0%,
+            #00e1b7 0%,
+            rgba(0, 225, 183, 0) 60%
+          );
+        --vip-surface: #111;
+        --vip-surface-2: #151515;
+        --vip-border: #2a2a2a;
+        --vip-muted: #bfbfbf;
+        --vip-dim: #9a9a9a;
+        --vip-accent: #a200ff;
+        --vip-accent-2: #00e1b7;
+      }
+
+      .center {
+        text-align: center;
+      }
+      .muted {
+        color: var(--vip-muted);
+      }
+      .subtle {
+        margin: 0.25rem 0 0;
+        color: var(--vip-dim);
+        font-weight: 600;
+      }
+      .lead {
+        max-width: 70ch;
+        margin: 0.5rem auto 1rem;
+      }
+
+      .vip-hero {
+        position: relative;
+        overflow: clip;
+        padding: 3.5rem 1rem 2.25rem;
+        text-align: center;
+        isolation: isolate;
+      }
+      .vip-hero-bg {
+        position: absolute;
+        inset: -2px;
+        z-index: -1;
+        background: var(--vip-bg);
+        filter: saturate(1.1);
+      }
+      .vip-hero-inner {
+        max-width: 1000px;
+        margin: 0 auto;
+      }
+      .gradient-title {
+        margin: 0;
+        font-size: clamp(2rem, 4vw + 1.25rem, 4rem);
+        line-height: 1.05;
+        font-weight: 900;
+        letter-spacing: -0.02em;
+        background: linear-gradient(90deg, #fff, #b893ff, #8ef3db, #fff);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        text-shadow: 0 0 40px rgba(162, 0, 255, 0.25);
+        background-size: 200% auto;
+        animation:
+          fade-in-up 0.7s ease both,
+          gradient-pan 8s ease-in-out infinite;
+      }
+
+      .btn-cta {
+        --btn-bg: linear-gradient(
+          135deg,
+          var(--vip-accent),
+          #6b00ff 40%,
+          #4a26ff
+        );
+        position: relative;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.85rem 1.1rem;
+        border-radius: 0.65rem;
+        background: var(--btn-bg);
+        color: #fff;
+        font-weight: 800;
+        text-decoration: none;
+        box-shadow:
+          0 8px 30px rgba(162, 0, 255, 0.25),
+          inset 0 0 0 1px rgba(255, 255, 255, 0.06);
+        transition:
+          transform 0.15s ease,
+          box-shadow 0.2s ease;
+        will-change: transform;
+      }
+      .btn-cta:hover {
+        transform: translateY(-1px);
+        box-shadow:
+          0 12px 36px rgba(162, 0, 255, 0.35),
+          inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+        color: #d89fff !important;
+      }
+      .btn-cta:active {
+        transform: translateY(0);
+      }
+      .btn-cta .cta-arrow {
+        transition: transform 0.2s ease;
+        display: inline-block;
+      }
+      .btn-cta:hover .cta-arrow {
+        transform: translateX(4px);
+      }
+      .btn-cta .btn-glow {
+        position: absolute;
+        inset: -1px;
+        border-radius: inherit;
+        background: radial-gradient(
+          80% 80% at 20% 10%,
+          rgba(255, 255, 255, 0.22),
+          rgba(255, 255, 255, 0)
+        );
+        pointer-events: none;
+      }
+      .btn-small {
+        padding: 0.7rem 0.95rem;
+        font-size: 0.95rem;
+      }
+      .btn-cta.is-loading {
+        cursor: wait;
+        pointer-events: none;
+        background: linear-gradient(
+          135deg,
+          rgba(70, 48, 122, 0.95),
+          rgba(47, 10, 92, 0.95) 50%,
+          rgba(28, 7, 64, 0.95)
+        );
+        box-shadow:
+          inset 0 0 0 1px rgba(255, 255, 255, 0.06),
+          0 6px 20px rgba(0, 0, 0, 0.4);
+        color: #d7c4ff;
+      }
+      .btn-cta.is-loading .cta-arrow {
+        opacity: 0;
+        transform: none;
+      }
+      .btn-cta.is-loading .btn-label {
+        opacity: 0.85;
+      }
+      .btn-cta.is-loading::after {
+        content: "";
+        position: absolute;
+        right: 0.85rem;
+        width: 16px;
+        height: 16px;
+        border-radius: 999px;
+        border: 2px solid rgba(255, 255, 255, 0.7);
+        border-top-color: rgba(255, 255, 255, 0.15);
+        animation: spin 0.8s linear infinite;
+      }
+
+      .vip-gate {
+        padding: 0.75rem 1rem 1.5rem;
+        max-width: 1000px;
+        margin: 0 auto;
+        text-align: center;
+      }
+      .section-title {
+        text-align: center;
+        margin: 0.25rem 0 0;
+        font-size: 1.35rem;
+      }
+
+      /* Luciérnagas decorativas flotando por toda la página */
+      main {
+        position: relative;
+      }
+      #fireflies-container.is-hidden {
+        display: none;
+      }
+      .libelula {
+        position: fixed;
+        left: 0;
+        top: 0;
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: radial-gradient(
+          35% 35% at 40% 40%,
+          #ffffff 0%,
+          #ffd7f2 55%,
+          rgba(232, 110, 208, 0.4) 100%
+        );
+        box-shadow:
+          0 0 10px rgba(255, 255, 255, 0.9),
+          0 0 22px rgba(232, 110, 208, 0.9),
+          0 0 38px rgba(139, 92, 246, 0.7);
+        opacity: 0.95;
+        filter: saturate(1.2);
+        transform: translate(-50%, -50%);
+        z-index: 0;
+        pointer-events: none;
+      }
+
+      .libelula::after {
+        /* leve cola de luz */
+        content: "";
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        width: 22px;
+        height: 6px;
+        transform: translate(-70%, -50%) rotate(12deg);
+        background: radial-gradient(
+          60% 70% at 0% 50%,
+          rgba(255, 255, 255, 0.8),
+          rgba(232, 110, 208, 0) 70%
+        );
+        filter: blur(4px);
+        opacity: 0.7;
+      }
+
+      /* Asegurar que el contenido esté por encima de las luciérnagas */
+      .vip-hero,
+      #vip-acceso,
+      .vip-gate {
+        position: relative;
+        z-index: 1;
+      }
+
+      /* Glow de entrada al revelar el formulario */
+      /* Glow ahora abarca toda la sección de acceso (heading + formulario) */
+      #vip-acceso.reveal-glow {
+        animation: revealGlow 1200ms ease-out;
+      }
+
+      .vip-form {
+        display: grid;
+        gap: 0.6rem;
+        max-width: 380px;
+        margin: 0.6rem auto 0;
+      }
+      input[type="password"] {
+        padding: 0.85rem 1rem;
+        border-radius: 0.6rem;
+        border: 1px solid var(--vip-border);
+        background: #0c0c0c;
+        color: #fff;
+        font-family: Beiruti, Helvetica, Arial, sans-serif;
+        font-size: 0.95rem;
+      }
+      input[type="password"]:focus {
+        outline: none;
+        border-color: #5d3df7;
+        box-shadow: 0 0 0 3px rgba(93, 61, 247, 0.25);
+      }
+      .error {
+        color: #ff6b6b;
+      }
+      .sr-only {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
+      }
+      .is-hidden {
+        display: none;
+      }
+
+      /* Grid de contenido */
+      .vip-content {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 0 1rem;
+      }
+      .vip-grid {
+        display: grid;
+        gap: 1rem;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        margin: 1rem 0;
+      }
+      .vip-card {
+        position: relative;
+        border: 1px solid var(--vip-border);
+        border-radius: 12px;
+        padding: 1rem;
+        background: linear-gradient(180deg, #0b0b0b, #0e0e0e);
+        transition:
+          transform 0.18s ease,
+          box-shadow 0.2s ease,
+          border-color 0.2s ease;
+      }
+      .vip-card:hover {
+        transform: translateY(-2px);
+        border-color: #3b2c6e;
+        box-shadow:
+          0 12px 26px rgba(0, 0, 0, 0.35),
+          inset 0 0 0 1px rgba(255, 255, 255, 0.02);
+      }
+      .vip-card h3 {
+        margin-top: 0;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+      .vip-card .meta {
+        color: var(--vip-dim);
+      }
+      .badge {
+        display: inline-block;
+        font-size: 0.75rem;
+        padding: 0.15rem 0.5rem;
+        border-radius: 0.5rem;
+        border: 1px solid var(--vip-border);
+        color: var(--vip-dim);
+      }
+
+      .btn-link {
+        background: none;
+        border: none;
+        color: var(--vip-dim);
+        text-decoration: underline;
+        cursor: pointer;
+        padding: 0;
+        font: inherit;
+      }
+      .btn-link:hover {
+        color: #fff;
+      }
+
+      /* Entradas sutiles */
+      @keyframes fade-in-up {
+        from {
+          opacity: 0;
+          transform: translateY(6px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      .vip-card,
+      .vip-form {
+        animation: fade-in-up 0.5s ease both;
+      }
+      @keyframes gradient-pan {
+        0%,
+        100% {
+          background-position: 0% 50%;
+        }
+        50% {
+          background-position: 100% 50%;
+        }
+      }
+      @keyframes sheen {
+        0% {
+          transform: translateX(-120%);
+          opacity: 0;
+        }
+        10% {
+          opacity: 0.25;
+        }
+        40% {
+          opacity: 0.5;
+        }
+        60% {
+          opacity: 0.4;
+        }
+        90% {
+          opacity: 0.2;
+        }
+        100% {
+          transform: translateX(120%);
+          opacity: 0;
+        }
+      }
+      @keyframes glowPulse {
+        0%,
+        100% {
+          box-shadow:
+            inset 0 0 0 1px rgba(255, 255, 255, 0.04),
+            0 12px 32px rgba(162, 0, 255, 0.35),
+            0 0 24px rgba(162, 0, 255, 0.15);
+        }
+        50% {
+          box-shadow:
+            inset 0 0 0 1px rgba(255, 255, 255, 0.07),
+            0 16px 40px rgba(162, 0, 255, 0.55),
+            0 0 36px rgba(139, 92, 246, 0.25);
+        }
+      }
+      @keyframes pop {
+        0% {
+          transform: translateY(2px) scale(0.98);
+          filter: brightness(0.95);
+        }
+        60% {
+          transform: translateY(-1px) scale(1.03);
+          filter: brightness(1.08);
+        }
+        100% {
+          transform: translateY(0) scale(1);
+          filter: brightness(1);
+        }
+      }
+      @keyframes spin {
+        from {
+          transform: rotate(0deg);
+        }
+        to {
+          transform: rotate(360deg);
+        }
+      }
+      @keyframes libelula-flicker {
+        0%,
+        100% {
+          opacity: 0.95;
+          filter: saturate(1.2) brightness(1);
+        }
+        40% {
+          opacity: 0.7;
+          filter: saturate(1.35) brightness(1.1);
+        }
+        60% {
+          opacity: 0.85;
+          filter: saturate(1.1) brightness(0.95);
+        }
+      }
+      @keyframes revealGlow {
+        0% {
+          box-shadow: 0 0 0 rgba(162, 0, 255, 0);
+        }
+        30% {
+          box-shadow: 0 0 0 6px rgba(162, 0, 255, 0.2);
+        }
+        100% {
+          box-shadow: 0 0 0 rgba(162, 0, 255, 0);
+        }
+      }
+
+      @media (prefers-reduced-motion: no-preference) {
+        .libelula {
+          animation: libelula-flicker 2.6s ease-in-out infinite;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .libelula {
+          animation: none !important;
+          opacity: 0.55;
+        }
+      }
+
+      @media (min-width: 960px) {
+        .vip-hero {
+          padding: 4.25rem 1rem 2.5rem;
+        }
+      }
+    </style>
+
+    <script is:inline>
+      (function () {
+        const $ = (id) => document.getElementById(id);
+
+        async function checkSession() {
+          if (new URLSearchParams(window.location.search).has("stay")) return;
+          try {
+            const res = await fetch("/zona-vip/contenido/", {
+              method: "HEAD",
+              credentials: "include",
+            });
+            if (res.ok) {
+              const urlParams = new URLSearchParams(window.location.search);
+              const redirectUrl = urlParams.get("redirect") || "/zona-vip/contenido/";
+              window.location.replace(redirectUrl);
+            }
+          } catch (_) {}
+        }
+
+        function show(el) {
+          if (el) {
+            el.hidden = false;
+            el.removeAttribute("hidden");
+          }
+        }
+        function hide(el) {
+          if (el) {
+            el.hidden = true;
+            el.setAttribute("hidden", "");
+          }
+        }
+
+        function animateEntry() {
+          // Glow sobre toda la sección de acceso
+          const gate = document.getElementById("vip-acceso");
+          if (!gate) return;
+          gate.classList.add("reveal-glow");
+          setTimeout(() => {
+            gate.classList.remove("reveal-glow");
+          }, 1400);
+        }
+
+        // Fireflies animation for VIP section
+        function initFireflies() {
+          const reduce =
+            window.matchMedia &&
+            window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+          const container = document.getElementById("fireflies-container");
+          if (!container) return;
+          const els = Array.from(container.querySelectorAll(".libelula"));
+          if (!els.length) return;
+
+          const baseSizes = [10, 8, 7, 6, 5, 4, 7, 5];
+
+          // Set sizes for existing fireflies
+          for (let i = 0; i < Math.min(els.length, baseSizes.length); i++) {
+            els[i].style.width = baseSizes[i] + "px";
+            els[i].style.height = baseSizes[i] + "px";
+          }
+
+          const rand = (min, max) => Math.random() * (max - min) + min;
+          const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+
+          const getViewportDimensions = () => ({
+            width: window.innerWidth,
+            height: window.innerHeight,
+          });
+
+          let viewport = getViewportDimensions();
+
+          const fireflies = els.map((el) => {
+            return {
+              el,
+              speed: rand(0.15, 0.4),
+              w1: rand(0.55, 1.0),
+              w2: rand(0.75, 1.25),
+              w3: rand(0.6, 1.15),
+              w4: rand(0.8, 1.4),
+              p1: rand(0, Math.PI * 2),
+              p2: rand(0, Math.PI * 2),
+              p3: rand(0, Math.PI * 2),
+              p4: rand(0, Math.PI * 2),
+              ax1: rand(150, 250),
+              ax2: rand(50, 100),
+              ay1: rand(120, 200),
+              ay2: rand(40, 80),
+              cx: rand(viewport.width * 0.2, viewport.width * 0.8),
+              cy: rand(viewport.height * 0.2, viewport.height * 0.8),
+              driftx: rand(-0.3, 0.3),
+              drifty: rand(-0.3, 0.3),
+              t0: rand(0, 1000),
+              x: 0,
+              y: 0,
+            };
+          });
+
+          if (reduce) {
+            fireflies.forEach((f) => {
+              const x = clamp(
+                f.cx + f.ax1 * Math.sin(f.p1) + f.ax2 * Math.sin(f.p2),
+                0,
+                viewport.width,
+              );
+              const y = clamp(
+                f.cy + f.ay1 * Math.cos(f.p3) + f.ay2 * Math.sin(f.p4),
+                0,
+                viewport.height,
+              );
+              f.el.style.left = x + "px";
+              f.el.style.top = y + "px";
+            });
+            return;
+          }
+
+          const minDist = 80; // minimum separation in pixels
+          let start = performance.now();
+          let running = true;
+          let rafId = 0;
+
+          // Update viewport on resize
+          const onResize = () => {
+            viewport = getViewportDimensions();
+            // Adjust center positions to stay within new viewport
+            fireflies.forEach((f) => {
+              f.cx = clamp(f.cx, viewport.width * 0.1, viewport.width * 0.9);
+              f.cy = clamp(f.cy, viewport.height * 0.1, viewport.height * 0.9);
+            });
+          };
+          window.addEventListener("resize", onResize, { passive: true });
+
+          function frame(now) {
+            if (!running) return;
+            const tsec = (now - start) / 1000;
+
+            fireflies.forEach((f) => {
+              const t = (tsec + f.t0) * f.speed;
+              let x =
+                f.cx +
+                f.ax1 * Math.sin(t * f.w1 + f.p1) +
+                f.ax2 * Math.sin(t * f.w2 + f.p2) +
+                t * f.driftx;
+              let y =
+                f.cy +
+                f.ay1 * Math.cos(t * f.w3 + f.p3) +
+                f.ay2 * Math.sin(t * f.w4 + f.p4) +
+                t * f.drifty;
+              f.x = x;
+              f.y = y;
+            });
+
+            for (let i = 0; i < fireflies.length; i++) {
+              for (let j = i + 1; j < fireflies.length; j++) {
+                const a = fireflies[i];
+                const b = fireflies[j];
+                const dx = b.x - a.x;
+                const dy = b.y - a.y;
+                const d2 = dx * dx + dy * dy;
+                const d = Math.sqrt(d2) || 0.0001;
+                if (d < minDist) {
+                  const push = ((minDist - d) / minDist) * 0.6;
+                  const ux = dx / d;
+                  const uy = dy / d;
+                  a.x -= ux * push;
+                  a.y -= uy * push;
+                  b.x += ux * push;
+                  b.y += uy * push;
+                }
+              }
+            }
+
+            const margin = 50;
+            fireflies.forEach((f) => {
+              const x = clamp(f.x, -margin, viewport.width + margin);
+              const y = clamp(f.y, -margin, viewport.height + margin);
+              f.el.style.left = x + "px";
+              f.el.style.top = y + "px";
+            });
+
+            rafId = requestAnimationFrame(frame);
+          }
+          rafId = requestAnimationFrame(frame);
+
+          return () => {
+            running = false;
+            if (rafId) cancelAnimationFrame(rafId);
+            window.removeEventListener("resize", onResize);
+          };
+        }
+
+        async function onSubmit(e) {
+          e.preventDefault();
+          const form = e.currentTarget;
+          const passwordInput = $("vip-password");
+          const error = $("vip-password-error");
+          const serverError = $("vip-password-server-error");
+          const submit = $("vip-submit");
+
+          hide(error);
+          hide(serverError);
+
+          const value = (passwordInput?.value || "").trim();
+          if (!value) {
+            show(error);
+            return;
+          }
+
+          let shouldReset = true;
+          try {
+            if (form) form.setAttribute("aria-busy", "true");
+            submit?.setAttribute("disabled", "");
+            submit?.classList.add("is-loading");
+            const res = await fetch("/api/vip-login", {
+              method: "POST",
+              headers: { "content-type": "application/json" },
+              credentials: "include",
+              body: JSON.stringify({ password: value }),
+            });
+            if (!res.ok) {
+              if (res.status === 401) {
+                show(error);
+                passwordInput?.select();
+              } else {
+                show(serverError);
+              }
+              return;
+            }
+            // Cookies firmadas puestas por Set-Cookie; redirige al contenido protegido
+            shouldReset = false;
+            const urlParams = new URLSearchParams(window.location.search);
+            const redirectUrl = urlParams.get("redirect") || "/zona-vip/contenido/";
+            window.location.assign(redirectUrl);
+          } catch (err) {
+            show(serverError);
+          } finally {
+            if (form) form.setAttribute("aria-busy", "false");
+            if (shouldReset) {
+              submit?.removeAttribute("disabled");
+              submit?.classList.remove("is-loading");
+            }
+          }
+        }
+
+        function init() {
+          checkSession();
+          // Iniciar animación de luciérnagas siempre
+          initFireflies();
+          // Glow de entrada
+          animateEntry();
+
+          const form = $("vip-password-form");
+          if (form && !form.dataset.bound) {
+            form.addEventListener("submit", onSubmit);
+            form.dataset.bound = "1";
+          }
+          const input = $("vip-password");
+          const error = $("vip-password-error");
+          const serverError = $("vip-password-server-error");
+          if (input && !input.dataset.bound) {
+            input.addEventListener("input", () => {
+              hide(error);
+              hide(serverError);
+            });
+            input.dataset.bound = "1";
+            try {
+              input.focus();
+            } catch (_) {}
+          }
+
+          // Auto-completar si viene la contraseña por GET (?acceso=XXX)
+          // No se hace auto-submit: el usuario debe pulsar "Desbloquear" manualmente
+          const urlParams = new URLSearchParams(window.location.search);
+          const accesoParam = urlParams.get("acceso");
+          if (accesoParam && input && form && !form.dataset.autoFilled) {
+            input.value = accesoParam;
+            form.dataset.autoFilled = "1";
+
+            // Limpiar la URL para no dejar la contraseña visible en la barra de direcciones
+            window.history.replaceState(null, "", window.location.pathname);
+          }
+        }
+
+        if (document.readyState === "loading") {
+          document.addEventListener("DOMContentLoaded", init, { once: true });
+        } else {
+          init();
+        }
+        document.addEventListener("astro:page-load", init);
+      })();
+    </script>
+  </main>
+</Layout>

@@ -1,0 +1,159 @@
+<!-- Componente sin hidratación: la lógica de cliente controla la visibilidad -->
+<style>
+  .popup-aviso {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.76);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+  }
+  .popup-aviso-content {
+    position: relative;
+    background: rgb(26, 26, 26);
+    padding: 20px;
+    border-radius: 8px;
+    text-align: center;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    max-width: 560px;
+  }
+
+  .hidden {
+    display: none;
+  }
+  .progress-container {
+    width: 100%;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+    margin-top: 20px;
+    height: 4px;
+    overflow: hidden;
+  }
+  .progress-bar {
+    height: 100%;
+    background-color: #a200ff;
+    width: 100%;
+  }
+</style>
+
+<div
+  id="popup-aviso"
+  class="popup-aviso hidden"
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="popup-aviso-titulo"
+>
+  <div class="popup-aviso-content">
+    <h2 id="popup-aviso-titulo" style="margin-top:0">Aviso importante</h2>
+    <p style="color:#ffffff; line-height:1.5;">
+      Este sitio es un <strong>proyecto educativo</strong> y <strong
+        >NO OFICIAL</strong
+      >.<br /> Al continuar, aceptas que la web nace como archivo y memoria de lo
+      que fue Tefía en Teatro, un musical creado por estudiantes.
+    </p>
+    <button
+      type="button"
+      data-accept
+      aria-label="Cerrar"
+      style="position:absolute;top:12px;right:12px;width:32px;height:32px;background:rgba(255,255,255,0.12);border:none;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;margin:0;color:#fff;opacity:1;visibility:visible;z-index:9999;box-sizing:border-box;"
+      onmouseover="this.style.background='#a200ff';this.style.transform='scale(1.1)'"
+      onmouseout="this.style.background='rgba(255,255,255,0.12)';this.style.transform='scale(1)'"
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:block;flex-shrink:0;">
+        <line x1="18" y1="6" x2="6" y2="18"></line>
+        <line x1="6" y1="6" x2="18" y2="18"></line>
+      </svg>
+    </button>
+    <div class="progress-container">
+      <div class="progress-bar"></div>
+    </div>
+  </div>
+</div>
+
+<script is:inline>
+  (function () {
+    try {
+      const KEY = "popupAccepted";
+      const popup = document.getElementById("popup-aviso");
+      if (!popup) return;
+
+      // Helpers para bloquear/desbloquear el scroll de la página
+      let prevBodyOverflow = "";
+      let prevHtmlOverflow = "";
+      const lockScroll = () => {
+        prevBodyOverflow = document.body.style.overflow;
+        prevHtmlOverflow = document.documentElement.style.overflow;
+        document.body.style.overflow = "hidden";
+        document.documentElement.style.overflow = "hidden";
+      };
+      const unlockScroll = () => {
+        document.body.style.overflow = prevBodyOverflow || "";
+        document.documentElement.style.overflow = prevHtmlOverflow || "";
+      };
+
+      // Detectar si es un robot/bot
+      const isBot =
+        /bot|crawler|spider|crawling|googlebot|bingbot|slurp|duckduckbot|baiduspider|yandexbot|facebookexternalhit|twitterbot|whatsapp|telegram|linkedinbot|embedly|quora link preview|showyoubot|outbrain|pinterest|slackbot|vkShare|w3c_validator|redditbot|applebot|petalbot|semrushbot|ahrefsbot|dotbot|mj12bot|rogerbot|screaming frog|headless|phantom|selenium|puppeteer|playwright/i.test(
+          navigator.userAgent,
+        );
+
+      // Si es un bot, no mostrar el popup
+      if (isBot) return;
+
+      const alreadyAccepted = localStorage.getItem(KEY) === "true";
+      const acceptPopup = () => {
+        localStorage.setItem(KEY, "true");
+        popup.classList.add("hidden");
+        unlockScroll();
+      };
+
+      const acceptBtn = popup.querySelector("[data-accept]");
+      if (acceptBtn) {
+        acceptBtn.addEventListener("click", acceptPopup);
+      }
+
+      if (!alreadyAccepted) {
+        popup.classList.remove("hidden");
+        lockScroll();
+
+        const bar = popup.querySelector(".progress-bar");
+        let animation;
+        
+        if (bar) {
+          // Usar Web Animations API para que la "barra" dicte el temporizador
+          animation = bar.animate(
+            [{ width: "100%" }, { width: "0%" }],
+            { duration: 10000, fill: "forwards" }
+          );
+          
+          // Cuando la animación termine (10s), cerramos el popup
+          animation.onfinish = acceptPopup;
+        } else {
+          // Fallback por si acaso
+          setTimeout(acceptPopup, 10000);
+        }
+
+        // Eventos para pausar la cuenta atrás si el usuario está leyendo (hover)
+        const content = popup.querySelector(".popup-aviso-content");
+        if (content && animation) {
+          content.addEventListener("mouseenter", () => animation.pause());
+          content.addEventListener("mouseleave", () => animation.play());
+        }
+      }
+    } catch (e) {
+      // Si localStorage falla, no romper la navegación
+      const popup = document.getElementById("popup-aviso");
+      if (popup) {
+        popup.classList.remove("hidden");
+        try {
+          document.body.style.overflow = "hidden";
+          document.documentElement.style.overflow = "hidden";
+        } catch (_) {}
+      }
+    }
+  })();
+</script>

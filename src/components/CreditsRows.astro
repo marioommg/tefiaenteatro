@@ -1,0 +1,76 @@
+---
+export interface Props {
+  rowCount?: number;
+  targetPerRow?: number;
+}
+const { rowCount = 10, targetPerRow = 14 } = Astro.props;
+
+import { agradecimientosNames as names } from '../data/agradecimientos-names';
+
+function shuffle<T>(arr: T[]): T[] {
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+const TOTAL_TARGET = targetPerRow * rowCount;
+const R = Math.max(1, Math.min(3, Math.ceil(TOTAL_TARGET / names.length)));
+let pool: string[] = [];
+for (let i = 0; i < R; i++) pool = pool.concat(names);
+
+const shuffled = shuffle(pool);
+const perRowBase = Math.floor(shuffled.length / rowCount);
+const remainder = shuffled.length % rowCount;
+const rows: string[][] = Array.from({ length: rowCount }, (_, i) => {
+  const start = i * perRowBase + Math.min(i, remainder);
+  const take = perRowBase + (i < remainder ? 1 : 0);
+  return shuffled.slice(start, start + take);
+});
+
+function generateRowMeta(count: number) {
+  const MAX_RUN = 3;
+  const meta: { reverse: boolean; speed: number }[] = [];
+  let prev: boolean | null = null;
+  let streak = 0;
+  for (let i = 0; i < count; i++) {
+    let reverse = Math.random() < 0.5;
+    if (prev !== null && reverse === prev) streak += 1; else streak = 1;
+    if (streak > MAX_RUN) { reverse = !prev!; streak = 1; }
+    prev = reverse;
+    const speed = Number((0.75 + Math.random() * 0.5).toFixed(2));
+    meta.push({ reverse, speed });
+  }
+  return meta;
+}
+
+const rowMeta: { reverse: boolean; speed: number }[] = generateRowMeta(rowCount);
+---
+<div class="bg">
+  <div class="rows" id="rows" style={`--rows: ${rowCount}`}>
+    {rows.map((rowNames: string[], i: number) => {
+      const speedFactor = rowMeta[i]?.speed ?? 1;
+      const dirReverse = rowMeta[i]?.reverse ?? (i % 2 === 1);
+      return (
+        <div class="row">
+          <div class={`track ${dirReverse ? 'reverse' : ''}`} data-speed={speedFactor.toFixed(2)}>
+            {[0, 1].map(() => (
+              <span style="display: contents">
+                {rowNames.map((n: string, idx: number) => (
+                  <span style="display: contents">
+                    <span class="name">{n}</span>
+                    {idx !== rowNames.length - 1 && (
+                      <span aria-hidden="true" class="name dot">★</span>
+                    )}
+                  </span>
+                ))}
+              </span>
+            ))}
+          </div>
+        </div>
+      );
+    })}
+  </div>
+</div>

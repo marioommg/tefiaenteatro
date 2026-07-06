@@ -1,0 +1,2089 @@
+---
+import Layout from "../../../layouts/Layout.astro";
+import { galleryItems } from "../../../data/galeria";
+
+export function getStaticPaths() {
+  return galleryItems.map((entry) => ({
+    params: { slug: entry.slug },
+  }));
+}
+
+const { slug } = Astro.params;
+
+const item = galleryItems.find((entry) => entry.slug === slug);
+
+if (!item) {
+  throw Astro.redirect("/zona-vip/galeria/");
+}
+
+// En páginas estáticas, los query params no están disponibles en el servidor
+// Los leeremos en el cliente
+const activeFiltersPlaceholder = {
+  theme: [] as string[],
+  person: [] as string[],
+  event: [] as string[],
+  musical: [] as string[],
+};
+
+// Función para filtrar items
+function filterItems(items: typeof galleryItems) {
+  // En el servidor no tenemos acceso a los query params en páginas estáticas
+  // El filtrado se hará en el cliente
+  return items;
+}
+
+// No filtrar en el servidor - se hará en el cliente
+const filteredItems = galleryItems;
+
+// Encontrar índice - se calculará en el cliente con los filtros correctos
+const currentIndex = galleryItems.findIndex(
+  (entry: (typeof galleryItems)[number]) => entry.slug === item.slug,
+);
+const prevItem = currentIndex > 0 ? galleryItems[currentIndex - 1] : null;
+const nextItem =
+  currentIndex >= 0 && currentIndex < galleryItems.length - 1
+    ? galleryItems[currentIndex + 1]
+    : null;
+
+// Construir query string preservando filtros
+const buildUrlWithFilters = (itemSlug: string) => {
+  // Las URLs se construirán en el cliente
+  return `/zona-vip/galeria/${itemSlug}/`;
+};
+
+const pageTitle = `Zona VIP – Fotografía ${item.id}`;
+const pageDescription =
+  "Fotografía de la galería exclusiva de Tefía en el teatro.";
+const eventLabel = item.event ? item.event : null;
+const hasEvent = !!item.event;
+const musicalNumberLabel = item.musicalNumber ? item.musicalNumber : null;
+const hasMusicalNumber = !!item.musicalNumber;
+const hasPeople = item.people.length > 0;
+const dimensionLabel = `${item.width} × ${item.height}px`;
+
+const dateLabel = item.date ? (() => {
+  try {
+    const parts = item.date.split(' ');
+    if (parts.length === 2) {
+      const dateParts = parts[0].split(':');
+      const timeParts = parts[1].split(':');
+      if (dateParts.length === 3) {
+        return `${dateParts[2]}/${dateParts[1]}/${dateParts[0]} ${timeParts[0]}:${timeParts[1]}`;
+      }
+    }
+  } catch (e) {}
+  return item.date;
+})() : null;
+const hasDate = !!item.date;
+
+// Construir URL de retorno - se hará en el cliente
+const backUrl = "/zona-vip/galeria/";
+
+const apiUrl = import.meta.env.PUBLIC_REVISION_API_URL || "";
+---
+
+<Layout
+  title={pageTitle}
+  description={pageDescription}
+  noContainer="true"
+  robots="noindex, nofollow"
+>
+  <script is:inline>
+    window.__REVISION_API_URL__ = "{apiUrl}";
+  </script>
+  <main class="vip-photo-detail">
+    <nav class="photo-detail-nav" aria-label="Navegación secundaria">
+      <a class="photo-back-link" href={backUrl}>
+        <span class="photo-back-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="18" height="18" focusable="false">
+            <path
+              fill="currentColor"
+              d="M15.71 5.29a1 1 0 0 0-1.42 0L7.88 11.7a1 1 0 0 0 0 1.42l6.41 6.41a1 1 0 1 0 1.42-1.42L10.41 12l5.3-5.29a1 1 0 0 0 0-1.42z"
+            ></path>
+          </svg>
+        </span>
+        <span class="photo-back-label">Volver a la galería</span>
+      </a>
+      <!-- Filtros seleccionados (editable en detalle) -->
+      <div class="selected-filters" id="selected-filters"></div>
+    </nav>
+
+    <article class="photo-detail-card">
+      <div class="photo-visual">
+        <img
+          src={item.src}
+          alt={item.alt}
+          width={item.width}
+          height={item.height}
+          loading="eager"
+          decoding="async"
+          class="vip-photo-img"
+          id="vip-photo-img"
+          tabindex="0"
+        />
+        <a
+          class="photo-nav-button photo-nav-button--prev"
+          href={prevItem ? buildUrlWithFilters(prevItem.slug) : "#"}
+          aria-label={prevItem
+            ? `Ver fotografía anterior: ${prevItem.alt}`
+            : "Ver fotografía anterior"}
+          data-photo-nav="prev"
+          data-target-slug={prevItem ? prevItem.slug : ""}
+          style={prevItem ? "" : "display: none;"}
+        >
+          <svg
+            viewBox="0 0 24 24"
+            width="28"
+            height="28"
+            aria-hidden="true"
+            focusable="false"
+          >
+            <path
+              fill="currentColor"
+              d="M15.71 5.29a1 1 0 0 0-1.42 0L7.88 11.7a1 1 0 0 0 0 1.42l6.41 6.41a1 1 0 1 0 1.42-1.42L10.41 12l5.3-5.29a1 1 0 0 0 0-1.42z"
+            ></path>
+          </svg>
+        </a>
+
+        <a
+          class="photo-nav-button photo-nav-button--next"
+          href={nextItem ? buildUrlWithFilters(nextItem.slug) : "#"}
+          aria-label={nextItem
+            ? `Ver fotografía siguiente: ${nextItem.alt}`
+            : "Ver fotografía siguiente"}
+          data-photo-nav="next"
+          data-target-slug={nextItem ? nextItem.slug : ""}
+          style={nextItem ? "" : "display: none;"}
+        >
+          <svg
+            viewBox="0 0 24 24"
+            width="28"
+            height="28"
+            aria-hidden="true"
+            focusable="false"
+          >
+            <path
+              fill="currentColor"
+              d="M8.29 5.29a1 1 0 0 1 1.42 0L16.12 11.7a1 1 0 0 1 0 1.42l-6.41 6.41a1 1 0 1 1-1.42-1.42L13.59 12l-5.3-5.29a1 1 0 0 1 0-1.42z"
+            ></path>
+          </svg>
+        </a>
+      </div>
+
+      <div class="photo-info">
+        <h1 class="sr-only">Fotografía</h1>
+        <dl class="photo-meta">
+          <div class="photo-meta-row photo-meta-row--clickable">
+            <dt>Personas</dt>
+            <dd>
+              {
+                hasPeople ? (
+                  <ul class="photo-people">
+                    {item.people.map((person, index) => (
+                      <li>
+                        <a
+                          href={`/zona-vip/galeria/?person=${item.peopleSlugs[index]}`}
+                          class="meta-button-person"
+                        >
+                          {person}
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  "No especificado"
+                )
+              }
+            </dd>
+          </div>
+          <div class="photo-meta-row photo-meta-row--pair photo-meta-row--with-actions">
+            <div class="photo-meta-cell photo-meta-cell--clickable">
+              <dt>Evento</dt>
+              <dd>
+                {
+                  hasEvent ? (
+                    <a
+                      href={`/zona-vip/galeria/?event=${item.eventSlug}`}
+                      class="meta-button meta-button--event"
+                    >
+                      {eventLabel}
+                    </a>
+                  ) : (
+                    "No especificado"
+                  )
+                }
+              </dd>
+            </div>
+            <div class="photo-meta-cell" aria-hidden="true">
+              <!-- Temática oculta -->
+            </div>
+            <div class="photo-meta-cell photo-meta-cell--action">
+              <dt class="sr-only">Descargar</dt>
+              <dd class="photo-meta-action-dd">
+                <button
+                  type="button"
+                  id="vip-photo-download"
+                  class="download-link"
+                  data-download-src={item.src}
+                  data-download-file={item.file}
+                  aria-label="Descargar fotografía en JPG"
+                >
+                  <svg
+                    class="photo-meta-action-icon"
+                    viewBox="0 0 24 24"
+                    width="18"
+                    height="18"
+                    aria-hidden="true"
+                    focusable="false"
+                    ><path
+                      fill="currentColor"
+                      d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"></path></svg
+                  >
+                  Descargar
+                </button>
+              </dd>
+            </div>
+          </div>
+          {
+            hasMusicalNumber && (
+              <div class="photo-meta-row photo-meta-row--clickable">
+                <dt>Número musical</dt>
+                <dd>
+                  <a
+                    href={`/zona-vip/galeria/?musical=${item.musicalNumberSlug}`}
+                    class="meta-button meta-button--musical"
+                  >
+                    {musicalNumberLabel}
+                  </a>
+                </dd>
+              </div>
+            )
+          }
+          {
+            hasDate && (
+              <div class="photo-meta-row photo-meta-row--pair">
+                <div class="photo-meta-cell">
+                  <dt>Fecha de captura</dt>
+                  <dd>{dateLabel}</dd>
+                </div>
+                <div class="photo-meta-cell" aria-hidden="true"></div>
+              </div>
+            )
+          }
+          <div class="photo-meta-row photo-meta-row--pair photo-meta-row--with-actions">
+            <div class="photo-meta-cell">
+              <dt>Archivo</dt>
+              <dd class="photo-meta-file">{item.file}</dd>
+            </div>
+            <div class="photo-meta-cell">
+              <dt>Dimensiones</dt>
+              <dd>{dimensionLabel}</dd>
+            </div>
+            <div class="photo-meta-cell photo-meta-cell--action">
+              <dt class="sr-only">Pedir un cambio</dt>
+              <dd class="photo-meta-action-dd">
+                <button
+                  type="button"
+                  id="vip-photo-report"
+                  class="report-link"
+                  data-photo-slug={item.slug}
+                  aria-label="Pedir un cambio para esta fotografía"
+                >
+                  <svg
+                    class="photo-meta-action-icon photo-meta-action-icon--flag"
+                    viewBox="0 0 24 24"
+                    width="18"
+                    height="18"
+                    aria-hidden="true"
+                    focusable="false"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    ><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"
+                    ></path><line x1="4" x2="4" y1="22" y2="15"></line></svg
+                  >
+                  Pedir un cambio
+                </button>
+              </dd>
+            </div>
+          </div>
+        </dl>
+      </div>
+    </article>
+  </main>
+
+  <!-- Fullscreen photo modal -->
+  <div
+    id="vip-photo-modal"
+    class="vip-photo-modal"
+    tabindex="-1"
+    aria-hidden="true"
+  >
+    <div class="vip-photo-modal-bg"></div>
+    <img src={item.src} alt={item.alt} class="vip-photo-modal-img" />
+  </div>
+
+  <!-- Modal de Pedir un cambio -->
+  <div
+    id="vip-report-modal"
+    class="vip-report-modal"
+    tabindex="-1"
+    aria-hidden="true"
+  >
+    <div class="vip-report-modal-bg"></div>
+    
+    <!-- Paso 1: Elegir opción -->
+    <div class="vip-report-modal-content" id="report-step-1">
+      <div class="vip-report-modal-header">
+        <h2>Pedir un cambio</h2>
+        <button type="button" class="vip-report-modal-close" aria-label="Cerrar">&times;</button>
+      </div>
+      <div class="vip-report-modal-body">
+        <p>¿Qué tipo de cambio quieres solicitar para esta imagen?</p>
+        <div class="vip-report-options">
+          <button type="button" class="vip-report-option-btn" id="btn-opt-modify">
+            <strong>Modificar información</strong>
+            <span>Personas, evento o temática incorrecta</span>
+          </button>
+          <button type="button" class="vip-report-option-btn vip-report-option-btn--danger" id="btn-opt-delete">
+            <strong>Borrar imagen</strong>
+            <span>Pedir que se retire esta fotografía</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Paso 2: Modificar información -->
+    <div class="vip-report-modal-content" id="report-step-modify" style="display: none;">
+      <div class="vip-report-modal-header">
+        <h2>Modificar información</h2>
+        <button type="button" class="vip-report-modal-close" aria-label="Cerrar">&times;</button>
+      </div>
+      <div class="vip-report-modal-body">
+        <div class="form-group">
+          <label for="modify-people">Personas</label>
+          <input type="text" id="modify-people" placeholder="Ej: Fulanito, Menganito..." />
+        </div>
+        <div class="form-group row-group">
+          <div class="form-col">
+            <label for="modify-event">Evento</label>
+            <input type="text" id="modify-event" placeholder="Ej: Estreno" />
+          </div>
+          <div class="form-col" style="display: none;">
+            <label for="modify-theme">Temática</label>
+            <input type="text" id="modify-theme" placeholder="Ej: Backstage" />
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="modify-music">Número musical</label>
+          <input type="text" id="modify-music" placeholder="Ej: Canción Inicial" />
+        </div>
+        <div class="form-group" style="margin-top: -0.5rem; margin-bottom: 1rem;">
+          <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; color: #fff; font-size: 0.95rem; font-weight: normal; margin-bottom: 0;">
+            <input type="checkbox" id="modify-rotate" style="width: auto; cursor: pointer; margin: 0;" />
+            La imagen sale girada, hay que rotarla
+          </label>
+        </div>
+        <div class="form-group">
+          <label for="modify-extra" style="color: #999; font-size: 0.85rem; font-weight: normal;">Comentarios adicionales (opcional)</label>
+          <textarea id="modify-extra" rows="2" placeholder="Explica cualquier otro dato incorrecto..."></textarea>
+        </div>
+        <div class="vip-report-actions">
+          <button type="button" class="vip-report-back-btn">Atrás</button>
+          <button type="button" class="vip-report-submit-btn">Enviar petición</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Paso 3: Borrar imagen -->
+    <div class="vip-report-modal-content" id="report-step-delete" style="display: none;">
+      <div class="vip-report-modal-header">
+        <h2>Borrar imagen</h2>
+        <button type="button" class="vip-report-modal-close" aria-label="Cerrar">&times;</button>
+      </div>
+      <div class="vip-report-modal-body">
+        <div class="form-group">
+          <label>Motivo por el que deseas retirarla:</label>
+          <textarea rows="4" placeholder="Explícanos por qué..."></textarea>
+        </div>
+        <div class="vip-report-actions">
+          <button type="button" class="vip-report-back-btn">Atrás</button>
+          <button type="button" class="vip-report-submit-btn vip-report-submit-btn--danger">Pedir borrado</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Paso 4: Éxito -->
+    <div class="vip-report-modal-content" id="report-step-success" style="display: none; text-align: center;">
+      <div class="vip-report-modal-header" style="justify-content: center; border-bottom: none;">
+        <h2 style="margin: 0;">¡Recibido!</h2>
+      </div>
+      <div class="vip-report-modal-body">
+        <p style="color: #fff; font-size: 1.1rem;">Tu petición ha sido enviada con éxito.</p>
+        <p style="margin-bottom: 2rem;">La revisaremos a la mayor brevedad posible.</p>
+        <button type="button" class="vip-report-submit-btn vip-report-modal-close-final" style="width: 100%;">Cerrar</button>
+      </div>
+    </div>
+  </div>
+
+  <script is:inline>
+    (function() {
+      function initReportModal() {
+        const modal = document.getElementById("vip-report-modal");
+        const bg = modal ? modal.querySelector(".vip-report-modal-bg") : null;
+        const closeBtn = modal ? modal.querySelector(".vip-report-modal-close") : null;
+        const options = modal ? modal.querySelectorAll(".vip-report-option-btn") : [];
+        
+        function open(btnNode) {
+          if (modal) {
+            modal.setAttribute("aria-hidden", "false");
+            document.body.style.overflow = "hidden";
+            showStep("report-step-1"); // Reset a paso inicial al abrir
+            
+            // Populate inputs
+            const slug = btnNode ? btnNode.getAttribute("data-photo-slug") : null;
+            if (slug) {
+              const photoDataRaw = document.getElementById("gallery-photo-data");
+              const photoData = photoDataRaw && photoDataRaw.textContent ? JSON.parse(photoDataRaw.textContent) : [];
+              const item = photoData.find(e => e.slug === slug);
+              
+              if (item) {
+                const inputPeople = modal.querySelector("#modify-people");
+                const inputEvent = modal.querySelector("#modify-event");
+                const inputTheme = modal.querySelector("#modify-theme");
+                const inputMusic = modal.querySelector("#modify-music");
+                const inputRotate = modal.querySelector("#modify-rotate");
+                
+                if (inputPeople) inputPeople.value = (item.people || []).join(", ");
+                if (inputEvent) inputEvent.value = item.event || "";
+                if (inputTheme) inputTheme.value = item.theme || "";
+                if (inputMusic) inputMusic.value = item.musicalNumber || "";
+                if (inputRotate) inputRotate.checked = false;
+              }
+            }
+
+            // Restablecer textareas
+            modal.querySelectorAll('textarea').forEach(t => t.value = '');
+          }
+        }
+        
+        function close() {
+          if (modal) {
+            modal.setAttribute("aria-hidden", "true");
+            document.body.style.overflow = "";
+          }
+        }
+
+        function showStep(stepId) {
+           const steps = modal.querySelectorAll('.vip-report-modal-content');
+           steps.forEach(s => s.style.display = 'none');
+           const target = modal.querySelector('#' + stepId);
+           if (target) {
+              target.style.display = 'block';
+           }
+        }
+
+        document.addEventListener("click", function(e) {
+          const btn = e.target.closest("#vip-photo-report");
+          if (btn) {
+            e.preventDefault();
+            open(btn);
+          }
+        });
+
+        // Botones de cierre
+        if (bg) bg.addEventListener("click", close);
+        const closeBtns = modal ? modal.querySelectorAll(".vip-report-modal-close, .vip-report-modal-close-final") : [];
+        closeBtns.forEach(btn => btn.addEventListener("click", close));
+        
+        // Navegación del modal
+        const btnModify = modal ? modal.querySelector("#btn-opt-modify") : null;
+        const btnDelete = modal ? modal.querySelector("#btn-opt-delete") : null;
+        const btnBacks = modal ? modal.querySelectorAll(".vip-report-back-btn") : [];
+        const btnSubmits = modal ? modal.querySelectorAll(".vip-report-submit-btn:not(.vip-report-modal-close-final)") : [];
+
+        if (btnModify) btnModify.addEventListener("click", () => showStep("report-step-modify"));
+        if (btnDelete) btnDelete.addEventListener("click", () => showStep("report-step-delete"));
+        btnBacks.forEach(b => b.addEventListener("click", () => showStep("report-step-1")));
+        btnSubmits.forEach(b => b.addEventListener("click", async () => {
+           b.disabled = true;
+           b.textContent = "Procesando...";
+
+           const isDanger = b.classList.contains('vip-report-submit-btn--danger');
+           const actionStr = isDanger ? 'delete' : 'modify';
+           const activePhotoSlug = document.querySelector("#vip-photo-report")?.getAttribute("data-photo-slug");
+           
+           const photoDataRaw = document.getElementById("gallery-photo-data");
+           const photoDataList = photoDataRaw && photoDataRaw.textContent ? JSON.parse(photoDataRaw.textContent) : [];
+           const photoItem = photoDataList.find(e => e.slug === activePhotoSlug) || {};
+
+           const payload = {
+              type: "photo_report",
+              action: actionStr,
+              photoSlug: activePhotoSlug,
+              file: photoItem.file || "Desconocido",
+              data: {}
+           };
+
+           if (actionStr === 'modify') {
+              payload.data = {
+                 people: modal.querySelector("#modify-people")?.value,
+                 event: modal.querySelector("#modify-event")?.value,
+                 theme: modal.querySelector("#modify-theme")?.value,
+                 music: modal.querySelector("#modify-music")?.value,
+                 rotateImage: modal.querySelector("#modify-rotate")?.checked ? "Sí" : "No",
+                 extra: modal.querySelector("#modify-extra")?.value
+              };
+           } else {
+              payload.data = {
+                 reason: modal.querySelector("#report-step-delete textarea")?.value
+              };
+           }
+
+           const endpoint = window.__REVISION_API_URL__ || "";
+
+           try {
+             const res = await fetch(endpoint, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload)
+             });
+             
+             if (!res.ok) throw new Error("Network error");
+             
+             b.disabled = false;
+             b.textContent = isDanger ? "Pedir borrado" : "Enviar petición";
+             showStep("report-step-success");
+           } catch (err) {
+             console.error("Error submitting report:", err);
+             b.disabled = false;
+             b.textContent = isDanger ? "Pedir borrado" : "Enviar petición";
+             alert("Hubo un problema de conexión. Por favor, inténtalo de nuevo.");
+           }
+        }));
+
+        window.addEventListener("keydown", (e) => {
+          if (modal && modal.getAttribute("aria-hidden") === "false" && (e.key === "Escape" || e.key === "Esc")) {
+            close();
+          }
+        });
+      }
+
+      if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", initReportModal);
+      } else {
+        initReportModal();
+      }
+    })();
+  </script>
+
+  <link rel="stylesheet" href="/styles/ampliacion-galeria.css" />
+  <style is:global>
+    .vip-photo-detail {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2.5rem 1.5rem 4rem;
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+    }
+    .photo-back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6rem;
+      text-decoration: none;
+      font-weight: 600;
+      letter-spacing: 0.01em;
+      padding: 0.6rem 1.2rem;
+      border-radius: 0.85rem;
+      color: #fff;
+      background: linear-gradient(
+        135deg,
+        rgba(162, 0, 255, 0.18),
+        rgba(90, 0, 200, 0.12)
+      );
+      border: 1px solid rgba(162, 0, 255, 0.35);
+      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.35);
+      transition:
+        transform 0.18s ease,
+        box-shadow 0.18s ease,
+        border-color 0.18s ease,
+        background 0.18s ease;
+    }
+    .photo-back-link:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 18px 34px rgba(0, 0, 0, 0.42);
+      border-color: rgba(162, 0, 255, 0.6);
+      background: linear-gradient(
+        135deg,
+        rgba(162, 0, 255, 0.28),
+        rgba(90, 0, 200, 0.18)
+      );
+      color: #fff;
+    }
+    .photo-back-link:focus-visible {
+      outline: 2px solid rgba(162, 0, 255, 0.85);
+      outline-offset: 3px;
+    }
+    .photo-back-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 1.9rem;
+      height: 1.9rem;
+      border-radius: 999px;
+      background: rgba(0, 0, 0, 0.25);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.06);
+    }
+    .photo-back-label {
+      white-space: nowrap;
+    }
+    .photo-detail-card {
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 2.2rem;
+      width: 100%;
+      max-width: 100%;
+      box-sizing: border-box;
+    }
+    /* Marco 4:3 fijo: la altura NO depende de la imagen. La img va en absolute (no aporta min-content). */
+    .photo-visual {
+      position: relative;
+      width: 100%;
+      min-width: 0;
+      box-sizing: border-box;
+      background: #050505;
+      border-radius: 22px;
+      overflow: hidden;
+      box-shadow: 0 40px 80px rgba(0, 0, 0, 0.45);
+      aspect-ratio: 4 / 3;
+      display: block;
+    }
+    /* Entera siempre: tamaño intrínseco limitado al marco (solo se reduce si no cabe; no rellena forzando zoom) */
+    .photo-visual .vip-photo-img {
+      position: absolute;
+      left: 0;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      display: block;
+      box-sizing: border-box;
+      width: auto;
+      height: auto;
+      max-width: 100%;
+      max-height: 100%;
+      margin: auto;
+      padding: 0;
+      border: 0;
+      object-fit: contain;
+      object-position: center center;
+      background: #050505;
+      z-index: 1;
+    }
+    /* Botones de navegación: banda lateral clicable, flecha grande y sin círculo */
+    .photo-nav-button {
+      position: absolute;
+      inset-block: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: clamp(48px, 12vw, 120px);
+      background: transparent;
+      color: #fff;
+      cursor: pointer;
+      z-index: 3;
+      transition: background 0.18s ease;
+    }
+    .photo-nav-button svg {
+      display: block;
+      position: relative;
+      width: 3.2rem;
+      height: 3.2rem;
+      filter: drop-shadow(0 2px 8px rgba(162, 0, 255, 0.18));
+      transition:
+        transform 0.18s,
+        filter 0.18s;
+    }
+    .photo-nav-button:hover svg {
+      transform: scale(1.35);
+      filter: drop-shadow(0 6px 18px rgba(162, 0, 255, 0.38));
+    }
+    .photo-nav-button:focus-visible {
+      outline: 2px solid rgba(162, 0, 255, 0.8);
+      outline-offset: 3px;
+    }
+    .photo-nav-button--prev {
+      inset-inline-start: 0;
+    }
+    .photo-nav-button--next {
+      inset-inline-end: 0;
+    }
+    .photo-nav-button--prev:hover {
+      background: linear-gradient(
+        90deg,
+        rgba(162, 0, 255, 0.1),
+        rgba(0, 0, 0, 0)
+      );
+    }
+    .photo-nav-button--next:hover {
+      background: linear-gradient(
+        270deg,
+        rgba(162, 0, 255, 0.1),
+        rgba(0, 0, 0, 0)
+      );
+    }
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+    .photo-info {
+      width: 100%;
+      min-width: 0;
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+      gap: 1.6rem;
+      background: linear-gradient(
+        180deg,
+        rgba(15, 15, 15, 0.92),
+        rgba(10, 10, 10, 0.96)
+      );
+      border: 1px solid rgba(87, 87, 87, 0.35);
+      border-radius: 22px;
+      padding: 2.2rem;
+      box-shadow: 0 22px 48px rgba(0, 0, 0, 0.35);
+    }
+    .photo-meta {
+      margin: 0;
+      display: grid;
+      gap: 1rem;
+    }
+    .photo-meta-row {
+      display: grid;
+      gap: 0.35rem;
+    }
+    .photo-meta-row--pair {
+      display: grid;
+      gap: 1rem 1.25rem;
+      align-items: start;
+    }
+    .photo-meta-row--pair:not(.photo-meta-row--with-actions) {
+      grid-template-columns: 1fr 1fr;
+    }
+    .photo-meta-row--with-actions {
+      grid-template-columns: 1fr 1fr minmax(0, auto);
+    }
+    .photo-meta-cell {
+      display: grid;
+      gap: 0.35rem;
+      min-width: 0;
+    }
+    .photo-meta-row dt,
+    .photo-meta-cell dt {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      color: #999;
+    }
+    .photo-meta-row dd,
+    .photo-meta-cell dd {
+      margin: 0;
+      font-size: 1rem;
+      color: #fff;
+    }
+    .photo-meta-file {
+      overflow-wrap: anywhere;
+      word-break: break-word;
+    }
+    .photo-meta-action-dd {
+      margin: 0;
+    }
+    .photo-meta-cell--action {
+      min-width: 0;
+    }
+    .photo-meta-action-icon {
+      flex-shrink: 0;
+      display: block;
+    }
+    .photo-meta-action-icon--flag {
+      margin-top: 1px;
+    }
+    @media (max-width: 520px) {
+      .photo-meta-row--pair:not(.photo-meta-row--with-actions) {
+        grid-template-columns: 1fr;
+      }
+      .photo-meta-row--with-actions {
+        grid-template-columns: 1fr;
+      }
+    }
+    .meta-button {
+      display: inline-block;
+      color: #fff;
+      text-decoration: none;
+      background: linear-gradient(
+        135deg,
+        rgba(162, 0, 255, 0.12),
+        rgba(162, 0, 255, 0.08)
+      );
+      border: 1px solid rgba(162, 0, 255, 0.3);
+      border-radius: 0.5rem;
+      padding: 0.4rem 0.85rem;
+      font-weight: 600;
+      transition: all 0.2s ease;
+      cursor: pointer;
+    }
+    .meta-button:hover {
+      background: linear-gradient(
+        135deg,
+        rgba(162, 0, 255, 0.25),
+        rgba(162, 0, 255, 0.15)
+      );
+      border-color: rgba(162, 0, 255, 0.5);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(162, 0, 255, 0.2);
+      color: #fff !important;
+    }
+    .meta-button--event {
+      background: linear-gradient(
+        135deg,
+        rgba(0, 225, 183, 0.12),
+        rgba(0, 225, 183, 0.08)
+      );
+      border-color: rgba(0, 225, 183, 0.3);
+    }
+    .meta-button--event:hover {
+      background: linear-gradient(
+        135deg,
+        rgba(0, 225, 183, 0.25),
+        rgba(0, 225, 183, 0.15)
+      );
+      border-color: rgba(0, 225, 183, 0.5);
+      box-shadow: 0 4px 12px rgba(0, 225, 183, 0.2);
+    }
+    .meta-button--musical {
+      background: linear-gradient(
+        135deg,
+        rgba(255, 196, 0, 0.12),
+        rgba(255, 196, 0, 0.08)
+      );
+      border-color: rgba(255, 196, 0, 0.3);
+    }
+    .meta-button--musical:hover {
+      background: linear-gradient(
+        135deg,
+        rgba(255, 196, 0, 0.25),
+        rgba(255, 196, 0, 0.15)
+      );
+      border-color: rgba(255, 196, 0, 0.5);
+      box-shadow: 0 4px 12px rgba(255, 196, 0, 0.2);
+    }
+    .photo-people {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+    .photo-people li {
+      margin: 0;
+      padding: 0;
+    }
+    .meta-button-person {
+      display: block;
+      color: #fff;
+      text-decoration: none;
+      border-radius: 999px;
+      border: 1px solid rgba(162, 0, 255, 0.3);
+      padding: 0.35rem 0.75rem;
+      background: linear-gradient(
+        135deg,
+        rgba(162, 0, 255, 0.08),
+        rgba(162, 0, 255, 0.04)
+      );
+      font-size: 0.9rem;
+      font-weight: 600;
+      transition: all 0.2s ease;
+      cursor: pointer;
+    }
+    .meta-button-person:hover {
+      border-color: rgba(162, 0, 255, 0.6);
+      background: linear-gradient(
+        135deg,
+        rgba(162, 0, 255, 0.2),
+        rgba(162, 0, 255, 0.12)
+      );
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(162, 0, 255, 0.15);
+    }
+    .download-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      font: inherit;
+      font-weight: 700;
+      color: #fff;
+      text-decoration: none;
+      border-radius: 0.75rem;
+      padding: 0.6rem 1.2rem;
+      background: linear-gradient(135deg, #1a1a1a, #0f0f0f);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.35);
+      transition:
+        transform 0.18s ease,
+        box-shadow 0.18s ease,
+        border-color 0.18s ease;
+      cursor: pointer;
+    }
+    .download-link:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 14px 28px rgba(0, 0, 0, 0.4);
+      border-color: rgba(162, 0, 255, 0.4);
+    }
+    .download-link:disabled {
+      opacity: 0.7;
+      cursor: wait;
+      transform: translateY(0);
+    }
+    .report-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      font-weight: 700;
+      color: #fff;
+      font: inherit;
+      text-decoration: none;
+      border-radius: 0.75rem;
+      padding: 0.6rem 1.2rem;
+      background: linear-gradient(135deg, #1a1a1a, #0f0f0f);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.35);
+      transition:
+        transform 0.18s ease,
+        box-shadow 0.18s ease,
+        border-color 0.18s ease;
+      cursor: pointer;
+    }
+    .report-link:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 14px 28px rgba(0, 0, 0, 0.4);
+      border-color: rgba(255, 180, 100, 0.45);
+    }
+    .spinner {
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin {
+      from {
+        transform: rotate(0deg);
+      }
+      to {
+        transform: rotate(360deg);
+      }
+    }
+    @media (max-width: 768px) {
+      .vip-photo-detail {
+        padding: 1rem 0.5rem 2rem;
+      }
+      .photo-detail-card {
+        padding: 0.5rem;
+      }
+      .photo-info {
+        padding: 1rem;
+      }
+      .photo-nav-button {
+        width: clamp(40px, 10vw, 90px);
+      }
+      .photo-nav-button svg {
+        width: 2.2rem;
+        height: 2.2rem;
+      }
+    }
+    .vip-photo-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      background: none;
+      transition: opacity 0.2s;
+    }
+    .vip-photo-modal[aria-hidden="false"] {
+      display: flex;
+      opacity: 1;
+    }
+    .vip-photo-modal-bg {
+      position: absolute;
+      inset: 0;
+      background: rgba(10, 10, 10, 0.92);
+      z-index: 1;
+      cursor: pointer;
+    }
+    .vip-photo-modal-img {
+      position: relative;
+      z-index: 2;
+      max-width: 96vw;
+      max-height: 92vh;
+      border-radius: 18px;
+      box-shadow: 0 0 80px rgba(0, 0, 0, 0.7);
+      background: #050505;
+      object-fit: contain;
+      cursor: pointer;
+      transition: box-shadow 0.18s;
+    }
+    @media (max-width: 768px) {
+      .vip-photo-modal-img {
+        max-width: 100vw;
+        max-height: 90vh;
+        border-radius: 0;
+      }
+    }
+    
+    .vip-report-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 10000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      background: none;
+      transition: opacity 0.2s;
+    }
+    .vip-report-modal[aria-hidden="false"] {
+      display: flex;
+      opacity: 1;
+      animation: fadeIn 0.2s ease-out;
+    }
+    .vip-report-modal-bg {
+      position: absolute;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(4px);
+      z-index: 1;
+      cursor: pointer;
+    }
+    .vip-report-modal-content {
+      position: relative;
+      z-index: 2;
+      background: #1a1a1a;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 16px;
+      padding: 1.5rem;
+      width: 90%;
+      max-width: 450px;
+      box-sizing: border-box;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+      color: #fff;
+    }
+    .vip-report-modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding-bottom: 0.8rem;
+    }
+    .vip-report-modal-header h2 {
+      margin: 0;
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: #fff;
+    }
+    .vip-report-modal-close {
+      background: none;
+      border: none;
+      color: #999;
+      font-size: 1.8rem;
+      line-height: 1;
+      cursor: pointer;
+      padding: 0;
+      transition: color 0.15s;
+    }
+    .vip-report-modal-close:hover {
+      color: #fff;
+    }
+    .vip-report-modal-body p {
+      margin-top: 0;
+      margin-bottom: 1.2rem;
+      color: #ccc;
+      font-size: 0.95rem;
+      line-height: 1.4;
+    }
+    .vip-report-options {
+      display: flex;
+      flex-direction: column;
+      gap: 0.8rem;
+    }
+    .vip-report-option-btn {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      text-align: left;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 10px;
+      padding: 1rem;
+      width: 100%;
+      box-sizing: border-box;
+      color: #fff;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-family: inherit;
+    }
+    .vip-report-option-btn:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: rgba(255, 255, 255, 0.2);
+      transform: translateY(-2px);
+    }
+    .vip-report-option-btn strong {
+      font-size: 1rem;
+      margin-bottom: 0.3rem;
+      font-weight: 600;
+    }
+    .vip-report-option-btn span {
+      font-size: 0.85rem;
+      color: #999;
+    }
+    .vip-report-option-btn--danger:hover {
+      background: rgba(255, 100, 100, 0.1);
+      border-color: rgba(255, 100, 100, 0.3);
+    }
+    .vip-report-option-btn--danger:hover strong {
+      color: #ff8888;
+    }
+    
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      text-align: left;
+      margin-bottom: 1.25rem;
+    }
+    .row-group {
+      flex-direction: row;
+      gap: 1rem;
+    }
+    .form-col {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+    .form-group label, .form-col label {
+      font-size: 0.95rem;
+      color: #ccc;
+      font-weight: 600;
+    }
+    .form-group input[type="text"],
+    .form-group textarea,
+    .form-col input[type="text"] {
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      appearance: none;
+      width: 100%;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 8px;
+      padding: 0.8rem 1rem;
+      color: #fff;
+      font-size: 1rem;
+      font-family: inherit;
+      resize: vertical;
+      box-sizing: border-box;
+      transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
+    }
+    .form-group input[type="text"]:focus,
+    .form-col input[type="text"]:focus,
+    .form-group textarea:focus {
+      outline: none;
+      border-color: rgba(162, 0, 255, 0.8);
+      background: rgba(255, 255, 255, 0.08);
+      box-shadow: 0 0 0 3px rgba(162, 0, 255, 0.25);
+    }
+    .vip-report-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 1rem;
+    }
+    .vip-report-back-btn {
+      background: none;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: #ccc;
+      font-family: inherit;
+      padding: 0.6rem 1.2rem;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+    .vip-report-back-btn:hover {
+      background: rgba(255, 255, 255, 0.08);
+      color: #fff;
+    }
+    .vip-report-submit-btn {
+      background: linear-gradient(135deg, rgba(162,0,255,0.8), rgba(90,0,200,0.8));
+      color: #fff;
+      border: none;
+      padding: 0.6rem 1.2rem;
+      border-radius: 8px;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .vip-report-submit-btn:hover:not(:disabled) {
+      background: linear-gradient(135deg, rgba(162,0,255,1), rgba(90,0,200,1));
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(162, 0, 255, 0.3);
+    }
+    .vip-report-submit-btn:disabled {
+      opacity: 0.7;
+      cursor: wait;
+    }
+    .vip-report-submit-btn--danger {
+      background: linear-gradient(135deg, rgba(220,50,50,0.8), rgba(180,20,20,0.8));
+    }
+    .vip-report-submit-btn--danger:hover:not(:disabled) {
+      background: linear-gradient(135deg, rgba(255,60,60,1), rgba(200,30,30,1));
+      box-shadow: 0 4px 12px rgba(220, 50, 50, 0.3);
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+
+  <script is:inline
+    type="application/json"
+    id="gallery-photo-data"
+    set:html={JSON.stringify(galleryItems)}
+  />
+  <script is:inline>
+    // Leer filtros desde la URL en el cliente
+    (function () {
+      console.log("Reading filters from URL:", window.location.href);
+      console.log("Search string:", window.location.search);
+
+      const params = new URLSearchParams(window.location.search);
+      const activeFilters = {
+        theme: [],
+        person: [],
+        event: [],
+        musical: [],
+      };
+
+      // Log todos los parámetros detectados
+      params.forEach((value, key) => {
+        if (key === "theme") activeFilters.theme.push(value);
+        if (key === "person") activeFilters.person.push(value);
+        if (key === "event") activeFilters.event.push(value);
+        if (key === "musical") activeFilters.musical.push(value);
+      });
+
+      // Guardar en elemento para que el otro script lo lea
+      const filterDataEl = document.createElement("script");
+      filterDataEl.type = "application/json";
+      filterDataEl.id = "active-filters-data";
+      filterDataEl.textContent = JSON.stringify(activeFilters);
+      document.head.appendChild(filterDataEl);
+
+      console.log("Filters from URL:", activeFilters);
+
+      // Actualizar el botón de volver con filtros
+      const backLink = document.querySelector(".photo-back-link");
+      if (backLink) {
+        if (
+          activeFilters.theme.length ||
+          activeFilters.person.length ||
+          activeFilters.event.length ||
+          activeFilters.musical.length
+        ) {
+          const backParams = new URLSearchParams();
+          activeFilters.theme.forEach((t) => backParams.append("theme", t));
+          activeFilters.person.forEach((p) => backParams.append("person", p));
+          activeFilters.event.forEach((e) => backParams.append("event", e));
+          activeFilters.musical.forEach((m) => backParams.append("musical", m));
+          backLink.setAttribute(
+            "href",
+            `/zona-vip/galeria/?${backParams.toString()}`,
+          );
+        } else {
+          backLink.setAttribute("href", "/zona-vip/galeria/?nofilter");
+        }
+      }
+
+      // Si la URL contiene ?nofilter, limpiar filtros y recargar galería limpia
+      if (window.location.search.includes("nofilter")) {
+        try {
+          localStorage.removeItem("vipGalleryFilters");
+          sessionStorage.removeItem("vipGalleryFilters");
+        } catch {}
+        // Si estamos en la galería principal, recargar sin parámetros
+        if (window.location.pathname.endsWith("/zona-vip/galeria/")) {
+          window.location.replace("/zona-vip/galeria/");
+        }
+      }
+      // Pintar filtros seleccionados y permitir quitarlos en detalle
+      const selectedFiltersEl = document.getElementById("selected-filters");
+      const photoDataRaw = document.getElementById("gallery-photo-data");
+      const photoData =
+        photoDataRaw && photoDataRaw.textContent
+          ? JSON.parse(photoDataRaw.textContent)
+          : [];
+
+      // Construir lookups de etiquetas a partir de los datos disponibles
+      const labelMaps = {
+        theme: new Map(),
+        person: new Map(),
+        event: new Map(),
+        musical: new Map(),
+      };
+
+      try {
+        photoData.forEach((it) => {
+          if (it.themeSlug)
+            labelMaps.theme.set(it.themeSlug, it.theme || it.themeSlug);
+          if (Array.isArray(it.peopleSlugs) && Array.isArray(it.people)) {
+            it.peopleSlugs.forEach((slug, idx) => {
+              const name = it.people[idx] || slug;
+              if (slug) labelMaps.person.set(slug, name);
+            });
+          }
+          if (it.eventSlug)
+            labelMaps.event.set(it.eventSlug, it.event || it.eventSlug);
+          if (it.musicalNumberSlug)
+            labelMaps.musical.set(
+              it.musicalNumberSlug,
+              it.musicalNumber || it.musicalNumberSlug,
+            );
+        });
+      } catch {}
+
+      function buildGalleryUrlFromFilters() {
+        const params = new URLSearchParams();
+        activeFilters.theme.forEach((t) => params.append("theme", t));
+        activeFilters.person.forEach((p) => params.append("person", p));
+        activeFilters.event.forEach((e) => params.append("event", e));
+        activeFilters.musical.forEach((m) => params.append("musical", m));
+        const qs = params.toString();
+        return `/zona-vip/galeria/${qs ? "?" + qs : ""}`;
+      }
+
+      function renderSelectedFiltersDetail() {
+        if (!selectedFiltersEl) return;
+
+        const hasAny =
+          activeFilters.theme.length ||
+          activeFilters.person.length ||
+          activeFilters.event.length ||
+          activeFilters.musical.length;
+        console.log(
+          "[VIP] Filtros activos:",
+          JSON.stringify(activeFilters),
+          "hasAny:",
+          hasAny,
+        );
+        if (!hasAny) {
+          selectedFiltersEl.classList.remove("active");
+          selectedFiltersEl.innerHTML =
+            '<span style="color:#ccc;font-size:.95em;">(No hay filtros activos)</span>';
+          const back = document.querySelector(".photo-back-link");
+          if (back) back.setAttribute("href", "/zona-vip/galeria/?nofilter");
+          return;
+        }
+        selectedFiltersEl.classList.add("active");
+        selectedFiltersEl.innerHTML = "";
+
+        const addChip = (type, slug) => {
+          const chip = document.createElement("span");
+          chip.className = "selected-filter";
+          let label = slug;
+          try {
+            if (type === "theme") label = labelMaps.theme.get(slug) || slug;
+            else if (type === "person")
+              label = labelMaps.person.get(slug) || slug;
+            else if (type === "event")
+              label = labelMaps.event.get(slug) || slug;
+            else if (type === "musical")
+              label = labelMaps.musical.get(slug) || slug;
+          } catch {}
+          chip.textContent = label;
+
+          const btn = document.createElement("button");
+          btn.className = "remove-filter";
+          btn.type = "button";
+          btn.setAttribute("aria-label", `Quitar filtro: ${label}`);
+          btn.textContent = "×";
+          btn.addEventListener("click", () => {
+            // Eliminar del estado local
+            if (type === "theme")
+              activeFilters.theme = activeFilters.theme.filter(
+                (v) => v !== slug,
+              );
+            if (type === "person")
+              activeFilters.person = activeFilters.person.filter(
+                (v) => v !== slug,
+              );
+            if (type === "event")
+              activeFilters.event = activeFilters.event.filter(
+                (v) => v !== slug,
+              );
+            if (type === "musical")
+              activeFilters.musical = activeFilters.musical.filter(
+                (v) => v !== slug,
+              );
+
+            // Actualizar href del botón volver
+            const back = document.querySelector(".photo-back-link");
+            if (back) back.setAttribute("href", buildGalleryUrlFromFilters());
+
+            // Actualizar navegación y URL actual (si el script posterior define helpers, se actualizarán después)
+            try {
+              const currentSlug = window.location.pathname
+                .split("/")
+                .filter(Boolean)
+                .pop();
+              if (currentSlug) {
+                const params = new URLSearchParams();
+                activeFilters.theme.forEach((t) => params.append("theme", t));
+                activeFilters.person.forEach((p) => params.append("person", p));
+                activeFilters.event.forEach((e) => params.append("event", e));
+                activeFilters.musical.forEach((m) =>
+                  params.append("musical", m),
+                );
+                const qs = params.toString();
+                const newUrl = `/zona-vip/galeria/${currentSlug}/${qs ? "?" + qs : ""}`;
+                window.history.replaceState({}, "", newUrl);
+              }
+            } catch {}
+
+            // Re-render chips
+            renderSelectedFiltersDetail();
+
+            // Emitir evento para que otros scripts (navegación) puedan reaccionar si lo desean
+            document.dispatchEvent(
+              new CustomEvent("vip:filters-changed", {
+                detail: { activeFilters },
+              }),
+            );
+          });
+
+          chip.appendChild(btn);
+          selectedFiltersEl.appendChild(chip);
+        };
+
+        activeFilters.theme.forEach((slug) => addChip("theme", slug));
+        activeFilters.event.forEach((slug) => addChip("event", slug));
+        activeFilters.person.forEach((slug) => addChip("person", slug));
+        activeFilters.musical.forEach((slug) => addChip("musical", slug));
+
+        // Actualizar el enlace de volver con los filtros actuales
+        const back = document.querySelector(".photo-back-link");
+        if (back) back.setAttribute("href", buildGalleryUrlFromFilters());
+      }
+
+      renderSelectedFiltersDetail();
+    })();
+  </script>
+  <script is:inline>
+    (function () {
+      // Función para convertir WebP a JPG y descargar
+      async function downloadAsJPG(webpUrl, filename, button) {
+        const originalText = button ? button.textContent : "";
+
+        try {
+          if (button) {
+            button.disabled = true;
+            button.innerHTML =
+              '<svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false" class="spinner" style="display:inline-block;margin-right:0.5rem;"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3" fill="none" opacity="0.25"/><path fill="currentColor" d="M12 2a10 10 0 0 1 10 10h-3a7 7 0 0 0-7-7V2z"/></svg>Descargando...';
+          }
+
+          const img = new Image();
+          img.crossOrigin = "anonymous";
+
+          await new Promise((resolve, reject) => {
+            img.onload = resolve;
+            img.onerror = reject;
+            img.src = webpUrl;
+          });
+
+          const canvas = document.createElement("canvas");
+          canvas.width = img.naturalWidth;
+          canvas.height = img.naturalHeight;
+
+          const ctx = canvas.getContext("2d");
+          if (!ctx) {
+            if (button) {
+              button.disabled = false;
+              button.textContent = originalText;
+            }
+            return;
+          }
+          ctx.drawImage(img, 0, 0);
+
+          canvas.toBlob(
+            (blob) => {
+              if (!blob) {
+                if (button) {
+                  button.disabled = false;
+                  button.textContent = originalText;
+                }
+                return;
+              }
+
+              const url = URL.createObjectURL(blob);
+              const a = document.createElement("a");
+              a.href = url;
+              a.download = filename.replace(/\.webp$/i, ".jpg");
+              document.body.appendChild(a);
+              a.click();
+              document.body.removeChild(a);
+              URL.revokeObjectURL(url);
+
+              if (button) {
+                button.disabled = false;
+                button.textContent = originalText;
+              }
+            },
+            "image/jpeg",
+            0.95,
+          );
+        } catch (error) {
+          console.error("Error:", error);
+          if (button) {
+            button.disabled = false;
+            button.textContent = originalText;
+          }
+          window.open(webpUrl, "_blank");
+        }
+      }
+
+      function initDownload() {
+        const root = document.querySelector(".photo-info");
+        if (!root) return;
+
+        root.addEventListener("click", function (e) {
+          const btn = e.target.closest(".download-link");
+          if (!btn || !btn.hasAttribute("data-download-src")) return;
+          e.preventDefault();
+          const src = btn.getAttribute("data-download-src");
+          const file = btn.getAttribute("data-download-file");
+          if (src && file) {
+            downloadAsJPG(src, file, btn);
+          }
+        });
+      }
+
+      if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", initDownload);
+      } else {
+        initDownload();
+      }
+    })();
+  </script>
+  <script is:inline>
+    // SPA-like navigation for photo detail con filtros preservados
+    document.addEventListener("DOMContentLoaded", function () {
+      const photoDataRaw = document.getElementById("gallery-photo-data");
+      const photoData =
+        photoDataRaw && photoDataRaw.textContent
+          ? JSON.parse(photoDataRaw.textContent)
+          : [];
+      const activeFiltersRaw = document.getElementById("active-filters-data");
+
+      let activeFilters = { theme: [], person: [], event: [], musical: [] };
+
+      if (activeFiltersRaw && activeFiltersRaw.textContent) {
+        try {
+          const parsed = JSON.parse(activeFiltersRaw.textContent);
+          console.log("Parsed filters from JSON:", parsed);
+          activeFilters = parsed || activeFilters;
+        } catch (e) {
+          console.error("Error parsing filters:", e);
+        }
+      }
+
+      console.log("Active filters loaded:", activeFilters);
+
+      // Re-render filtros seleccionados si llegan cambios de otro bloque
+      document.addEventListener("vip:filters-changed", (e) => {
+        try {
+          const detail = e.detail || {};
+          if (detail.activeFilters) {
+            activeFilters = detail.activeFilters;
+            const currentSlug = window.location.pathname
+              .split("/")
+              .filter(Boolean)
+              .pop();
+            if (currentSlug) updateNavigationButtons(currentSlug);
+          }
+        } catch {}
+      });
+
+      const navButtons = document.querySelectorAll(".photo-nav-button");
+      const photoImg = document.getElementById("vip-photo-img");
+      const photoMeta = document.querySelector(".photo-meta");
+      const modal = document.getElementById("vip-photo-modal");
+      const modalImg = modal
+        ? modal.querySelector(".vip-photo-modal-img")
+        : null;
+      const modalBg = modal ? modal.querySelector(".vip-photo-modal-bg") : null;
+
+      // Filtrar fotos según los filtros activos
+      function getFilteredPhotos() {
+        const hasFilters =
+          activeFilters.theme.length ||
+          activeFilters.person.length ||
+          activeFilters.event.length ||
+          activeFilters.musical.length;
+
+        if (!hasFilters) {
+          return photoData;
+        }
+
+        return photoData.filter((item) => {
+          if (
+            activeFilters.theme.length &&
+            !activeFilters.theme.includes(item.themeSlug)
+          ) {
+            return false;
+          }
+
+          if (activeFilters.person.length) {
+            const hasMatchingPerson = item.peopleSlugs.some((slug) =>
+              activeFilters.person.includes(slug),
+            );
+            if (!hasMatchingPerson) return false;
+          }
+
+          if (
+            activeFilters.event.length &&
+            !activeFilters.event.includes(item.eventSlug)
+          ) {
+            return false;
+          }
+
+          if (
+            activeFilters.musical.length &&
+            !activeFilters.musical.includes(item.musicalNumberSlug)
+          ) {
+            return false;
+          }
+
+          return true;
+        });
+      }
+
+      // Construir URL con filtros preservados
+      function buildUrlWithFilters(slug) {
+        const params = new URLSearchParams();
+
+        // Agregar todos los filtros activos
+        if (activeFilters.theme && activeFilters.theme.length > 0) {
+          activeFilters.theme.forEach((t) => params.append("theme", t));
+        }
+        if (activeFilters.person && activeFilters.person.length > 0) {
+          activeFilters.person.forEach((p) => params.append("person", p));
+        }
+        if (activeFilters.event && activeFilters.event.length > 0) {
+          activeFilters.event.forEach((e) => params.append("event", e));
+        }
+        if (activeFilters.musical && activeFilters.musical.length > 0) {
+          activeFilters.musical.forEach((m) => params.append("musical", m));
+        }
+
+        const queryStr = params.toString();
+        return `/zona-vip/galeria/${slug}/${queryStr ? "?" + queryStr : ""}`;
+      }
+
+      // Actualizar botones de navegación basándose en filtros
+      function updateNavigationButtons(currentSlug) {
+        const filteredPhotos = getFilteredPhotos();
+        const currentIndex = filteredPhotos.findIndex(
+          (entry) => entry.slug === currentSlug,
+        );
+        const prevItem =
+          currentIndex > 0 ? filteredPhotos[currentIndex - 1] : null;
+        const nextItem =
+          currentIndex >= 0 && currentIndex < filteredPhotos.length - 1
+            ? filteredPhotos[currentIndex + 1]
+            : null;
+
+        console.log("Navigation update:", {
+          currentSlug,
+          currentIndex,
+          filteredCount: filteredPhotos.length,
+          prevItem: prevItem?.slug,
+          nextItem: nextItem?.slug,
+        });
+
+        navButtons.forEach((btn) => {
+          if (btn instanceof HTMLElement) btn.style.display = "none";
+        });
+
+        if (prevItem) {
+          const prevBtn = document.querySelector(".photo-nav-button--prev");
+          if (prevBtn && prevBtn instanceof HTMLAnchorElement) {
+            prevBtn.setAttribute("href", buildUrlWithFilters(prevItem.slug));
+            prevBtn.setAttribute("data-target-slug", prevItem.slug);
+            prevBtn.setAttribute(
+              "aria-label",
+              `Ver fotografía anterior: ${prevItem.alt}`,
+            );
+            prevBtn.style.display = "";
+          }
+        }
+
+        if (nextItem) {
+          const nextBtn = document.querySelector(".photo-nav-button--next");
+          if (nextBtn && nextBtn instanceof HTMLAnchorElement) {
+            nextBtn.setAttribute("href", buildUrlWithFilters(nextItem.slug));
+            nextBtn.setAttribute("data-target-slug", nextItem.slug);
+            nextBtn.setAttribute(
+              "aria-label",
+              `Ver fotografía siguiente: ${nextItem.alt}`,
+            );
+            nextBtn.style.display = "";
+          }
+        }
+      }
+
+      // Obtener slug actual de la URL
+      const currentSlug = window.location.pathname
+        .split("/")
+        .filter(Boolean)
+        .pop();
+
+      // Actualizar navegación al cargar
+      if (currentSlug) {
+        updateNavigationButtons(currentSlug);
+      }
+
+      // También actualizar el enlace de volver al cargar en base a activeFilters
+      (function updateBackLinkOnLoad() {
+        const backLink = document.querySelector(".photo-back-link");
+        if (!backLink) return;
+        const params = new URLSearchParams();
+        activeFilters.theme.forEach((t) => params.append("theme", t));
+        activeFilters.person.forEach((p) => params.append("person", p));
+        activeFilters.event.forEach((e) => params.append("event", e));
+        activeFilters.musical.forEach((m) => params.append("musical", m));
+        backLink.setAttribute(
+          "href",
+          `/zona-vip/galeria/${params.toString() ? "?" + params.toString() : ""}`,
+        );
+      })();
+
+      function updatePhoto(slug) {
+        const item = photoData.find((entry) => entry.slug === slug);
+        if (!item) return;
+
+        // Update image
+        if (photoImg) {
+          photoImg.setAttribute("src", item.src);
+          photoImg.setAttribute("alt", item.alt);
+          photoImg.setAttribute("width", String(item.width));
+          photoImg.setAttribute("height", String(item.height));
+          photoImg.setAttribute("tabindex", "0");
+          photoImg.setAttribute("loading", "eager");
+          photoImg.setAttribute("decoding", "async");
+        }
+
+        // Update meta
+        if (photoMeta) {
+          // Limpiar el contenedor
+          photoMeta.innerHTML = "";
+
+          // Personas
+          const personasRow = document.createElement("div");
+          personasRow.className = "photo-meta-row photo-meta-row--clickable";
+          personasRow.innerHTML = "<dt>Personas</dt>";
+          const personasDD = document.createElement("dd");
+
+          if (item.people && item.people.length > 0) {
+            const peopleList = document.createElement("ul");
+            peopleList.className = "photo-people";
+            item.people.forEach((person, idx) => {
+              const li = document.createElement("li");
+              const a = document.createElement("a");
+              a.href = `/zona-vip/galeria/?person=${item.peopleSlugs[idx]}`;
+              a.className = "meta-button-person";
+              a.textContent = person;
+              li.appendChild(a);
+              peopleList.appendChild(li);
+            });
+            personasDD.appendChild(peopleList);
+          } else {
+            personasDD.textContent = "No especificado";
+          }
+
+          personasRow.appendChild(personasDD);
+          photoMeta.appendChild(personasRow);
+
+          // Fecha de captura
+          if (item.date) {
+            let dateStr = item.date;
+            try {
+              const parts = item.date.split(' ');
+              if (parts.length === 2) {
+                const dateParts = parts[0].split(':');
+                const timeParts = parts[1].split(':');
+                if (dateParts.length === 3) {
+                  dateStr = `${dateParts[2]}/${dateParts[1]}/${dateParts[0]} ${timeParts[0]}:${timeParts[1]}`;
+                }
+              }
+            } catch (e) {}
+
+            const dateRow = document.createElement("div");
+            dateRow.className = "photo-meta-row photo-meta-row--pair";
+            const dateCell = document.createElement("div");
+            dateCell.className = "photo-meta-cell";
+            dateCell.innerHTML = "<dt>Fecha de captura</dt><dd>" + dateStr + "</dd>";
+            const emptyCell = document.createElement("div");
+            emptyCell.className = "photo-meta-cell";
+            emptyCell.setAttribute("aria-hidden", "true");
+            dateRow.appendChild(dateCell);
+            dateRow.appendChild(emptyCell);
+            photoMeta.appendChild(dateRow);
+          }
+
+          // Evento + Temática + Descargar (misma fila)
+          const eventThemeRow = document.createElement("div");
+          eventThemeRow.className =
+            "photo-meta-row photo-meta-row--pair photo-meta-row--with-actions";
+
+          const eventCell = document.createElement("div");
+          eventCell.className = "photo-meta-cell photo-meta-cell--clickable";
+          const eventDt = document.createElement("dt");
+          eventDt.textContent = "Evento";
+          const eventDd = document.createElement("dd");
+          if (item.event && item.eventSlug) {
+            const eventoA = document.createElement("a");
+            eventoA.href = `/zona-vip/galeria/?event=${item.eventSlug}`;
+            eventoA.className = "meta-button meta-button--event";
+            eventoA.textContent = item.event;
+            eventDd.appendChild(eventoA);
+          } else {
+            eventDd.textContent = "No especificado";
+          }
+          eventCell.appendChild(eventDt);
+          eventCell.appendChild(eventDd);
+
+          const themeCell = document.createElement("div");
+          themeCell.className = "photo-meta-cell";
+          themeCell.setAttribute("aria-hidden", "true");
+
+          const downloadCell = document.createElement("div");
+          downloadCell.className = "photo-meta-cell photo-meta-cell--action";
+          const downloadDt = document.createElement("dt");
+          downloadDt.className = "sr-only";
+          downloadDt.textContent = "Descargar";
+          const downloadDd = document.createElement("dd");
+          downloadDd.className = "photo-meta-action-dd";
+          const downloadBtn = document.createElement("button");
+          downloadBtn.type = "button";
+          downloadBtn.id = "vip-photo-download";
+          downloadBtn.className = "download-link";
+          downloadBtn.setAttribute("data-download-src", item.src);
+          downloadBtn.setAttribute("data-download-file", item.file);
+          downloadBtn.setAttribute("aria-label", "Descargar fotografía en JPG");
+          downloadBtn.innerHTML =
+            '<svg class="photo-meta-action-icon" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false"><path fill="currentColor" d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"></path></svg> Descargar';
+          downloadDd.appendChild(downloadBtn);
+          downloadCell.appendChild(downloadDt);
+          downloadCell.appendChild(downloadDd);
+
+          eventThemeRow.appendChild(eventCell);
+          eventThemeRow.appendChild(themeCell);
+          eventThemeRow.appendChild(downloadCell);
+          photoMeta.appendChild(eventThemeRow);
+
+          // Número musical
+          if (item.musicalNumber) {
+            const musicalRow = document.createElement("div");
+            musicalRow.className = "photo-meta-row photo-meta-row--clickable";
+            musicalRow.innerHTML = "<dt>Número musical</dt>";
+            const musicalDD = document.createElement("dd");
+            const musicalA = document.createElement("a");
+            musicalA.href = `/zona-vip/galeria/?musical=${item.musicalNumberSlug}`;
+            musicalA.className = "meta-button meta-button--musical";
+            musicalA.textContent = item.musicalNumber;
+            musicalDD.appendChild(musicalA);
+            musicalRow.appendChild(musicalDD);
+            photoMeta.appendChild(musicalRow);
+          }
+
+          // Archivo + Dimensiones + Reportar (misma fila)
+          const fileDimRow = document.createElement("div");
+          fileDimRow.className =
+            "photo-meta-row photo-meta-row--pair photo-meta-row--with-actions";
+
+          const archivoCell = document.createElement("div");
+          archivoCell.className = "photo-meta-cell";
+          const archivoDt = document.createElement("dt");
+          archivoDt.textContent = "Archivo";
+          const archivoDD = document.createElement("dd");
+          archivoDD.className = "photo-meta-file";
+          archivoDD.textContent = item.file;
+          archivoCell.appendChild(archivoDt);
+          archivoCell.appendChild(archivoDD);
+
+          const dimCell = document.createElement("div");
+          dimCell.className = "photo-meta-cell";
+          const dimDt = document.createElement("dt");
+          dimDt.textContent = "Dimensiones";
+          const dimDD = document.createElement("dd");
+          dimDD.textContent = item.width + " × " + item.height + "px";
+          dimCell.appendChild(dimDt);
+          dimCell.appendChild(dimDD);
+
+          const reportCell = document.createElement("div");
+          reportCell.className = "photo-meta-cell photo-meta-cell--action";
+          const reportDt = document.createElement("dt");
+          reportDt.className = "sr-only";
+          reportDt.textContent = "Pedir un cambio";
+          const reportDd = document.createElement("dd");
+          reportDd.className = "photo-meta-action-dd";
+          const reportBtn = document.createElement("button");
+          reportBtn.type = "button";
+          reportBtn.id = "vip-photo-report";
+          reportBtn.className = "report-link";
+          reportBtn.setAttribute("data-photo-slug", item.slug);
+          reportBtn.setAttribute("aria-label", "Pedir un cambio para esta fotografía");
+          reportBtn.innerHTML =
+            '<svg class="photo-meta-action-icon photo-meta-action-icon--flag" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"></path><line x1="4" x2="4" y1="22" y2="15"></line></svg> Pedir un cambio';
+          reportDd.appendChild(reportBtn);
+          reportCell.appendChild(reportDt);
+          reportCell.appendChild(reportDd);
+
+          fileDimRow.appendChild(archivoCell);
+          fileDimRow.appendChild(dimCell);
+          fileDimRow.appendChild(reportCell);
+          photoMeta.appendChild(fileDimRow);
+        }
+
+        // Update modal image
+        if (modalImg) {
+          modalImg.setAttribute("src", item.src);
+          modalImg.setAttribute("alt", item.alt);
+        }
+
+        // Update navigation buttons based on FILTERED photos
+        const filteredPhotos = getFilteredPhotos();
+        const currentIndex = filteredPhotos.findIndex(
+          (entry) => entry.slug === slug,
+        );
+        const prevItem =
+          currentIndex > 0 ? filteredPhotos[currentIndex - 1] : null;
+        const nextItem =
+          currentIndex >= 0 && currentIndex < filteredPhotos.length - 1
+            ? filteredPhotos[currentIndex + 1]
+            : null;
+
+        navButtons.forEach((btn) => {
+          if (btn instanceof HTMLElement) btn.style.display = "none";
+        });
+
+        if (prevItem) {
+          const prevBtn = document.querySelector(".photo-nav-button--prev");
+          if (prevBtn && prevBtn instanceof HTMLAnchorElement) {
+            prevBtn.setAttribute("href", buildUrlWithFilters(prevItem.slug));
+            prevBtn.setAttribute("data-target-slug", prevItem.slug);
+            prevBtn.setAttribute(
+              "aria-label",
+              `Ver fotografía anterior: ${prevItem.alt}`,
+            );
+            prevBtn.style.display = "";
+          }
+        }
+
+        if (nextItem) {
+          const nextBtn = document.querySelector(".photo-nav-button--next");
+          if (nextBtn && nextBtn instanceof HTMLAnchorElement) {
+            nextBtn.setAttribute("href", buildUrlWithFilters(nextItem.slug));
+            nextBtn.setAttribute("data-target-slug", nextItem.slug);
+            nextBtn.setAttribute(
+              "aria-label",
+              `Ver fotografía siguiente: ${nextItem.alt}`,
+            );
+            nextBtn.style.display = "";
+          }
+        }
+
+        // Actualiza la URL sin recargar, preservando los parámetros
+        const newUrl = buildUrlWithFilters(slug);
+        window.history.replaceState({}, "", newUrl);
+      }
+
+      navButtons.forEach(function (btn) {
+        btn.addEventListener("click", function (e) {
+          e.preventDefault();
+          const targetSlug = btn.getAttribute("data-target-slug");
+
+          console.log("Navigation clicked:", targetSlug);
+          console.log("Current filters:", activeFilters);
+          console.log("Filtered photos count:", getFilteredPhotos().length);
+
+          if (typeof targetSlug === "string" && targetSlug) {
+            // Actualiza en la misma página (SPA) y preserva la URL con filtros
+            updatePhoto(targetSlug);
+          }
+        });
+      });
+
+      // Modal logic
+      function openModal() {
+        if (modal) {
+          modal.setAttribute("aria-hidden", "false");
+          document.body.style.overflow = "hidden";
+        }
+      }
+
+      function closeModal() {
+        if (modal) {
+          modal.setAttribute("aria-hidden", "true");
+          document.body.style.overflow = "";
+        }
+      }
+
+      if (photoImg) {
+        photoImg.addEventListener("click", openModal);
+        photoImg.addEventListener("keydown", (e) => {
+          if (e.key === "Enter" || e.key === " ") openModal();
+        });
+      }
+
+      if (modalBg) {
+        modalBg.addEventListener("click", closeModal);
+      }
+
+      if (modalImg) {
+        modalImg.addEventListener("click", closeModal);
+      }
+
+      window.addEventListener("keydown", (e) => {
+        if (
+          modal &&
+          modal.getAttribute("aria-hidden") === "false" &&
+          (e.key === "Escape" || e.key === "Esc")
+        ) {
+          closeModal();
+        }
+      });
+
+    });
+  </script>
+</Layout>

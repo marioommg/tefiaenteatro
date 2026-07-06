@@ -1,0 +1,1404 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import { CANCIONES } from "../../data/canciones";
+
+const pageTitle = "Zona VIP – Banda sonora";
+const pageDescription = "Escucha las canciones del musical y lee sus letras.";
+---
+
+<Layout
+  title={pageTitle}
+  description={pageDescription}
+  noContainer="true"
+  robots="noindex, nofollow"
+>
+  <main>
+    <section class="vip-hero" aria-labelledby="hero-title">
+      <div class="vip-hero-bg" aria-hidden="true"></div>
+      <div class="vip-hero-inner">
+        <h1 id="hero-title" class="gradient-title">Banda sonora</h1>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════
+         REPRODUCTOR DE BANDA SONORA — ZONA VIP
+    ════════════════════════════════════════════════════ -->
+    <section id="vip-music" aria-labelledby="vip-music-title">
+      <div class="vip-music-inner">
+        <div class="vip-player">
+          <!-- Lista lateral de canciones -->
+          <ol
+            class="vip-tracklist"
+            id="vip-tracklist"
+            aria-label="Lista de canciones"
+          >
+            {
+              CANCIONES.map((c, i) => (
+                <li
+                  class="vip-track"
+                  data-index={i}
+                  data-src={c.archivo}
+                  data-titulo={c.titulo}
+                  data-enlace={c.enlaceOficial || ""}
+                  data-tiene-letra={c.letra.length > 0 ? "1" : "0"}
+                  role="button"
+                  tabindex="0"
+                  aria-label={`${c.numero}. ${c.titulo}`}
+                >
+                  <span class="vip-track-num">{c.numero}</span>
+                  <span class="vip-track-title">{c.titulo}</span>
+                  <span class="vip-track-play-icon" aria-hidden="true">
+                    ▶
+                  </span>
+                </li>
+              ))
+            }
+          </ol>
+
+          <!-- Panel principal del reproductor -->
+          <div class="vip-player-panel">
+            <div class="vip-panel-top">
+              <!-- Nombre de la canción activa -->
+              <div class="vip-now-playing" id="vip-now-playing">
+                <div class="vip-now-playing-icon" aria-hidden="true">
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="currentColor"
+                    width="56"
+                    height="56"
+                    ><path
+                      d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"
+                    ></path></svg
+                  >
+                </div>
+                <div class="vip-now-title-wrap">
+                  <span id="vip-track-title" class="vip-now-title"
+                    >Selecciona una canción</span
+                  >
+                </div>
+              </div>
+
+              <!-- Panel de letra (Overlay) -->
+              <div class="vip-lyrics-panel" id="vip-lyrics-panel">
+                <div class="vip-lyrics-body" id="vip-lyrics-body">
+                  <p class="vip-lyrics-empty">
+                    No hay letra disponible para esta canción.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div class="vip-panel-bottom">
+              <!-- Barra de progreso -->
+              <div
+                class="vip-progress-wrap"
+                id="vip-progress-wrap"
+                role="slider"
+                aria-label="Progreso"
+                aria-valuemin="0"
+                aria-valuemax="100"
+                aria-valuenow="0"
+                tabindex="0"
+              >
+                <div class="vip-progress-bg">
+                  <div class="vip-progress-fill" id="vip-progress-fill"></div>
+                  <div class="vip-progress-thumb" id="vip-progress-thumb"></div>
+                </div>
+              </div>
+              <div class="vip-time-row">
+                <span id="vip-time-cur">0:00</span>
+                <span id="vip-time-dur">0:00</span>
+              </div>
+
+              <!-- Controles -->
+              <div class="vip-controls">
+                <button
+                  id="vip-btn-prev"
+                  class="vip-ctrl-btn"
+                  aria-label="Canción anterior"
+                  title="Anterior"
+                >
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="currentColor"
+                    width="18"
+                    height="18"
+                    ><path d="M6 6h2v12H6zm3.5 6 8.5 6V6z"></path></svg
+                  >
+                </button>
+                <button
+                  id="vip-btn-play"
+                  class="vip-ctrl-btn vip-ctrl-play"
+                  aria-label="Reproducir"
+                  title="Reproducir / Pausar"
+                >
+                  <svg
+                    id="vip-icon-play"
+                    viewBox="0 0 24 24"
+                    fill="currentColor"
+                    width="22"
+                    height="22"><path d="M8 5v14l11-7z"></path></svg
+                  >
+                  <svg
+                    id="vip-icon-pause"
+                    viewBox="0 0 24 24"
+                    fill="currentColor"
+                    width="22"
+                    height="22"
+                    style="display:none"
+                    ><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"></path></svg
+                  >
+                </button>
+                <button
+                  id="vip-btn-next"
+                  class="vip-ctrl-btn"
+                  aria-label="Siguiente canción"
+                  title="Siguiente"
+                >
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="currentColor"
+                    width="18"
+                    height="18"
+                    ><path
+                      d="M6 18l8.5-6L6 6v12zm2-8.14 5.15 2.14L8 14.14V9.86zM16 6h2v12h-2z"
+                    ></path></svg
+                  >
+                </button>
+
+                <!-- Letra toggle btn -->
+                <button
+                  id="vip-lyrics-toggle"
+                  class="vip-ctrl-btn vip-ctrl-lyrics"
+                  aria-label="Ver letra"
+                  title="Ver letra"
+                >
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="currentColor"
+                    width="18"
+                    height="18"
+                    ><path
+                      d="M12 2C6.48 2 2 5.92 2 10.75c0 2.87 1.63 5.41 4.13 7.02l-.84 2.82c-.11.39.26.74.63.6l3.14-1.22c.94.27 1.93.43 2.94.43 5.52 0 10-3.92 10-8.75S17.52 2 12 2zm-2 11H8v-2h2v2zm4 0h-2v-2h2v2zm4 0h-2v-2h2v2z"
+                    ></path></svg
+                  >
+                </button>
+
+                <!-- Descargar track -->
+                <a
+                  id="vip-btn-download"
+                  class="vip-ctrl-btn"
+                  aria-label="Descargar canción"
+                  title="Descargar canción"
+                  download=""
+                >
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="currentColor"
+                    width="18"
+                    height="18"
+                    ><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"
+                    ></path></svg
+                  >
+                </a>
+
+                <!-- Escuchar la oficial -->
+                <a
+                  href="#"
+                  id="vip-track-link"
+                  class="vip-track-link is-hidden"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  title="Escuchar la oficial"
+                >
+                  <svg
+                    id="vip-icon-spotify"
+                    viewBox="0 0 24 24"
+                    fill="currentColor"
+                    width="20"
+                    height="20"
+                  >
+                    <path
+                      d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm4.587 14.424c-.18.295-.562.387-.857.207-2.348-1.435-5.302-1.76-8.784-.964-.328.075-.658-.13-.733-.458-.075-.328.13-.658.458-.733 3.805-.87 7.076-.497 9.71 1.11.294.18.386.56.206.855zm1.227-2.735c-.227.368-.707.49-1.076.262-2.684-1.648-6.78-2.13-9.596-1.166-.412.14-.86-.078-1.002-.49-.14-.413.078-.86.49-1.002 3.25-1.114 7.78-.57 10.92 1.354.37.228.49.708.264 1.076zm.106-2.868c-3.21-1.905-8.508-2.08-11.583-1.15-.494.15-1.013-.13-1.163-.623-.15-.493.13-1.013.623-1.163 3.515-1.063 9.35-.862 13.04 1.328.44.262.585.836.324 1.277-.26.44-.835.584-1.276.324z"
+                    ></path>
+                  </svg>
+                  <svg
+                    id="vip-icon-atresplayer"
+                    viewBox="0 0 24 24"
+                    fill="currentColor"
+                    width="22"
+                    height="22"
+                    style="display:none;"
+                  >
+                    <path d="M8 5v14l11-7z"></path>
+                  </svg>
+                  <span class="vip-track-link-text">Escuchar la oficial</span>
+                </a>
+
+                <!-- Volumen -->
+                <div class="vip-volume-wrap">
+                  <button
+                    id="vip-btn-mute"
+                    class="vip-ctrl-btn vip-ctrl-mute"
+                    aria-label="Silenciar"
+                    title="Silenciar"
+                  >
+                    <svg
+                      id="vip-icon-vol"
+                      viewBox="0 0 24 24"
+                      fill="currentColor"
+                      width="18"
+                      height="18"
+                      ><path
+                        d="M3 9v6h4l5 5V4L7 9H3zm10-.17v6.34c.74-.36 1.27-1.13 1.27-2.17s-.53-1.81-1.27-2.17zM14.5 3.23v2.06c1.77.72 3 2.46 3 4.71s-1.23 3.99-3 4.71v2.06c2.89-.86 5-3.54 5-6.77s-2.11-5.91-5-6.77z"
+                      ></path></svg
+                    >
+                    <svg
+                      id="vip-icon-mute"
+                      viewBox="0 0 24 24"
+                      fill="currentColor"
+                      width="18"
+                      height="18"
+                      style="display:none"
+                      ><path
+                        d="M16.5 12A4.5 4.5 0 0 0 14 7.97v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"
+                      ></path></svg
+                    >
+                  </button>
+                  <div class="vip-volume-slider-wrap">
+                    <input
+                      type="range"
+                      id="vip-volume"
+                      class="vip-volume-slider"
+                      min="0"
+                      max="1"
+                      step="0.02"
+                      value="1"
+                      aria-label="Volumen"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <p
+          class="vip-music-sub muted center"
+          style="margin-top: 2.5rem; margin-bottom: 1rem;"
+        >
+          <a
+            href="/zona-vip/contenido/"
+            class="btn-link"
+            style="font-size: 0.95rem;"
+          >
+            <span aria-hidden="true">←</span> Volver al contenido
+          </a>
+        </p>
+      </div>
+
+      <!-- Elemento audio oculto -->
+      <audio id="vip-audio" preload="metadata"></audio>
+
+      <!-- Datos de letras serializados para el JS del cliente -->
+      <script is:inline
+        id="vip-letras-json"
+        type="application/json"
+        set:html={JSON.stringify(CANCIONES.map((c) => c.letra))}
+      />
+
+      <style>
+        :root {
+          --vip-bg:
+            radial-gradient(
+              1200px 600px at 50% -10%,
+              #3a0077 0%,
+              rgba(58, 0, 119, 0) 55%
+            ),
+            radial-gradient(
+              600px 300px at 10% -10%,
+              #0066ff 0%,
+              rgba(0, 102, 255, 0) 60%
+            ),
+            radial-gradient(
+              600px 300px at 90% 0%,
+              #00e1b7 0%,
+              rgba(0, 225, 183, 0) 60%
+            );
+          --vip-border: #2a2a2a;
+          --vip-muted: #bfbfbf;
+          --vip-dim: #9a9a9a;
+          --vip-accent: #a200ff;
+          --vip-accent-2: #00e1b7;
+        }
+
+        .center {
+          text-align: center;
+        }
+        .muted {
+          color: var(--vip-muted);
+        }
+        .btn-link {
+          color: var(--vip-dim);
+          text-decoration: underline;
+        }
+        .btn-link:hover {
+          color: #fff;
+        }
+
+        /* ── Hero ── */
+        .vip-hero {
+          position: relative;
+          overflow: clip;
+          padding: 3.5rem 1rem 2.25rem;
+          text-align: center;
+          isolation: isolate;
+        }
+        .vip-hero-bg {
+          position: absolute;
+          inset: -2px;
+          z-index: -1;
+          background: var(--vip-bg);
+          filter: saturate(1.1);
+        }
+        .vip-hero-inner {
+          max-width: 1000px;
+          margin: 0 auto;
+        }
+        .gradient-title {
+          margin: 0;
+          font-size: clamp(2rem, 4vw + 1.25rem, 4rem);
+          line-height: 1.05;
+          font-weight: 900;
+          letter-spacing: -0.02em;
+          background: linear-gradient(90deg, #fff, #b893ff, #8ef3db);
+          -webkit-background-clip: text;
+          background-clip: text;
+          color: transparent;
+          text-shadow: 0 0 40px rgba(162, 0, 255, 0.25);
+        }
+
+        /* ── Sección música ── */
+        #vip-music {
+          padding: 1rem 1rem 3.5rem;
+          position: relative;
+          z-index: 1;
+          overflow-x: clip;
+        }
+        .vip-music-inner {
+          max-width: 1000px;
+          margin: 0 auto;
+          width: 100%;
+        }
+
+        /* ── Player container ── */
+        .vip-player {
+          display: grid;
+          grid-template-columns: 220px 1fr;
+          gap: 1rem;
+          align-items: stretch;
+          width: 100%;
+          max-width: 100%;
+        }
+
+        /* ── Lista de canciones ── */
+        .vip-tracklist {
+          list-style: none;
+          margin: 0;
+          padding: 0;
+          border: 1px solid var(--vip-border);
+          border-radius: 10px;
+          overflow: hidden;
+          background: #0d0d0d;
+          height: 480px; /* Igualar al panel principal */
+          box-sizing: border-box;
+          overflow-y: auto;
+          scrollbar-width: thin;
+          scrollbar-color: #2a2a2a transparent;
+          max-width: 100%;
+        }
+        .vip-tracklist::-webkit-scrollbar {
+          width: 4px;
+        }
+        .vip-tracklist::-webkit-scrollbar-thumb {
+          background: #2a2a2a;
+          border-radius: 2px;
+        }
+        .vip-track {
+          display: flex;
+          align-items: center;
+          gap: 0.55rem;
+          padding: 0.7rem 0.85rem;
+          cursor: pointer;
+          border-bottom: 1px solid var(--vip-border);
+          transition:
+            background 0.15s,
+            color 0.15s;
+          color: var(--vip-muted);
+          font-size: 0.875rem;
+          user-select: none;
+          outline: none;
+        }
+        .vip-track:last-child {
+          border-bottom: none;
+        }
+        .vip-track:hover {
+          background: #161616;
+          color: #fff;
+        }
+        .vip-track:focus-visible {
+          box-shadow: inset 0 0 0 2px var(--vip-accent);
+        }
+        .vip-track.is-active {
+          color: #fff;
+          background: #181220;
+        }
+        .vip-track.is-active .vip-track-num {
+          color: var(--vip-accent);
+        }
+        .vip-track-num {
+          font-size: 0.72rem;
+          color: var(--vip-dim);
+          font-variant-numeric: tabular-nums;
+          min-width: 1.6em;
+          flex-shrink: 0;
+        }
+        .vip-track-title {
+          flex: 1;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+        .vip-track-play-icon {
+          font-size: 0.6rem;
+          opacity: 0;
+          transition: opacity 0.15s;
+          color: var(--vip-accent);
+          flex-shrink: 0;
+        }
+        .vip-track.is-active .vip-track-play-icon,
+        .vip-track:hover .vip-track-play-icon {
+          opacity: 1;
+        }
+        .vip-track.is-playing .vip-track-play-icon {
+          animation: pulse-dot 1s ease-in-out infinite;
+        }
+
+        /* ── Panel principal ── */
+        .vip-player-panel {
+          border: 1px solid var(--vip-border);
+          border-radius: 12px;
+          background: linear-gradient(160deg, #0e0b16 0%, #0b0b0b 100%);
+          padding: 1.25rem 1.4rem 1.1rem;
+          display: flex;
+          flex-direction: column;
+          gap: 0.9rem;
+          height: 480px; /* Igualar al tracklist y dar suficiente espacio al interior */
+          box-sizing: border-box;
+          position: relative;
+          max-width: 100%;
+        }
+
+        .vip-panel-top {
+          flex: 1;
+          position: relative;
+          min-height: 0;
+          display: flex;
+          flex-direction: column;
+        }
+        .vip-panel-bottom {
+          flex-shrink: 0;
+          display: flex;
+          flex-direction: column;
+          gap: 0.8rem;
+          position: relative;
+          z-index: 5;
+        }
+
+        /* Título de la canción activa */
+        .vip-now-playing {
+          flex: 1;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          text-align: center;
+          gap: 1.5rem;
+          transition:
+            opacity 0.3s ease,
+            transform 0.3s ease;
+        }
+        .vip-now-playing.is-hidden {
+          opacity: 0;
+          pointer-events: none;
+          transform: scale(0.95);
+        }
+        .vip-now-playing-icon {
+          color: rgba(255, 255, 255, 0.08);
+          background: rgba(255, 255, 255, 0.03);
+          width: 140px;
+          height: 140px;
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+        }
+        .vip-now-title-wrap {
+          display: flex;
+          flex-direction: column;
+          gap: 0.15rem;
+        }
+        .vip-now-title {
+          font-size: 1.75rem;
+          font-weight: 800;
+          color: #fff;
+          letter-spacing: -0.01em;
+          text-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+          transition: opacity 0.2s;
+        }
+        .vip-now-title.is-idle {
+          opacity: 0.5;
+          color: var(--vip-dim);
+          font-weight: 500;
+          font-size: 1.1rem;
+        }
+        .vip-track-link {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          gap: 0.45rem;
+          font-size: 0.85rem;
+          color: #d18dff; /* Morado claro */
+          background: rgba(162, 0, 255, 0.1); /* Fondo sutil morado */
+          border: 1px solid rgba(162, 0, 255, 0.3); /* Borde estilo botón */
+          border-radius: 8px; /* Igual que los otros botones de control */
+          height: 38px; /* Misma altura que vip-ctrl-btn */
+          padding: 0 1rem;
+          text-decoration: none;
+          font-weight: 700;
+          transition: all 0.2s;
+          margin-left: auto; /* Empuja a los bordes y se centra a sí mismo */
+          margin-right: auto;
+        }
+        .vip-track-link:hover {
+          background: rgba(162, 0, 255, 0.25);
+          border-color: rgba(162, 0, 255, 0.6);
+          color: #fff;
+          transform: translateY(-1px);
+        }
+        .vip-track-link:active {
+          transform: translateY(1px);
+        }
+        .vip-track-link:global(.is-atresplayer) {
+          color: #ff3c3c !important;
+          background: rgba(255, 30, 30, 0.1) !important;
+          border-color: rgba(255, 30, 30, 0.3) !important;
+        }
+        .vip-track-link:global(.is-atresplayer):hover {
+          background: rgba(255, 30, 30, 0.25) !important;
+          border-color: rgba(255, 30, 30, 0.6) !important;
+          color: #fff !important;
+        }
+        .vip-track-link.is-hidden {
+          display: none;
+        }
+
+        /* Barra de progreso */
+        .vip-progress-wrap {
+          cursor: pointer;
+          padding: 6px 0;
+          touch-action: none;
+        }
+        .vip-progress-bg {
+          position: relative;
+          height: 3px;
+          border-radius: 999px;
+          background: #232323;
+          overflow: visible;
+        }
+        .vip-progress-fill {
+          position: absolute;
+          left: 0;
+          top: 0;
+          height: 100%;
+          width: 0%;
+          background: linear-gradient(
+            90deg,
+            var(--vip-accent),
+            var(--vip-accent-2)
+          );
+          border-radius: 999px;
+          pointer-events: none;
+          transition: width 0.1s linear;
+        }
+        .vip-progress-thumb {
+          position: absolute;
+          top: 50%;
+          left: 0%;
+          transform: translate(-50%, -50%) scale(0);
+          width: 12px;
+          height: 12px;
+          border-radius: 50%;
+          background: #fff;
+          box-shadow: 0 0 6px rgba(162, 0, 255, 0.5);
+          pointer-events: none;
+          transition:
+            left 0.1s linear,
+            transform 0.15s ease;
+        }
+        .vip-progress-wrap:hover .vip-progress-thumb,
+        .vip-progress-wrap:focus-visible .vip-progress-thumb {
+          transform: translate(-50%, -50%) scale(1);
+        }
+        .vip-progress-wrap:focus-visible {
+          outline: none;
+        }
+        .vip-progress-wrap:focus-visible .vip-progress-bg {
+          box-shadow: 0 0 0 2px rgba(162, 0, 255, 0.4);
+        }
+
+        /* Tiempos */
+        .vip-time-row {
+          display: flex;
+          justify-content: space-between;
+          font-size: 0.72rem;
+          color: var(--vip-dim);
+          font-variant-numeric: tabular-nums;
+          margin-top: -0.3rem;
+        }
+
+        /* Controles */
+        .vip-controls {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+        }
+        .vip-ctrl-btn {
+          background: none;
+          border: 1px solid var(--vip-border);
+          border-radius: 8px;
+          color: var(--vip-muted);
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          width: 38px;
+          height: 38px;
+          cursor: pointer;
+          transition:
+            background 0.15s,
+            border-color 0.15s,
+            color 0.15s;
+          flex-shrink: 0;
+        }
+        .vip-ctrl-btn:hover {
+          background: #1a1a1a;
+          border-color: #3d3d3d;
+          color: #fff;
+        }
+        .vip-ctrl-btn:active {
+          transform: scale(0.94);
+        }
+        .vip-ctrl-play {
+          border-color: #3b2c6e;
+          background: #130d22;
+          color: var(--vip-accent);
+          width: 44px;
+          height: 44px;
+        }
+        .vip-ctrl-play:hover {
+          background: #1e1234;
+          border-color: var(--vip-accent);
+          color: #c260ff;
+        }
+
+        /* Volumen */
+        .vip-volume-wrap {
+          display: flex;
+          align-items: center;
+          gap: 0.35rem;
+          margin-left: auto;
+        }
+        .vip-ctrl-mute {
+          width: 32px;
+          height: 32px;
+          border: none;
+          background: none;
+          color: var(--vip-dim);
+        }
+        .vip-ctrl-mute:hover {
+          color: #fff;
+          background: none;
+          border: none;
+        }
+        .vip-volume-slider-wrap {
+          width: 80px;
+        }
+        .vip-volume-slider {
+          -webkit-appearance: none;
+          appearance: none;
+          width: 100%;
+          height: 3px;
+          border-radius: 999px;
+          background: #2a2a2a;
+          outline: none;
+          cursor: pointer;
+          accent-color: var(--vip-accent);
+        }
+        .vip-volume-slider::-webkit-slider-thumb {
+          -webkit-appearance: none;
+          appearance: none;
+          width: 11px;
+          height: 11px;
+          border-radius: 50%;
+          background: #fff;
+          cursor: pointer;
+          box-shadow: 0 0 4px rgba(162, 0, 255, 0.4);
+        }
+        .vip-volume-slider::-moz-range-thumb {
+          width: 11px;
+          height: 11px;
+          border-radius: 50%;
+          background: #fff;
+          cursor: pointer;
+          border: none;
+        }
+
+        /* ── Panel de letra (Overlay) ── */
+        .vip-lyrics-panel {
+          position: absolute;
+          inset: 0;
+          overflow-y: auto;
+          scroll-behavior: smooth;
+          opacity: 0;
+          pointer-events: none;
+          transition:
+            opacity 0.3s ease,
+            transform 0.3s ease;
+          transform: translateY(10px);
+          padding: 3rem 1rem 4rem;
+          scrollbar-width: none;
+          -ms-overflow-style: none;
+          mask-image: linear-gradient(
+            to bottom,
+            transparent,
+            black 15%,
+            black 85%,
+            transparent
+          );
+          -webkit-mask-image: linear-gradient(
+            to bottom,
+            transparent,
+            black 15%,
+            black 85%,
+            transparent
+          );
+        }
+        .vip-lyrics-panel::-webkit-scrollbar {
+          display: none;
+        }
+        .vip-lyrics-panel.is-visible {
+          opacity: 1;
+          pointer-events: auto;
+          transform: translateY(0);
+        }
+        .vip-lyrics-body {
+          display: flex;
+          flex-direction: column;
+          gap: 1rem;
+          text-align: left; /* Alineado a la izquierda */
+          line-height: 1.25;
+          font-weight: 800;
+          letter-spacing: -0.02em;
+        }
+        .vip-lyrics-body :global(.vip-lyric-line) {
+          transition: all 0.18s cubic-bezier(0.4, 0, 0.2, 1);
+          transform-origin: left center;
+          opacity: 0.4;
+          color: #888;
+          font-size: 1.4rem;
+          cursor: pointer;
+          filter: blur(2px);
+          padding: 0.2em 0; /* Padding sutil para las líneas normales */
+          width: fit-content;
+        }
+        .vip-lyrics-body :global(.vip-lyric-line:hover) {
+          opacity: 0.8;
+          color: #b3b3b3;
+          filter: blur(0);
+        }
+        .vip-lyrics-body :global(.vip-lyric-line.is-active) {
+          opacity: 1;
+          color: #fff;
+          font-size: 1.8rem;
+          transform: scale(1.02);
+          filter: blur(0);
+          font-weight: 800;
+          text-shadow: 0 0 15px rgba(255, 255, 255, 0.4);
+        }
+        .vip-lyrics-body :global(.vip-lyric-line.un-sync) {
+          font-size: 1.4rem;
+          font-weight: 600;
+          opacity: 0.5;
+          color: #aaa;
+          filter: blur(1px);
+        }
+        .vip-lyrics-body :global(.vip-lyrics-strophe) {
+          margin-bottom: 1.5rem;
+          height: 1px;
+        }
+        .vip-lyrics-body :global(.vip-lyrics-empty) {
+          color: var(--vip-dim);
+          font-size: 1.1rem;
+          font-style: italic;
+          opacity: 0.6;
+          filter: blur(0);
+        }
+        .vip-ctrl-lyrics {
+          transition:
+            color 0.2s,
+            background 0.2s,
+            border-color 0.2s;
+        }
+        .vip-ctrl-lyrics.is-active {
+          color: var(--vip-accent-2);
+          border-color: var(--vip-accent-2);
+          background: rgba(0, 225, 183, 0.1);
+        }
+
+        /* ── Animaciones ── */
+        @keyframes pulse-dot {
+          0%,
+          100% {
+            opacity: 1;
+          }
+          50% {
+            opacity: 0.35;
+          }
+        }
+        @keyframes fadeInPlayer {
+          from {
+            opacity: 0;
+            transform: translateY(8px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+        .vip-player {
+          animation: fadeInPlayer 0.5s ease both;
+        }
+
+        /* ── Responsive ── */
+        @media (max-width: 900px) {
+          #vip-music {
+            padding-inline: 1rem;
+          }
+          .vip-player {
+            grid-template-columns: 1fr;
+            gap: 0.8rem;
+          }
+          .vip-tracklist,
+          .vip-player-panel,
+          .vip-panel-top,
+          .vip-panel-bottom,
+          .vip-controls {
+            min-width: 0;
+          }
+          .vip-tracklist {
+            order: 2;
+            display: block;
+            padding: 0;
+            height: auto;
+            max-height: 220px;
+            overflow-x: hidden;
+            overflow-y: auto;
+            white-space: normal;
+            scroll-snap-type: none;
+          }
+          .vip-track {
+            border: 0;
+            border-bottom: 1px solid var(--vip-border);
+            border-radius: 0;
+            min-width: 0;
+            max-width: none;
+            padding: 0.68rem 0.8rem;
+            font-size: 0.86rem;
+            flex-shrink: 1;
+          }
+          .vip-track-num {
+            min-width: 1.4em;
+          }
+          .vip-track-play-icon {
+            opacity: 0;
+          }
+          .vip-track.is-active .vip-track-play-icon,
+          .vip-track:hover .vip-track-play-icon {
+            opacity: 1;
+          }
+          .vip-player-panel {
+            order: 1;
+            height: auto;
+            min-height: 400px;
+            padding: 1rem;
+          }
+          .vip-now-playing {
+            gap: 0.9rem;
+          }
+          .vip-now-playing-icon {
+            width: 96px;
+            height: 96px;
+          }
+          .vip-now-title {
+            font-size: 1.35rem;
+          }
+          .vip-controls {
+            flex-wrap: wrap;
+            gap: 0.45rem;
+            justify-content: center;
+          }
+          .vip-ctrl-btn {
+            width: 36px;
+            height: 36px;
+          }
+          .vip-ctrl-play {
+            width: 40px;
+            height: 40px;
+          }
+          .vip-track-link {
+            order: 3;
+            flex: 1 1 100%;
+            margin: 0;
+            min-width: 0;
+            font-size: 0.8rem;
+            width: 100%;
+          }
+          .vip-volume-wrap {
+            display: none;
+          }
+          .vip-lyrics-panel {
+            padding: 2rem 0.7rem 3rem;
+          }
+          .vip-lyrics-body :global(.vip-lyric-line) {
+            width: 100%;
+            max-width: 100%;
+            font-size: 1.12rem;
+            filter: blur(1px);
+          }
+          .vip-lyrics-body :global(.vip-lyric-line.is-active) {
+            font-size: 1.35rem;
+          }
+        }
+        @media (min-width: 960px) {
+          .vip-hero {
+            padding: 4.25rem 1rem 2.5rem;
+          }
+        }
+        @media (hover: none), (pointer: coarse) {
+          .vip-volume-wrap {
+            display: none !important;
+          }
+        }
+      </style>
+
+      <script is:inline>
+        (function () {
+          const LETRAS = JSON.parse(
+            document.getElementById("vip-letras-json")?.textContent || "[]",
+          );
+
+          let currentIndex = -1;
+          let isPlaying = false;
+          let isSeeking = false;
+
+          const audio = document.getElementById("vip-audio");
+          const trackItems = Array.from(
+            document.querySelectorAll(".vip-track"),
+          );
+          const btnPlay = document.getElementById("vip-btn-play");
+          const iconPlay = document.getElementById("vip-icon-play");
+          const iconPause = document.getElementById("vip-icon-pause");
+          const btnPrev = document.getElementById("vip-btn-prev");
+          const btnNext = document.getElementById("vip-btn-next");
+          const btnMute = document.getElementById("vip-btn-mute");
+          const iconVol = document.getElementById("vip-icon-vol");
+          const iconMute2 = document.getElementById("vip-icon-mute");
+          const volumeSlider = document.getElementById("vip-volume");
+          const progressWrap = document.getElementById("vip-progress-wrap");
+          const progressFill = document.getElementById("vip-progress-fill");
+          const progressThumb = document.getElementById("vip-progress-thumb");
+          const timeCur = document.getElementById("vip-time-cur");
+          const timeDur = document.getElementById("vip-time-dur");
+          const trackTitle = document.getElementById("vip-track-title");
+          const trackLink = document.getElementById("vip-track-link");
+          const iconSpotify = document.getElementById("vip-icon-spotify");
+          const iconAtresplayer = document.getElementById(
+            "vip-icon-atresplayer",
+          );
+          const btnDownload = document.getElementById("vip-btn-download");
+          const lyricsToggle = document.getElementById("vip-lyrics-toggle");
+          const lyricsPanel = document.getElementById("vip-lyrics-panel");
+          const lyricsBody = document.getElementById("vip-lyrics-body");
+
+          function fmt(sec) {
+            if (!isFinite(sec) || sec < 0) return "0:00";
+            const m = Math.floor(sec / 60);
+            const s = Math.floor(sec % 60);
+            return m + ":" + String(s).padStart(2, "0");
+          }
+
+          function setProgress(pct) {
+            const p = Math.min(100, Math.max(0, pct));
+            progressFill.style.width = p + "%";
+            progressThumb.style.left = p + "%";
+            progressWrap.setAttribute("aria-valuenow", Math.round(p));
+          }
+
+          function setPlayState(playing) {
+            isPlaying = playing;
+            iconPlay.style.display = playing ? "none" : "";
+            iconPause.style.display = playing ? "" : "none";
+            btnPlay.setAttribute(
+              "aria-label",
+              playing ? "Pausar" : "Reproducir",
+            );
+            btnPlay.title = playing ? "Pausar" : "Reproducir";
+            trackItems.forEach((el, i) => {
+              el.classList.toggle("is-playing", i === currentIndex && playing);
+            });
+          }
+
+          function scrollActiveTrack() {
+            const el = trackItems[currentIndex];
+            if (el) el.scrollIntoView({ block: "nearest", behavior: "smooth" });
+          }
+
+          function updateLyricsHighlight() {
+            if (
+              lyricsBody.dataset.sync === "1" &&
+              lyricsPanel.classList.contains("is-visible")
+            ) {
+              const lines = Array.from(
+                lyricsBody.querySelectorAll(".vip-lyric-line[data-time]"),
+              );
+              let activeIndex = -1;
+              // Pequeño adelanto para compensar latencia visual del `timeupdate`.
+              // Mantiene sincronía sin adelantarse tanto como el ajuste anterior.
+              const LYRICS_LEAD_SECONDS = 0.60;
+              const ct = (audio.currentTime || 0) + LYRICS_LEAD_SECONDS;
+
+              for (let i = 0; i < lines.length; i++) {
+                if (ct >= parseFloat(lines[i].dataset.time)) {
+                  activeIndex = i;
+                } else {
+                  break;
+                }
+              }
+
+              if (activeIndex !== -1) {
+                const currentActive = lyricsBody.querySelector(
+                  ".vip-lyric-line.is-active",
+                );
+                if (currentActive !== lines[activeIndex]) {
+                  if (currentActive)
+                    currentActive.classList.remove("is-active");
+                  lines[activeIndex].classList.add("is-active");
+
+                  // Hacer scroll automático
+                  const offsetTop = lines[activeIndex].offsetTop;
+                  lyricsPanel.scrollTo({
+                    top: offsetTop - lyricsPanel.clientHeight / 2 + 20,
+                    behavior: "smooth",
+                  });
+                }
+              }
+            }
+          }
+
+          function renderLyrics(index) {
+            const letraData = LETRAS[index] || [];
+            if (!letraData.length) {
+              lyricsBody.innerHTML =
+                '<p class="vip-lyrics-empty">No hay letra disponible para esta canción.</p>';
+              lyricsBody.dataset.sync = "0";
+            } else {
+              let html = "";
+              let hasSync = false;
+
+              // Acoplar todas las líneas en un array 1D
+              const lineas = letraData.flat();
+
+              lineas.forEach((line) => {
+                const match = String(line).match(
+                  /^\[(\d{2}):(\d{2}(?:\.\d+)?)\](.*)/,
+                );
+                if (match) {
+                  hasSync = true;
+                  const m = parseInt(match[1], 10);
+                  const s = parseFloat(match[2]);
+                  const timeSec = m * 60 + s;
+                  const text = match[3].trim();
+                  html += `<div class="vip-lyric-line sync-line" data-time="${timeSec}"><span>${text || "&nbsp;"}</span></div>`;
+                } else {
+                  // Si es un string vacío, lo tratamos como separación de estrofa
+                  if (!line.trim()) {
+                    html += `<div class="vip-lyrics-strophe"></div>`;
+                  } else {
+                    html += `<div class="vip-lyric-line un-sync"><span>${String(line).replace(/&/g, "&amp;").replace(/</g, "&lt;")}</span></div>`;
+                  }
+                }
+              });
+
+              lyricsBody.innerHTML = html;
+              lyricsBody.dataset.sync = hasSync ? "1" : "0";
+
+              if (hasSync) {
+                const lineEls = lyricsBody.querySelectorAll(".sync-line");
+                lineEls.forEach((el) => {
+                  el.addEventListener("click", () => {
+                    audio.currentTime = parseFloat(el.dataset.time);
+                    if (audio.paused) togglePlay();
+                    updateLyricsHighlight();
+                  });
+                });
+              }
+            }
+            updateLyricsHighlight();
+          }
+
+          function loadTrack(index, autoplay) {
+            const item = trackItems[index];
+            if (!item) return;
+
+            trackItems.forEach((el, i) => {
+              el.classList.toggle("is-active", i === index);
+              el.classList.remove("is-playing");
+            });
+
+            currentIndex = index;
+            const src = item.dataset.src;
+            const titulo = item.dataset.titulo;
+            const enlace = item.dataset.enlace;
+
+            trackTitle.textContent = titulo;
+            trackTitle.classList.remove("is-idle");
+
+            if (enlace) {
+              trackLink.href = enlace;
+              trackLink.title = "Escuchar la original en Spotify";
+              iconSpotify.style.display = "";
+              iconAtresplayer.style.display = "none";
+              trackLink.classList.remove("is-hidden");
+            } else {
+              trackLink.href =
+                "https://www.atresplayer.com/series/las-noches-de-tefia/";
+              trackLink.title = "Ver serie en ATRESplayer";
+              iconSpotify.style.display = "none";
+              iconAtresplayer.style.display = "";
+              trackLink.classList.remove("is-hidden");
+            }
+
+            // Configuramos el enlace de descarga directamente aquí
+            const srcFixed = item.dataset.src.replace(/^public\//, '/'); // Limpia "public/" si existe
+            const numero = item.querySelector('.vip-track-num').textContent;
+            btnDownload.href = srcFixed;
+            btnDownload.download = `${numero} ${titulo}.wav`.trim();
+
+            audio.src = src;
+            setProgress(0);
+            timeCur.textContent = "0:00";
+            timeDur.textContent = "0:00";
+            setPlayState(false);
+
+            audio.load();
+            if (autoplay) {
+              audio.play().catch(() => {});
+            }
+
+            renderLyrics(index);
+            lyricsPanel.scrollTop = 0;
+            scrollActiveTrack();
+          }
+
+          function togglePlay() {
+            if (currentIndex < 0) {
+              loadTrack(0, true);
+              return;
+            }
+            if (audio.paused) {
+              audio.play().catch(() => {});
+            } else {
+              audio.pause();
+            }
+          }
+
+          function prevTrack() {
+            if (currentIndex <= 0) return;
+            loadTrack(currentIndex - 1, isPlaying);
+          }
+          function nextTrack(autoplay = true) {
+            if (currentIndex >= trackItems.length - 1) return;
+            loadTrack(currentIndex + 1, autoplay);
+          }
+
+          audio.addEventListener("play", () => setPlayState(true));
+          audio.addEventListener("pause", () => setPlayState(false));
+          audio.addEventListener("ended", () => {
+            setPlayState(false);
+            nextTrack(true);
+          });
+          audio.addEventListener("loadedmetadata", () => {
+            timeDur.textContent = fmt(audio.duration);
+            updateLyricsHighlight();
+          });
+          audio.addEventListener("timeupdate", () => {
+            if (isSeeking || !audio.duration) return;
+            const pct = (audio.currentTime / audio.duration) * 100;
+            setProgress(pct);
+            timeCur.textContent = fmt(audio.currentTime);
+            updateLyricsHighlight();
+          });
+
+          function seekTo(e) {
+            if (!audio.duration) return;
+            const rect = progressWrap
+              .querySelector(".vip-progress-bg")
+              .getBoundingClientRect();
+            const x = Math.min(Math.max(e.clientX - rect.left, 0), rect.width);
+            const pct = (x / rect.width) * 100;
+            audio.currentTime = (pct / 100) * audio.duration;
+            setProgress(pct);
+            timeCur.textContent = fmt(audio.currentTime);
+          }
+
+          let pointerDown = false;
+          progressWrap.addEventListener("pointerdown", (e) => {
+            pointerDown = true;
+            isSeeking = true;
+            progressWrap.setPointerCapture(e.pointerId);
+            seekTo(e);
+          });
+          progressWrap.addEventListener("pointermove", (e) => {
+            if (!pointerDown) return;
+            seekTo(e);
+          });
+          progressWrap.addEventListener("pointerup", (e) => {
+            if (!pointerDown) return;
+            pointerDown = false;
+            isSeeking = false;
+            seekTo(e);
+          });
+          progressWrap.addEventListener("keydown", (e) => {
+            if (!audio.duration) return;
+            if (e.key === "ArrowRight")
+              audio.currentTime = Math.min(
+                audio.duration,
+                audio.currentTime + 5,
+              );
+            if (e.key === "ArrowLeft")
+              audio.currentTime = Math.max(0, audio.currentTime - 5);
+          });
+
+          volumeSlider.addEventListener("input", () => {
+            audio.volume = parseFloat(volumeSlider.value);
+            const muted = audio.volume === 0;
+            iconVol.style.display = muted ? "none" : "";
+            iconMute2.style.display = muted ? "" : "none";
+          });
+
+          btnMute.addEventListener("click", () => {
+            audio.muted = !audio.muted;
+            iconVol.style.display = audio.muted ? "none" : "";
+            iconMute2.style.display = audio.muted ? "" : "none";
+          });
+
+          btnDownload.addEventListener("click", async (e) => {
+            if (currentIndex === -1) {
+              e.preventDefault();
+              alert("Selecciona una canción primero");
+              return;
+            }
+
+            // Prevenimos la descarga normal para controlarla nosotros
+            e.preventDefault();
+            
+            const url = btnDownload.href;
+            const filename = btnDownload.download;
+
+            try {
+              // 1. Descargamos el archivo como un "Blob" (objeto binario)
+              const response = await fetch(url);
+              if (!response.ok) throw new Error("Archivo no encontrado");
+              const blob = await response.blob();
+
+              // 2. Creamos una URL temporal para ese objeto
+              const blobUrl = window.URL.createObjectURL(blob);
+
+              // 3. Creamos un enlace invisible, le ponemos el nombre y hacemos click
+              const tempLink = document.createElement("a");
+              tempLink.href = blobUrl;
+              tempLink.download = filename; // Aquí se aplica: "A1 - 06 OBERTURA TINDAYA.wav"
+              document.body.appendChild(tempLink);
+              tempLink.click();
+
+              // 4. Limpieza
+              document.body.removeChild(tempLink);
+              setTimeout(() => window.URL.revokeObjectURL(blobUrl), 100);
+
+            } catch (err) {
+              console.error("Fallo en descarga forzada:", err);
+              // Si falla el fetch, intentamos abrirlo en pestaña nueva como plan B
+              window.open(url, '_blank');
+            }
+          });
+
+          btnPlay.addEventListener("click", togglePlay);
+          btnPrev.addEventListener("click", prevTrack);
+          btnNext.addEventListener("click", nextTrack);
+
+          trackItems.forEach((item, i) => {
+            item.addEventListener("click", () => {
+              if (i === currentIndex) {
+                togglePlay();
+              } else {
+                loadTrack(i, true);
+              }
+            });
+            item.addEventListener("keydown", (e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                if (i === currentIndex) {
+                  togglePlay();
+                } else {
+                  loadTrack(i, true);
+                }
+              }
+            });
+          });
+
+          const nowPlaying = document.getElementById("vip-now-playing");
+
+          lyricsToggle.addEventListener("click", () => {
+            const isActive = lyricsPanel.classList.toggle("is-visible");
+            lyricsToggle.classList.toggle("is-active", isActive);
+            nowPlaying.classList.toggle("is-hidden", isActive);
+          });
+
+          document.addEventListener("keydown", (e) => {
+            const tag = e.target.tagName;
+            if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT")
+              return;
+            if (!document.getElementById("vip-music")) return;
+            if (e.code === "Space" && currentIndex >= 0) {
+              e.preventDefault();
+              togglePlay();
+            }
+          });
+
+          trackTitle.classList.add("is-idle");
+        })();
+      </script>
+    </section>
+  </main>
+</Layout>
