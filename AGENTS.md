@@ -28,9 +28,27 @@ Sitio web del musical [Tefía en Teatro](https://tefiaenteatro.com). Repositorio
 
 ## Deploy
 
-`deploy.ps1` sincroniza `dist/` con S3 e invalida CloudFront. Configura `$bucket` y `$distributionId` con tus recursos AWS.
+`deploy.ps1` sincroniza `dist/` con S3 e invalida CloudFront (+ purge Cloudflare si hay token). Bucket `tefiaenteatro.com`, distribución `E29CMKJWGWAZ58`.
 
 Flags: `--build` / `--nobuild`, `--media-all` / `--media-new` / `--media-none`, `-Yes`, `-DryRun`, `-Profile <nombre>`.
+
+### Continuous deploy (GitHub Actions)
+
+- **Automático:** push a `main` → [`.github/workflows/deploy.yml`](.github/workflows/deploy.yml): `deploy.ps1 --build --media-all -Yes` vía OIDC.
+- **Auth:** rol IAM `github-actions-deploy-tefia` (solo bucket `tefiaenteatro.com` + CF `E29CMKJWGWAZ58`; trust `refs/heads/main`).
+- **Manual local:** `npm run deploy` (interactivo) o `.\deploy.ps1 --build --media-all -Yes`.
+- **Setup IAM (MFA):** `powershell -File scripts/setup-github-oidc.ps1 -Apply -Profile iam-auditor-mfa`.
+- **Sync secrets:** `scripts/sync-github-deploy-secrets.ps1`.
+
+| Tipo | Nombre | Notas |
+|------|--------|--------|
+| Variable | `AWS_DEPLOY_ROLE_ARN` | `arn:aws:iam::282662225889:role/github-actions-deploy-tefia` |
+| Variable | `CLOUDFLARE_ZONE_IDS` | Zone ID Cloudflare |
+| Secret | `CLOUDFLARE_API_TOKEN` | Token zone-scoped |
+| Secret | `PUBLIC_REVISION_API_URL`, `PUBLIC_PHOTO_REPORT_AUTH` | Galería VIP / photo-report |
+| Secret | `PUBLIC_VIP_VIDEO_6_JULIO_ID` | Vídeo VIP embebido en build |
+
+Lambdas (`deploy-lambda-photo-report`) siguen siendo manuales con MFA.
 
 ## S3 (versioning, lifecycle, cifrado y access logs)
 
