@@ -21,12 +21,18 @@ $distPath = Join-Path $PSScriptRoot 'dist'
 # Perfil AWS: si se pasa -Profile, usarlo; sino, usar el perfil por defecto
 $awsProfileArgs = if ($Profile) { @('--profile', $Profile) } else { @() }
 
+# pwsh (Linux/CI) no siempre enlaza --build/--media-* a $Arg1/$Arg2; unificar con $args.
+$flagArgs = @($Arg1, $Arg2) + @($args) | Where-Object { $_ -and "$_".Trim() -ne '' }
+$isCi = $env:GITHUB_ACTIONS -eq 'true'
+if ($isCi) { $Yes = $true }
+
 Write-Host "--- PANEL DE CONTROL DE DESPLIEGUE ---" -ForegroundColor Yellow
 
 # --- Logica de BUILD ---
 $doBuild = $null
-if ($Arg1 -eq '--build' -or $Arg2 -eq '--build') { $doBuild = $true }
-elseif ($Arg1 -eq '--nobuild' -or $Arg2 -eq '--nobuild') { $doBuild = $false }
+if ($flagArgs -contains '--build') { $doBuild = $true }
+elseif ($flagArgs -contains '--nobuild') { $doBuild = $false }
+elseif ($isCi) { $doBuild = $true }
 
 if ($null -eq $doBuild) {
   $ans = Read-Host "Quieres ejecutar el build (npm run build)? (s/n)"
@@ -47,9 +53,10 @@ else {
 
 # --- Logica de MEDIA ---
 $mediaOption = $null
-if ($Arg1 -eq '--media-all' -or $Arg2 -eq '--media-all') { $mediaOption = 't' }
-elseif ($Arg1 -eq '--media-new' -or $Arg2 -eq '--media-new') { $mediaOption = 'n' }
-elseif ($Arg1 -eq '--media-none' -or $Arg2 -eq '--media-none') { $mediaOption = 'x' }
+if ($flagArgs -contains '--media-all') { $mediaOption = 't' }
+elseif ($flagArgs -contains '--media-new') { $mediaOption = 'n' }
+elseif ($flagArgs -contains '--media-none') { $mediaOption = 'x' }
+elseif ($isCi) { $mediaOption = 't' }
 
 if ($null -eq $mediaOption) {
   Write-Host "Opciones de archivos multimedia (imagenes/videos):" -ForegroundColor Cyan
