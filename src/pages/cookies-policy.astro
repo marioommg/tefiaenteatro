@@ -97,54 +97,56 @@ const lastUpdated = "09/11/2025";
         para ningún otro fin.
     </p>
 
-    <table>
-        <thead>
-            <tr>
-                <th>Cookie</th>
-                <th>Tipo / titular</th>
-                <th>Finalidad</th>
-                <th>Duración</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td><code>CloudFront-Policy</code></td>
-                <td>Técnica · Propia (emitida vía AWS CloudFront)</td>
-                <td
-                    >Contiene la política firmada que autoriza el acceso a los
-                    recursos protegidos de la zona VIP.</td
-                >
-                <td
-                    >24 horas desde la autenticación o hasta cerrar sesión
-                    manualmente.</td
-                >
-            </tr>
-            <tr>
-                <td><code>CloudFront-Signature</code></td>
-                <td>Técnica · Propia (emitida vía AWS CloudFront)</td>
-                <td
-                    >Incluye la firma criptográfica que valida la política de
-                    acceso y evita manipulaciones.</td
-                >
-                <td
-                    >24 horas desde la autenticación o hasta cerrar sesión
-                    manualmente.</td
-                >
-            </tr>
-            <tr>
-                <td><code>CloudFront-Key-Pair-Id</code></td>
-                <td>Técnica · Propia (emitida vía AWS CloudFront)</td>
-                <td
-                    >Identifica el par de claves usado para verificar la firma y
-                    completar la autenticación en la zona VIP.</td
-                >
-                <td
-                    >24 horas desde la autenticación o hasta cerrar sesión
-                    manualmente.</td
-                >
-            </tr>
-        </tbody>
-    </table>
+    <div class="cookies-table-wrapper" role="region" aria-label="Cookies técnicas">
+        <table>
+            <thead>
+                <tr>
+                    <th>Cookie</th>
+                    <th>Tipo / titular</th>
+                    <th>Finalidad</th>
+                    <th>Duración</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><code>CloudFront-Policy</code></td>
+                    <td>Técnica · Propia (emitida vía AWS CloudFront)</td>
+                    <td
+                        >Contiene la política firmada que autoriza el acceso a los
+                        recursos protegidos de la zona VIP.</td
+                    >
+                    <td
+                        >24 horas desde la autenticación o hasta cerrar sesión
+                        manualmente.</td
+                    >
+                </tr>
+                <tr>
+                    <td><code>CloudFront-Signature</code></td>
+                    <td>Técnica · Propia (emitida vía AWS CloudFront)</td>
+                    <td
+                        >Incluye la firma criptográfica que valida la política de
+                        acceso y evita manipulaciones.</td
+                    >
+                    <td
+                        >24 horas desde la autenticación o hasta cerrar sesión
+                        manualmente.</td
+                    >
+                </tr>
+                <tr>
+                    <td><code>CloudFront-Key-Pair-Id</code></td>
+                    <td>Técnica · Propia (emitida vía AWS CloudFront)</td>
+                    <td
+                        >Identifica el par de claves usado para verificar la firma y
+                        completar la autenticación en la zona VIP.</td
+                    >
+                    <td
+                        >24 horas desde la autenticación o hasta cerrar sesión
+                        manualmente.</td
+                    >
+                </tr>
+            </tbody>
+        </table>
+    </div>
 
     <p>
         Puedes revocar el acceso anticipadamente desde <a
@@ -217,3 +219,36 @@ const lastUpdated = "09/11/2025";
         >.
     </p>
 </Layout>
+
+<style>
+    .cookies-table-wrapper {
+        width: 100%;
+        max-width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .cookies-table-wrapper table {
+        width: 100%;
+        max-width: 100%;
+        table-layout: fixed;
+        border-collapse: collapse;
+    }
+
+    .cookies-table-wrapper th,
+    .cookies-table-wrapper td {
+        overflow-wrap: anywhere;
+        word-break: break-word;
+    }
+
+    @media (max-width: 600px) {
+        .cookies-table-wrapper {
+            font-size: 0.85em;
+        }
+
+        .cookies-table-wrapper th,
+        .cookies-table-wrapper td {
+            padding: 0.45rem 0.35rem;
+        }
+    }
+</style>
