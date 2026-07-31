@@ -1,3 +1,4 @@
+import { $, $$ } from "../lib/dom";
 // Scripts for the home page (index.astro)
 // - Fade-in animation on scroll for sections
 // - Making-of video: restore poster after end
@@ -5,7 +6,7 @@
 
 // Fade-in sections when entering viewport
 const initFadeSections = () => {
-  const sections = Array.from(document.querySelectorAll('.fade-section'));
+  const sections = $$('.fade-section');
   if (!sections.length) {
     return () => {};
   }
@@ -47,7 +48,7 @@ const initFadeSections = () => {
 
 // Ensure the elenco hero stays hidden until the visitor starts scrolling toward it
 const initElencoHeroScrollReveal = () => {
-  const hero = document.querySelector('#elenco.fade-section');
+  const hero = $('#elenco.fade-section');
   if (!hero) return () => {};
 
   const revealIfNeeded = () => {
@@ -82,7 +83,7 @@ const initElencoHeroScrollReveal = () => {
 
 // Restore poster on the making-of video after it ends
 const initMakingOfPosterReset = () => {
-  const video = document.querySelector('.makingof-video');
+  const video = $('.makingof-video');
   if (!(video instanceof HTMLVideoElement)) {
     return () => {};
   }
@@ -102,7 +103,7 @@ const initMakingOfPosterReset = () => {
 const initFireflies = () => {
   const reduce =
     window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const container = document.querySelector('#angeles-del-proyecto');
+  const container = $('#angeles-del-proyecto');
   if (!container) return () => {};
 
   // Use existing elements; if missing, create up to 6
@@ -233,7 +234,7 @@ const initFireflies = () => {
 
 // Purple glitter sparkles that follow the cursor over the elenco hero gallery
 const initHeroSparkles = () => {
-  const gallery = document.querySelector('.home-hero-gallery');
+  const gallery = $('.home-hero-gallery');
   if (!gallery) return () => {};
 
   const reduce =

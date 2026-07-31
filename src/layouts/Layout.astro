@@ -402,12 +402,14 @@ const canonicalUrl = Astro.url?.href;
 		{!hidePopup && <PopupAviso />}
 
 		<script is:inline>
+  import { $, $$ } from "../lib/dom";
+
 			(function () {
 				let resizeTimer = null;
 				let resizeBound = false;
 
 				function updateHeaderHeight() {
-					const header = document.querySelector("header");
+					const header = $("header");
 					if (!header) return;
 					const h = header.offsetHeight || 0;
 					document.documentElement.style.setProperty(
@@ -433,7 +435,7 @@ const canonicalUrl = Astro.url?.href;
 				}
 
 				function initHeaderHeight() {
-					const header = document.querySelector("header");
+					const header = $("header");
 					if (!header) return;
 					const h = header.offsetHeight || 0;
 					if (h > 0) {
@@ -471,7 +473,7 @@ const canonicalUrl = Astro.url?.href;
 					}
 
 					try {
-						document.querySelectorAll("img").forEach((img) => {
+						$$("img").forEach((img) => {
 							const loading = img.getAttribute("loading");
 							const priority = (
 								img.getAttribute("fetchpriority") || ""

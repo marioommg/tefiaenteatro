@@ -1,3 +1,4 @@
+import { $$ } from "../lib/dom";
 // Mantener velocidad constante en px/s, con ajustes para móvil.
 function initCredits(){
   const getBaseSpeed = () => {
@@ -25,7 +26,7 @@ function initCredits(){
     lastWidth = currentW;
 
     const base = getBaseSpeed();
-    const tracks = document.querySelectorAll('.track');
+    const tracks = $$('.track');
     tracks.forEach((track) => {
       let progress = 0;
       let oldMs = 0;
@@ -200,7 +201,7 @@ function initCredits(){
   window.addEventListener('resize', handleResize, { passive: true });
 
   window.addEventListener('orientationchange', () => {
-    const tracks = document.querySelectorAll('.track');
+    const tracks = $$('.track');
     tracks.forEach((t) => (t.style.animationPlayState = 'paused'));
     setTimeout(() => { fillRowsToCover(); setDurations(true, false); }, 150);
   });
@@ -222,7 +223,7 @@ document.addEventListener('astro:page-load', () => {
 });
 document.addEventListener('astro:before-swap', () => {
   // Pause during swap to avoid jank, will be resumed on page-load/init
-  const tracks = document.querySelectorAll('.track');
+  const tracks = $$('.track');
   tracks.forEach((t) => (t.style.animationPlayState = 'paused'));
 });
 

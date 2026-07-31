@@ -245,9 +245,11 @@ const vestuarioImages = Object.entries(lookImages)
 </section>
 
 <script>
+  import { $$ } from "../lib/dom";
+
     // Animation for numbers
     const animateNumbers = () => {
-        const stats = document.querySelectorAll(".stat-number");
+        const stats = $$(".stat-number");
 
         const observer = new IntersectionObserver(
             (entries) => {

@@ -1054,6 +1054,8 @@ const actorsWithHero = await Promise.all(
 </style>
 
 <script>
+  import { $$ } from "../lib/dom";
+
   // Keep track of cleanups between SPA navigations
   let cleanups: Array<() => void> = [];
 
@@ -1083,7 +1085,7 @@ const actorsWithHero = await Promise.all(
     );
 
     const toObserve = Array.from(
-      document.querySelectorAll(".reveal-on-scroll"),
+      $$(".reveal-on-scroll"),
     );
     toObserve.forEach((el, idx) => {
       setTimeout(() => obs.observe(el), idx * 80);
@@ -1231,7 +1233,7 @@ const actorsWithHero = await Promise.all(
 
   function initHandleRotators() {
     const cleanFns: Array<() => void> = [];
-    document.querySelectorAll(".handle-rotator").forEach((el) => {
+    $$(".handle-rotator").forEach((el) => {
       const rot = el as HTMLElement;
       let handles: string[] = [];
       try {
@@ -1297,7 +1299,7 @@ const actorsWithHero = await Promise.all(
     cleanups.push(cleanupReveal);
 
     // Init sliders
-    document.querySelectorAll(".slider").forEach((el) => {
+    $$(".slider").forEach((el) => {
       const cleanupSlider = initSlider(el as HTMLElement);
       cleanups.push(cleanupSlider);
     });

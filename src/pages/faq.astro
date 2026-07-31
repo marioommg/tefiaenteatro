@@ -51,15 +51,17 @@ const stripHtml = (html: string) => html.replace(/<[^>]+>/g, '').replace(/\s+/g,
   </main>
 
   <script is:inline>
+  import { $ } from "../lib/dom";
+
     // Accesible filter + expand/collapse controls
     (function () {
       const search = document.getElementById('faq-search');
       const list = document.getElementById('faq-list');
       const items = () => Array.from(list.querySelectorAll('.faq-item'));
       const groups = () => Array.from(list.querySelectorAll('.faq-group'));
-      const empty = document.querySelector('.faq-empty');
+      const empty = $('.faq-empty');
       const searchWrap = document.getElementById('faq-search-wrap');
-      const filterToggle = document.querySelector('.faq-filter-toggle');
+      const filterToggle = $('.faq-filter-toggle');
 
       function normalize(s) {
         return (s || '')

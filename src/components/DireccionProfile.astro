@@ -789,6 +789,8 @@ const handles = Array.from(new Set(
     </style>
 
     <script>
+  import { $$ } from "../lib/dom";
+
         // Keep track of cleanups between SPA navigations
         let cleanups: Array<() => void> = [];
 
@@ -818,7 +820,7 @@ const handles = Array.from(new Set(
             );
 
             const toObserve = Array.from(
-                document.querySelectorAll(".reveal-on-scroll"),
+                $$(".reveal-on-scroll"),
             );
             toObserve.forEach((el, idx) => {
                 setTimeout(() => obs.observe(el), idx * 80);
@@ -978,7 +980,7 @@ const handles = Array.from(new Set(
 
         function initHandleRotators() {
             const cleanFns: Array<() => void> = [];
-            document.querySelectorAll(".handle-rotator").forEach((el) => {
+            $$(".handle-rotator").forEach((el) => {
                 const rot = el as HTMLElement;
                 let handles: string[] = [];
                 try {

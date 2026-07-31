@@ -1,3 +1,4 @@
+import { $$ } from "../../lib/dom";
 // Explicit .js extensions added for production bundling clarity
 import { renderBatch, collectCards } from './cards.js';
 import { downloadAsJPG } from './download.js';
@@ -36,7 +37,7 @@ function ready(fn) {
 
 function initFilterPanels() {
   // NOTE: Removed TS generic (<HTMLDetailsElement>) for runtime compatibility
-  const panels = Array.from(document.querySelectorAll('.filter-panel'));
+  const panels = $$('.filter-panel');
   panels.forEach((panel) => {
     panel.addEventListener('toggle', () => {
       if (!panel.open) {
@@ -139,7 +140,7 @@ function initGallery() {
   let cardIndex = buildCardIndex(cards);
   const labelLookup = buildLabelLookup();
 
-  const checkboxes = Array.from(document.querySelectorAll('input[data-filter-type]'));
+  const checkboxes = $$('input[data-filter-type]');
 
   // Register labels from checkboxes
   checkboxes.forEach((checkbox) => {

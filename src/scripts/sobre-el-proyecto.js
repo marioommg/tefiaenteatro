@@ -1,3 +1,4 @@
+import { $, $$ } from "../lib/dom";
 // Intersection Observer for fade-in animations
 const observerOptions = {
     root: null,
@@ -35,9 +36,9 @@ const timelineObserver = new IntersectionObserver((entries) => {
 
 // Timeline Scroll Animation
 function initTimelineScroll() {
-    const timeline = document.querySelector(".timeline");
-    const lineFilled = document.querySelector(".timeline-line-filled");
-    const items = document.querySelectorAll(".timeline-item");
+    const timeline = $(".timeline");
+    const lineFilled = $(".timeline-line-filled");
+    const items = $$(".timeline-item");
 
     if (!timeline || !lineFilled) return;
 
@@ -82,13 +83,13 @@ function initTimelineScroll() {
 
 // Run on initial load and Astro page transitions
 const initAnimations = () => {
-    const sections = document.querySelectorAll(".fade-section");
+    const sections = $$(".fade-section");
     sections.forEach((section) => observer.observe(section));
 
-    const timelineItems = document.querySelectorAll(".timeline-anim-item");
+    const timelineItems = $$(".timeline-anim-item");
     timelineItems.forEach((item) => timelineObserver.observe(item));
 
-    document.querySelectorAll("[data-initial-visible]").forEach((el) => {
+    $$("[data-initial-visible]").forEach((el) => {
         el.classList.add("visible");
     });
 
@@ -153,7 +154,7 @@ function initAutoScroll() {
     }, { passive: true });
 
     // Make the arrow indicator clickable
-    const scrollIndicator = document.querySelector('.scroll-indicator');
+    const scrollIndicator = $('.scroll-indicator');
     if (scrollIndicator) {
         scrollIndicator.style.cursor = 'pointer';
         scrollIndicator.addEventListener('click', () => {

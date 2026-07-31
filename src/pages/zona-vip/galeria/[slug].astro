@@ -431,6 +431,8 @@ const photoReportAuth = import.meta.env.PUBLIC_PHOTO_REPORT_AUTH || "";
   </div>
 
   <script is:inline>
+  import { $ } from "../../../lib/dom";
+
     (function() {
       function initReportModal() {
         const modal = document.getElementById("vip-report-modal");
@@ -515,7 +517,7 @@ const photoReportAuth = import.meta.env.PUBLIC_PHOTO_REPORT_AUTH || "";
 
            const isDanger = b.classList.contains('vip-report-submit-btn--danger');
            const actionStr = isDanger ? 'delete' : 'modify';
-           const activePhotoSlug = document.querySelector("#vip-photo-report")?.getAttribute("data-photo-slug");
+           const activePhotoSlug = $("#vip-photo-report")?.getAttribute("data-photo-slug");
            
            const photoDataRaw = document.getElementById("gallery-photo-data");
            const photoDataList = photoDataRaw && photoDataRaw.textContent ? JSON.parse(photoDataRaw.textContent) : [];
@@ -1504,6 +1506,8 @@ const photoReportAuth = import.meta.env.PUBLIC_PHOTO_REPORT_AUTH || "";
     })();
   </script>
   <script is:inline>
+  import { $ } from "../../../lib/dom";
+
     (function () {
       // Función para convertir WebP a JPG y descargar
       async function downloadAsJPG(webpUrl, filename, button) {
@@ -1577,7 +1581,7 @@ const photoReportAuth = import.meta.env.PUBLIC_PHOTO_REPORT_AUTH || "";
       }
 
       function initDownload() {
-        const root = document.querySelector(".photo-info");
+        const root = $(".photo-info");
         if (!root) return;
 
         root.addEventListener("click", function (e) {
@@ -1600,6 +1604,8 @@ const photoReportAuth = import.meta.env.PUBLIC_PHOTO_REPORT_AUTH || "";
     })();
   </script>
   <script is:inline>
+  import { $, $$ } from "../../../lib/dom";
+
     // SPA-like navigation for photo detail con filtros preservados
     document.addEventListener("DOMContentLoaded", function () {
       const photoDataRaw = document.getElementById("gallery-photo-data");
@@ -1638,9 +1644,9 @@ const photoReportAuth = import.meta.env.PUBLIC_PHOTO_REPORT_AUTH || "";
         } catch {}
       });
 
-      const navButtons = document.querySelectorAll(".photo-nav-button");
+      const navButtons = $$(".photo-nav-button");
       const photoImg = document.getElementById("vip-photo-img");
-      const photoMeta = document.querySelector(".photo-meta");
+      const photoMeta = $(".photo-meta");
       const modal = document.getElementById("vip-photo-modal");
       const modalImg = modal
         ? modal.querySelector(".vip-photo-modal-img")
@@ -1740,7 +1746,7 @@ const photoReportAuth = import.meta.env.PUBLIC_PHOTO_REPORT_AUTH || "";
         });
 
         if (prevItem) {
-          const prevBtn = document.querySelector(".photo-nav-button--prev");
+          const prevBtn = $(".photo-nav-button--prev");
           if (prevBtn && prevBtn instanceof HTMLAnchorElement) {
             prevBtn.setAttribute("href", buildUrlWithFilters(prevItem.slug));
             prevBtn.setAttribute("data-target-slug", prevItem.slug);
@@ -1753,7 +1759,7 @@ const photoReportAuth = import.meta.env.PUBLIC_PHOTO_REPORT_AUTH || "";
         }
 
         if (nextItem) {
-          const nextBtn = document.querySelector(".photo-nav-button--next");
+          const nextBtn = $(".photo-nav-button--next");
           if (nextBtn && nextBtn instanceof HTMLAnchorElement) {
             nextBtn.setAttribute("href", buildUrlWithFilters(nextItem.slug));
             nextBtn.setAttribute("data-target-slug", nextItem.slug);
@@ -1779,7 +1785,7 @@ const photoReportAuth = import.meta.env.PUBLIC_PHOTO_REPORT_AUTH || "";
 
       // También actualizar el enlace de volver al cargar en base a activeFilters
       (function updateBackLinkOnLoad() {
-        const backLink = document.querySelector(".photo-back-link");
+        const backLink = $(".photo-back-link");
         if (!backLink) return;
         const params = new URLSearchParams();
         activeFilters.theme.forEach((t) => params.append("theme", t));
@@ -2003,7 +2009,7 @@ const photoReportAuth = import.meta.env.PUBLIC_PHOTO_REPORT_AUTH || "";
         });
 
         if (prevItem) {
-          const prevBtn = document.querySelector(".photo-nav-button--prev");
+          const prevBtn = $(".photo-nav-button--prev");
           if (prevBtn && prevBtn instanceof HTMLAnchorElement) {
             prevBtn.setAttribute("href", buildUrlWithFilters(prevItem.slug));
             prevBtn.setAttribute("data-target-slug", prevItem.slug);
@@ -2016,7 +2022,7 @@ const photoReportAuth = import.meta.env.PUBLIC_PHOTO_REPORT_AUTH || "";
         }
 
         if (nextItem) {
-          const nextBtn = document.querySelector(".photo-nav-button--next");
+          const nextBtn = $(".photo-nav-button--next");
           if (nextBtn && nextBtn instanceof HTMLAnchorElement) {
             nextBtn.setAttribute("href", buildUrlWithFilters(nextItem.slug));
             nextBtn.setAttribute("data-target-slug", nextItem.slug);
