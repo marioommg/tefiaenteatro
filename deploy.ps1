@@ -110,8 +110,10 @@ $syncDeleteFlag = if ($DryRun) { '--dryrun' } else { '--delete' }
 Write-Host "Sincronizando con S3..." -ForegroundColor Cyan
 
 # Exclusiones de seguridad para CI (GitHub Actions):
-# Evita que 'aws s3 sync --delete' elimine en S3 multimedia que no se sube al repo Git.
-$ciMediaExcludes = if ($isCi) { @('--exclude', 'sobre-el-proyecto/*', '--exclude', 'zona-vip/galeria/*', '--exclude', 'audios/*') } else { @() }
+# Evita que 'aws s3 sync --delete' elimine contenido que no se genera por completo en CI.
+# La banda sonora depende de canciones.local.ts (gitignored), por lo que GitHub solo
+# genera la version de demostracion y nunca debe reemplazar la pagina completa publicada.
+$ciMediaExcludes = if ($isCi) { @('--exclude', 'sobre-el-proyecto/*', '--exclude', 'zona-vip/galeria/*', '--exclude', 'zona-vip/banda-sonora/*', '--exclude', 'audios/*') } else { @() }
 
 if ($mediaOption -eq 't') {
   Write-Host "Subiendo TODO (reemplazando multimedia desde cero)..." -ForegroundColor Yellow
