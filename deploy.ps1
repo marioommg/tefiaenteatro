@@ -109,20 +109,24 @@ $syncDeleteFlag = if ($DryRun) { '--dryrun' } else { '--delete' }
 
 Write-Host "Sincronizando con S3..." -ForegroundColor Cyan
 
+# Exclusiones de seguridad para CI (GitHub Actions):
+# Evita que 'aws s3 sync --delete' elimine en S3 multimedia que no se sube al repo Git.
+$ciMediaExcludes = if ($isCi) { @('--exclude', 'sobre-el-proyecto/*', '--exclude', 'zona-vip/galeria/*', '--exclude', 'audios/*') } else { @() }
+
 if ($mediaOption -eq 't') {
   Write-Host "Subiendo TODO (reemplazando multimedia desde cero)..." -ForegroundColor Yellow
-  aws s3 sync $distPath s3://$bucket $syncDeleteFlag @awsProfileArgs
+  aws s3 sync $distPath s3://$bucket $syncDeleteFlag @ciMediaExcludes @awsProfileArgs
 }
 elseif ($mediaOption -eq 'n') {
   Write-Host "Subiendo TODO (multimedia: solo nuevas/modificadas)..." -ForegroundColor Yellow
-  aws s3 sync $distPath s3://$bucket $syncDeleteFlag --size-only @awsProfileArgs
+  aws s3 sync $distPath s3://$bucket $syncDeleteFlag --size-only @ciMediaExcludes @awsProfileArgs
 }
 else {
   Write-Host "Excluyendo archivos multimedia..." -ForegroundColor Yellow
   $excludeList = @('*.jpg', '*.jpeg', '*.png', '*.webp', '*.gif', '*.mp4', '*.mov', '*.avi', '*.mkv', '*.heic', '*.svg', '*.webm', '*.ogg', '*.avif')
   $excludeArgs = $excludeList | ForEach-Object { "--exclude", $_ }
   # Se usa --size-only para los archivos web (html, css, js) para maximizar la velocidad
-  aws s3 sync $distPath s3://$bucket $excludeArgs $syncDeleteFlag --size-only @awsProfileArgs
+  aws s3 sync $distPath s3://$bucket $excludeArgs $syncDeleteFlag --size-only @ciMediaExcludes @awsProfileArgs
 }
 
 # --- CloudFront ---
