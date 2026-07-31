@@ -37,4 +37,4 @@ jobs:
           PUBLIC_REVISION_API_URL: ${{ secrets.PUBLIC_REVISION_API_URL }}
           PUBLIC_PHOTO_REPORT_AUTH: ${{ secrets.PUBLIC_PHOTO_REPORT_AUTH }}
           PUBLIC_VIP_VIDEO_6_JULIO_ID: ${{ secrets.PUBLIC_VIP_VIDEO_6_JULIO_ID }}
-        run: pwsh -NoProfile -File ./deploy.ps1 --build --media-all -Yes
+        run: pwsh -NoProfile -File ./deploy.ps1 --build --media-none -Yes

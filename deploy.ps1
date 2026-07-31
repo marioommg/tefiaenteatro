@@ -123,7 +123,7 @@ elseif ($mediaOption -eq 'n') {
 }
 else {
   Write-Host "Excluyendo archivos multimedia..." -ForegroundColor Yellow
-  $excludeList = @('*.jpg', '*.jpeg', '*.png', '*.webp', '*.gif', '*.mp4', '*.mov', '*.avi', '*.mkv', '*.heic', '*.svg', '*.webm', '*.ogg', '*.avif')
+  $excludeList = @('*.jpg', '*.jpeg', '*.png', '*.webp', '*.gif', '*.mp4', '*.mov', '*.avi', '*.mkv', '*.heic', '*.svg', '*.webm', '*.ogg', '*.wav', '*.mp3', '*.m4a', '*.avif')
   $excludeArgs = $excludeList | ForEach-Object { "--exclude", $_ }
   # Se usa --size-only para los archivos web (html, css, js) para maximizar la velocidad
   aws s3 sync $distPath s3://$bucket $excludeArgs $syncDeleteFlag --size-only @ciMediaExcludes @awsProfileArgs

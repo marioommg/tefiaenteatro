@@ -401,7 +401,8 @@ const canonicalUrl = Astro.url?.href;
 
 		{!hidePopup && <PopupAviso />}
 
-		<script is:inline>
+		<script>
+  // @ts-nocheck
   import { $, $$ } from "../lib/dom";
 
 			(function () {

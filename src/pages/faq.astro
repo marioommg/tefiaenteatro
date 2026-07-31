@@ -50,7 +50,8 @@ const stripHtml = (html: string) => html.replace(/<[^>]+>/g, '').replace(/\s+/g,
     </section>
   </main>
 
-  <script is:inline>
+  <script>
+  // @ts-nocheck
   import { $ } from "../lib/dom";
 
     // Accesible filter + expand/collapse controls

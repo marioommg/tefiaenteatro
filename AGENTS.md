@@ -34,7 +34,7 @@ Flags: `--build` / `--nobuild`, `--media-all` / `--media-new` / `--media-none`, 
 
 ### Continuous deploy (GitHub Actions)
 
-- **Automático:** push a `main` → [`.github/workflows/deploy.yml`](.github/workflows/deploy.yml): `deploy.ps1 --build --media-all -Yes` vía OIDC.
+- **Automático:** push a `main` → [`.github/workflows/deploy.yml`](.github/workflows/deploy.yml): `deploy.ps1 --build --media-none -Yes` vía OIDC. El CD publica HTML/CSS/JS sin volver a subir ni borrar multimedia.
 - **Auth:** rol IAM `github-actions-deploy-tefia` (solo bucket `tefiaenteatro.com` + CF `E29CMKJWGWAZ58`; trust `refs/heads/main`).
 - **Manual local:** `npm run deploy` (interactivo) o `.\deploy.ps1 --build --media-all -Yes`.
 - **Setup IAM (MFA):** `powershell -File scripts/setup-github-oidc.ps1 -Apply -Profile iam-auditor-mfa`.
